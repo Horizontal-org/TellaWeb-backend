@@ -17,12 +17,12 @@ import { ReportDomain } from '../domain/report.domain';
 import { ICreateReportApplication } from '../interfaces/applications/create.report.application.interface';
 import { IGetByIdReportApplication } from '../interfaces/applications/get-by-id.report.application.interface';
 import { TYPES } from '../interfaces/types';
-import { TYPES as TYPES_FILES } from 'src/files/interfaces/types';
+import { TYPES as TYPES_FILES } from 'files/interfaces/types';
 import { Request, Response } from 'express';
-import { ICreateFileApplicationInterface } from 'src/files/interfaces/applications/create.file.application.interface';
+import { ICreateFileApplicationInterface } from 'files/interfaces/applications/create.file.application.interface';
 import { IAddFileReportService } from '../interfaces/services/add-file.report.service.interface';
-import { IGetByNameAndBucketFileApplication } from 'src/files/interfaces/applications/get-by-name-and-bucket.file.application';
-import { ICloseFileApplication } from 'src/files/interfaces/applications/close.file.application.interface';
+import { IGetByNameAndBucketFileApplication } from 'files/interfaces/applications/get-by-name-and-bucket.file.application';
+import { ICloseFileApplication } from 'files/interfaces/applications/close.file.application.interface';
 import { ReportNotFound } from '../exceptions/report-not-found';
 
 @Controller('reports')

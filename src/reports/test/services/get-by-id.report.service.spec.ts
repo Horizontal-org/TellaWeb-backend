@@ -3,15 +3,20 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Report } from '../../domain/report.entity';
 import { GetByIdReportService } from '../../services/get-by-id.report.service';
 import { Repository } from 'typeorm';
+import { TYPES } from '../../../files/interfaces/types';
+import { IGetByIdReportService } from '../../interfaces/services/get-by-id.report.service.interface';
 
 describe('GetByIdReportService', () => {
-  let service: GetByIdReportService;
+  let service: IGetByIdReportService;
   let repositoryMock: Repository<Report>;
 
   beforeAll(async () => {
     const app = await Test.createTestingModule({
       providers: [
-        GetByIdReportService,
+        {
+          provide: TYPES.services.IGetByIdFileService,
+          useClass: GetByIdReportService,
+        },
         {
           provide: getRepositoryToken(Report),
           useClass: Repository,
@@ -19,8 +24,13 @@ describe('GetByIdReportService', () => {
       ],
     }).compile();
 
-    service = app.get<GetByIdReportService>(GetByIdReportService);
+    service = app.get<IGetByIdReportService>(
+      TYPES.services.IGetByIdFileService,
+    );
+
     repositoryMock = app.get<Repository<Report>>(getRepositoryToken(Report));
+
+    return;
   });
 
   describe('findById', () => {
@@ -35,7 +45,6 @@ describe('GetByIdReportService', () => {
       jest.spyOn(repositoryMock, 'findOne').mockResolvedValue(report);
 
       expect(await service.execute(report.id)).toEqual(report);
-      expect(repositoryMock.findOne).toBeCalled();
     });
   });
 });

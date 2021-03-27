@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IGetByIdFileApplication } from 'src/files/interfaces/applications/get-by-id.file.application.inteface';
-import { TYPES as TYPES_FILES } from 'src/files/interfaces/types';
-import { IAddFileReportService } from 'src/reports/interfaces/services/add-file.report.service.interface';
+import { IGetByIdFileApplication } from 'files/interfaces/applications/get-by-id.file.application.inteface';
+import { TYPES as TYPES_FILES } from 'files/interfaces/types';
+import { IAddFileReportService } from 'reports/interfaces/services/add-file.report.service.interface';
 import { Repository } from 'typeorm';
-import { ReportFile } from '../domain/report-files.entity';
-import { Report } from '../domain/report.entity';
-import { AddFileReportDto } from '../dto/add-file-reports.dto';
+import { ReportFile } from 'reports/domain/report-files.entity';
+import { Report } from 'reports/domain/report.entity';
+import { AddFileReportDto } from 'reports/dto/add-file-reports.dto';
 
 @Injectable()
 export class AddFileReportService implements IAddFileReportService {
@@ -26,7 +26,6 @@ export class AddFileReportService implements IAddFileReportService {
     reportFile.report = report;
 
     report.files.push(reportFile);
-
     this.reportRepository.save(report);
     return report;
   }

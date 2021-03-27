@@ -4,8 +4,8 @@ import { ReportDomain } from '../../domain/report.domain';
 import { Report } from '../../domain/report.entity';
 import { TYPES } from '../../interfaces/types';
 
-class CreateReportService {
-  create(report: ReportDomain) {
+class CreateReportServiceMock {
+  execute(report: ReportDomain) {
     return report;
   }
 }
@@ -19,7 +19,7 @@ describe('CreateReportApplication', () => {
         CreateReportApplication,
         {
           provide: TYPES.services.ICreateReportService,
-          useClass: CreateReportService,
+          useClass: CreateReportServiceMock,
         },
       ],
     }).compile();

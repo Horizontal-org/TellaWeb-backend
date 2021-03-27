@@ -1,4 +1,4 @@
-import { FileDto } from 'src/files/dto/file.dto';
+import { FileDto } from 'files/dto/file.dto';
 
 export interface IGetByIdFileApplication {
   execute(id: string): Promise<FileDto>;

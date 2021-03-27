@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ICreateReportService } from 'src/reports/interfaces/services/create.report.service.interface';
+import { ICreateReportService } from 'reports/interfaces/services/create.report.service.interface';
 import { Repository } from 'typeorm';
-import { ReportDomain } from 'src/reports/domain/report.domain';
-import { Report } from '../domain/report.entity';
+import { ReportDomain } from 'reports/domain/report.domain';
 import { CreateReportDto } from '../dto/create-report.dto';
+import { Report } from '../domain/report.entity';
 
 @Injectable()
 export class CreateReportService implements ICreateReportService {

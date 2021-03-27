@@ -1,4 +1,4 @@
-import { File } from 'src/files/domain/file.entity';
+import { File } from 'files/domain/file.entity';
 import { FileInputDto } from '../../dto/file-input.dto';
 
 export interface IGetOrCreateFileService {

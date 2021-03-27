@@ -9,10 +9,10 @@ import { TYPES } from '../interfaces/types';
 export class CreateReportApplication implements ICreateReportApplication {
   constructor(
     @Inject(TYPES.services.ICreateReportService)
-    private reportService: ICreateReportService,
+    private readonly createReportService: ICreateReportService,
   ) {}
 
   async execute(createReportDto: CreateReportDto): Promise<ReportDomain> {
-    return this.reportService.execute(createReportDto);
+    return this.createReportService.execute(createReportDto);
   }
 }

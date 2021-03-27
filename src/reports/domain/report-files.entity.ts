@@ -1,4 +1,4 @@
-import { File } from 'src/files/domain/file.entity';
+import { File } from '../../files/domain/file.entity';
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Report } from './report.entity';
 

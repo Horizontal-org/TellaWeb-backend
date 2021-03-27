@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Report } from './domain/report.entity';
 import { ReportsController } from './controller/reports.controller';
 import { ReportFile } from './domain/report-files.entity';
-import { FilesModule } from 'src/files/files.module';
+import { FilesModule } from 'files/files.module';
 import {
   createReportApplicationProvider,
   getByIdReportApplicationProvider,

@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { mapReportFiles } from '../utils/mapReportFiles.utils';
-import { ReportFile } from './report-files.entity';
+import { mapReportFiles } from 'reports/utils/mapReportFiles.utils';
+import { ReportFile } from 'reports/domain/report-files.entity';
 
 @Entity()
 export class Report {
