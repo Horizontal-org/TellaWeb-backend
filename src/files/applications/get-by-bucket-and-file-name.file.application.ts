@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { FileInfoDto } from '../dto/file-info.dto';
 import { FileInputDto } from '../dto/file-input.dto';
-import { IGetByNameAndBucketFileApplication } from '../interfaces/applications/get-by-name-and-bucket.file.application';
+import { IGetByNameAndBucketFileApplication } from '../interfaces/applications/get-by-name-and-bucket.file.application.interface';
 import { IGetInfoFileService } from '../interfaces/services/get-info.file.service.interface';
 import { TYPES } from '../interfaces/types';
 
