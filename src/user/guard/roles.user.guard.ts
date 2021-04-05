@@ -12,11 +12,9 @@ export class RolesUserGuard implements CanActivate {
       'roles',
       context.getHandler(),
     );
-    console.log(roles);
     if (typeof roles === 'undefined') return true;
 
     const request = context.switchToHttp().getRequest();
-    console.log(request.user);
     const user: User = request.user;
     if (!user) return false;
 
@@ -25,6 +23,5 @@ export class RolesUserGuard implements CanActivate {
 }
 
 export const matchRoles = (roles: UserRoles[], role: UserRoles): boolean => {
-  console.log({ roles, role });
   return typeof roles.find((r) => r === role) !== 'undefined';
 };
