@@ -43,15 +43,13 @@ export class StorageFileHandler implements IStorageFileHandler {
     return this.get(input, true);
   }
 
-  public async append({
-    bucket,
-    fileName,
-    stream,
-  }: FileInputStreamDto): Promise<boolean> {
-    const file = await this.get({ bucket, fileName });
-    if (file.closed) throw new FileAlreadyClosed(fileName);
+  public async append(
+    fileInputStreamDto: FileInputStreamDto,
+  ): Promise<boolean> {
+    const file = await this.get(fileInputStreamDto);
+    if (file.closed) throw new FileAlreadyClosed(fileInputStreamDto.fileName);
 
-    const saved = await this.streamToFile({ bucket, fileName, stream });
+    const saved = await this.streamToFile(fileInputStreamDto);
     return saved;
   }
 

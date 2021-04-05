@@ -1,6 +1,6 @@
 import { FileInfoDto } from 'files/dto/file-info.dto';
-import { FileInputDto } from 'files/dto/file-input.dto';
+import { GetByNameAndBucketDto } from 'files/dto/get-by-name-and-bucket.file.dto';
 
 export interface IGetByNameAndBucketFileApplication {
-  execute(input: FileInputDto): Promise<FileInfoDto>;
+  execute(input: GetByNameAndBucketDto): Promise<FileInfoDto>;
 }

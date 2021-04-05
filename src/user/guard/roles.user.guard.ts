@@ -12,19 +12,19 @@ export class RolesUserGuard implements CanActivate {
       'roles',
       context.getHandler(),
     );
-    console.log({ roles });
-    if (!roles) {
-      return true;
-    }
+    console.log(roles);
+    if (typeof roles === 'undefined') return true;
+
     const request = context.switchToHttp().getRequest();
-    console.log('roles user guard ', request.user);
+    console.log(request.user);
     const user: User = request.user;
     if (!user) return false;
+
     return matchRoles(roles, user.role);
   }
 }
 
-function matchRoles(roles: UserRoles[], role: UserRoles): boolean {
+export const matchRoles = (roles: UserRoles[], role: UserRoles): boolean => {
   console.log({ roles, role });
   return typeof roles.find((r) => r === role) !== 'undefined';
-}
+};

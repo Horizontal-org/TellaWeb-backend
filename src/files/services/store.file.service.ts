@@ -18,10 +18,7 @@ export class StoreFileService implements IStoreFileService {
   async execute(input: FileInputStreamDto): Promise<FileDto> {
     await this.fileHandler.append(input);
 
-    const file = await this.getOrCreateFileService.execute({
-      fileName: input.fileName,
-      bucket: input.bucket,
-    });
+    const file = await this.getOrCreateFileService.execute(input);
 
     return {
       id: file.id,

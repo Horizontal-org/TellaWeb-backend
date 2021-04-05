@@ -1,6 +1,6 @@
 import { FileInputStreamDto } from 'files/dto/file-input.dto';
-import { File } from 'files/domain/file.entity';
+import { FileDto } from 'files/dto/file.dto';
 
 export interface ICreateFileApplication {
-  execute(input: FileInputStreamDto): Promise<File>;
+  execute(input: FileInputStreamDto): Promise<FileDto>;
 }

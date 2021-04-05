@@ -1,5 +1,5 @@
 export interface FileDto {
-  id: string;
+  id?: string;
   fileName: string;
   bucket: string;
 }

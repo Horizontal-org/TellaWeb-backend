@@ -17,14 +17,17 @@ export class CloseFileService implements ICloseFileService {
     private readonly fileHandler: StorageFileHandler,
   ) {}
 
-  async execute({ bucket, fileName }: FileInputDto): Promise<void> {
+  async execute(fileInputDto: FileInputDto): Promise<void> {
     const file = await this.fileRepository.findOne({
-      where: { report: bucket, fileName },
+      where: {
+        bucket: fileInputDto.bucket,
+        fileName: fileInputDto.fileName,
+      },
     });
 
-    if (!file) throw new FileNotFound(fileName);
+    if (!file) throw new FileNotFound(fileInputDto.fileName);
 
-    await this.fileHandler.close({ bucket, fileName });
+    await this.fileHandler.close(fileInputDto);
     await this.fileRepository.save(file);
 
     return;

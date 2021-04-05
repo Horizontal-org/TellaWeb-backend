@@ -9,7 +9,6 @@ import {
   getByIdFileApplicationProvider,
   getByIdFileServiceProvider,
   getByNameAndBucketFileApplicationProvider,
-  getInfoByIdFileApplicationProvider,
   getInfoFileServiceProvider,
   getOrCreateFileServiceProvider,
   storageFileHandlerProvider,
@@ -23,7 +22,6 @@ import {
     getByNameAndBucketFileApplicationProvider,
     getByIdFileApplicationProvider,
     getInfoFileServiceProvider,
-    getInfoByIdFileApplicationProvider,
     createFileApplicationProvider,
     closeFileApplicationProvider,
     getByIdFileServiceProvider,
@@ -33,7 +31,6 @@ import {
   ],
   exports: [
     getByNameAndBucketFileApplicationProvider,
-    getByIdFileApplicationProvider,
     createFileApplicationProvider,
     closeFileApplicationProvider,
   ],

@@ -1,5 +1,5 @@
-import { ReportDomain } from 'reports/domain/report.domain';
+import { Report } from 'reports/domain/report.entity';
 
 export interface IGetByIdReportService {
-  execute(id: string): Promise<ReportDomain>;
+  execute(id: string): Promise<Report>;
 }

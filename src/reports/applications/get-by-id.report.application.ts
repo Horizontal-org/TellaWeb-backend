@@ -1,5 +1,5 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ReportDomain } from '../domain/report.domain';
+import { Inject, Injectable } from '@nestjs/common';
+import { Report } from 'reports/domain/report.entity';
 import { ReportNotFound } from '../exceptions/report-not-found';
 import { IGetByIdReportApplication } from '../interfaces/applications/get-by-id.report.application.interface';
 import { IGetByIdReportService } from '../interfaces/services/get-by-id.report.service.interface';
@@ -12,7 +12,7 @@ export class GetByIdReportApplication implements IGetByIdReportApplication {
     private reportService: IGetByIdReportService,
   ) {}
 
-  async execute(id: string): Promise<ReportDomain> {
+  async execute(id: string): Promise<Report> {
     const report = await this.reportService.execute(id);
     if (!report) throw new ReportNotFound(id);
 

@@ -2,7 +2,6 @@ export const TYPES = {
   applications: {
     IGetByNameAndBucketFileApplication: 'IGetByNameAndBucketFileApplication',
     IGetByIdFileApplication: 'IGetByIdFileApplication',
-    IGetInfoByIdFileApplication: 'IGetInfoByIdFileApplication',
     ICreateFileApplication: 'ICreateFileApplication',
     ICloseFileApplication: 'ICloseFileApplication',
   },

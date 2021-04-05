@@ -1,6 +1,6 @@
-import { ReportDomain } from 'reports/domain/report.domain';
+import { Report } from 'reports/domain/report.entity';
 import { CreateReportDto } from 'reports/dto/create-report.dto';
 
 export interface ICreateReportService {
-  execute(createReportDto: CreateReportDto): Promise<ReportDomain>;
+  execute(createReportDto: CreateReportDto): Promise<Report>;
 }

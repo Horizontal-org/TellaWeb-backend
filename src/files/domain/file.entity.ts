@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Report } from 'reports/domain/report.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class File {
@@ -10,4 +11,7 @@ export class File {
 
   @Column()
   bucket: string;
+
+  @ManyToOne(() => Report, (report: Report) => report.files)
+  report: Report;
 }

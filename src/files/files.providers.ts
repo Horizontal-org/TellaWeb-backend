@@ -1,9 +1,8 @@
 import { TYPES } from './interfaces/types';
 import { CloseFileApplication } from './applications/close.file.application';
 import { CreateFileApplication } from './applications/create.file.application';
-import { GetByNameAndBucketFileApplication } from './applications/get-by-bucket-and-file-name.file.application copy';
+import { GetByNameAndBucketFileApplication } from './applications/get-by-bucket-and-file-name.file.application';
 import { GetByIdFileApplication } from './applications/get-by-id.file.application';
-import { GetInfoByIdFileApplication } from './applications/get-info-by-id.file.application';
 import { StorageFileHandler } from './handlers/storage.file.handler';
 import { CloseFileService } from './services/close.file.service';
 import { GetByIdFileService } from './services/get-by-id.file.service';
@@ -19,11 +18,6 @@ export const storageFileHandlerProvider = {
 export const getByNameAndBucketFileApplicationProvider = {
   provide: TYPES.applications.IGetByNameAndBucketFileApplication,
   useClass: GetByNameAndBucketFileApplication,
-};
-
-export const getInfoByIdFileApplicationProvider = {
-  provide: TYPES.applications.IGetInfoByIdFileApplication,
-  useClass: GetInfoByIdFileApplication,
 };
 
 export const getByIdFileApplicationProvider = {

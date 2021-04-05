@@ -5,7 +5,6 @@ import {
   Head,
   Inject,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   Req,
@@ -19,7 +18,6 @@ import { TYPES } from '../interfaces/types';
 import { TYPES as TYPES_FILES } from 'files/interfaces/types';
 import { Request, Response } from 'express';
 import { ICreateFileApplication } from 'files/interfaces/applications/create.file.application.interface';
-import { IAddFileReportService } from '../interfaces/services/add-file.report.service.interface';
 import { IGetByNameAndBucketFileApplication } from 'files/interfaces/applications/get-by-name-and-bucket.file.application';
 import { ICloseFileApplication } from 'files/interfaces/applications/close.file.application.interface';
 import { ReportNotFound } from '../exceptions/report-not-found';
@@ -29,6 +27,8 @@ import { Roles } from 'user/decorators/roles.user.decorator';
 import { UserRoles } from 'user/domain/user-roles.enum';
 
 @Controller('reports')
+@UseGuards(RolesUserGuard)
+@UseGuards(AuthGuard('basic'))
 export class ReportsController {
   constructor(
     @Inject(TYPES.applications.ICreateReportApplication)
@@ -39,28 +39,28 @@ export class ReportsController {
     private getByNameAndBucketFileApplication: IGetByNameAndBucketFileApplication,
     @Inject(TYPES_FILES.applications.ICreateFileApplication)
     private createFileApplication: ICreateFileApplication,
-    @Inject(TYPES.services.IAddFileReportService)
-    private readonly addFileReportService: IAddFileReportService,
     @Inject(TYPES_FILES.applications.ICloseFileApplication)
     private readonly closeFileApplication: ICloseFileApplication,
   ) {}
 
-  @UseGuards(AuthGuard('basic'))
-  @Post('/create')
-  async createReportHandler(@Body() reportDomain: ReportDomain) {
-    const report = await this.createReportApplication.execute(reportDomain);
+  @Post('create')
+  async createReportHandler(
+    @Body() reportDomain: ReportDomain,
+    @Req() request,
+  ) {
+    const report = await this.createReportApplication.execute({
+      ...reportDomain,
+      userId: request.user.id,
+    });
     return report;
   }
 
   @Roles(UserRoles.ADMIN)
-  @UseGuards(RolesUserGuard)
-  @UseGuards(AuthGuard('basic'))
   @Get(':id')
-  async findReportHandler(@Param('id', new ParseUUIDPipe()) id: string) {
+  async findReportHandler(@Param('id') id: string) {
     return this.getByIdReportApplication.execute(id);
   }
 
-  @UseGuards(AuthGuard('basic'))
   @Head(':reportId/:fileName')
   async getFileSizeHandler(
     @Res() res: Response,
@@ -75,7 +75,6 @@ export class ReportsController {
     res.send();
   }
 
-  @UseGuards(AuthGuard('basic'))
   @Put(':reportId/:fileName')
   async addFileHandler(
     @Req() stream: Request,
@@ -89,17 +88,12 @@ export class ReportsController {
       bucket: reportId,
       fileName,
       stream,
+      report,
     });
 
-    await this.addFileReportService.execute({
-      fileId: file.id,
-      reportId: reportId,
-    });
-
-    return;
+    return file;
   }
 
-  @UseGuards(AuthGuard('basic'))
   @Post(':reportId/:fileName')
   async closeFileHandler(
     @Param('reportId') reportId: string,
@@ -108,7 +102,11 @@ export class ReportsController {
     const report = await this.getByIdReportApplication.execute(reportId);
     if (!report) throw new ReportNotFound(reportId);
 
-    await this.closeFileApplication.execute({ fileName, bucket: reportId });
+    await this.closeFileApplication.execute({
+      fileName,
+      bucket: reportId,
+      report,
+    });
     return;
   }
 }
