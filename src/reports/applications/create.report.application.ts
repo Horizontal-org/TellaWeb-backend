@@ -14,7 +14,6 @@ export class CreateReportApplication implements ICreateReportApplication {
 
   async execute(createReportDto: CreateReportDto): Promise<ReportDomain> {
     const report = await this.createReportService.execute(createReportDto);
-    console.log(report);
     return report;
   }
 }

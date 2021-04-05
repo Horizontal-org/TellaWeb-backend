@@ -13,9 +13,11 @@ export class CreateReportService implements ICreateReportService {
   ) {}
 
   async execute(createReportDto: CreateReportDto): Promise<Report> {
-    return this.reportRepository.save({
-      title: createReportDto.title,
-      description: createReportDto.description,
-    });
+    const report = new Report();
+    report.title = createReportDto.title;
+    report.description = createReportDto.description;
+    report.author = createReportDto.author;
+
+    return this.reportRepository.save(report);
   }
 }

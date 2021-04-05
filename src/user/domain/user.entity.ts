@@ -1,7 +1,6 @@
-import { Transform } from 'class-transformer';
+import { Report } from 'reports/domain/report.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserId } from './user-id.dv';
-import { UserReport } from './user-report.entity';
 import { UserRoles } from './user-roles.enum';
 
 @Entity()
@@ -18,10 +17,6 @@ export class User {
   @Column()
   role: UserRoles;
 
-  @Transform(({ value }) => value.report)
-  @OneToMany(() => UserReport, (userReport) => userReport.user, {
-    cascade: true,
-    eager: true,
-  })
-  reports: UserReport[];
+  @OneToMany(() => Report, (report: Report) => report.author)
+  reports: Report[];
 }

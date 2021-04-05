@@ -18,13 +18,15 @@ import { TYPES } from '../interfaces/types';
 import { TYPES as TYPES_FILES } from 'files/interfaces/types';
 import { Request, Response } from 'express';
 import { ICreateFileApplication } from 'files/interfaces/applications/create.file.application.interface';
-import { IGetByNameAndBucketFileApplication } from 'files/interfaces/applications/get-by-name-and-bucket.file.application';
+import { IGetByNameAndBucketFileApplication } from 'files/interfaces/applications/get-by-name-and-bucket.file.application.interface';
 import { ICloseFileApplication } from 'files/interfaces/applications/close.file.application.interface';
 import { ReportNotFound } from '../exceptions/report-not-found';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesUserGuard } from 'user/guard/roles.user.guard';
 import { Roles } from 'user/decorators/roles.user.decorator';
 import { UserRoles } from 'user/domain/user-roles.enum';
+import { LoggedUser } from 'auth/decorators/logged-user.auth.decorator';
+import { User } from 'user/domain/user.entity';
 
 @Controller('reports')
 @UseGuards(RolesUserGuard)
@@ -46,11 +48,11 @@ export class ReportsController {
   @Post('create')
   async createReportHandler(
     @Body() reportDomain: ReportDomain,
-    @Req() request,
+    @LoggedUser() user: User,
   ) {
     const report = await this.createReportApplication.execute({
       ...reportDomain,
-      userId: request.user.id,
+      author: user,
     });
     return report;
   }
