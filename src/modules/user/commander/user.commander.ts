@@ -1,4 +1,4 @@
-import { Controller, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConsoleService } from 'nestjs-console';
 import * as prompt from 'prompt';
 
@@ -12,9 +12,8 @@ import {
   IListUserApplication,
 } from '../interfaces';
 
-@Controller()
 @Injectable()
-export class ConsoleUserController {
+export class UserCommander {
   constructor(
     @Inject(TYPES.applications.IListUserApplication)
     private readonly listUserApplication: IListUserApplication,

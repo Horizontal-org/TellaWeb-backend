@@ -53,23 +53,10 @@ export class ReportsController {
     private readonly closeFileApplication: ICloseFileApplication,
   ) {}
 
-  @Post('create')
-  async createReportHandler(
-    @Body() reportDomain: ReadReportDto,
-    //@LoggedUser() user: UserEntity,
-  ) {
-    const report = await this.createReportApplication.execute({
-      ...reportDomain,
-    });
-
-    //Todo add report to user
-    return report;
-  }
-
   @Roles(RolesUser.ADMIN)
-  @Get(':id')
-  async findReportHandler(@Param('id') id: string) {
-    return this.getByIdReportApplication.execute(id);
+  @Get(':reportId')
+  async findReportHandler(@Param('reportId') reportId: string) {
+    return this.getByIdReportApplication.execute(reportId);
   }
 
   @Head(':reportId/:fileName')
@@ -117,5 +104,18 @@ export class ReportsController {
     // todo add file to report
 
     return;
+  }
+
+  @Post('')
+  async createReportHandler(
+    @Body() reportDomain: ReadReportDto,
+    //@LoggedUser() user: UserEntity,
+  ) {
+    const report = await this.createReportApplication.execute({
+      ...reportDomain,
+    });
+
+    //Todo add report to user
+    return report;
   }
 }

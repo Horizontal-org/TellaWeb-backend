@@ -4,7 +4,7 @@ import { ConsoleModule } from 'nestjs-console';
 
 import { ReportsModule } from 'modules/reports/reports.module';
 
-import { ConsoleUserController } from './controllers';
+import { UserCommander } from './commander';
 import { UserEntity } from './domain';
 import {
   applicationsUserProviders,
@@ -18,8 +18,12 @@ import {
     ConsoleModule,
     ReportsModule,
   ],
-  controllers: [ConsoleUserController],
-  providers: [...applicationsUserProviders, ...servicesUserProviders],
+
+  providers: [
+    UserCommander,
+    ...applicationsUserProviders,
+    ...servicesUserProviders,
+  ],
   exports: [checkPasswordUserApplicationProvider],
 })
 export class UserModule {}

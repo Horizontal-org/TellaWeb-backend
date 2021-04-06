@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { BasicStrategy as Strategy } from 'passport-http';
-import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
 
 import {
   ICheckPasswordUserApplication,
