@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 
 import { hashPassword } from 'common/utils/password.utils';
 
-import { CreateUserDto } from '../dto';
+import { CreateUserDto, ReadUserDto } from '../dto';
 import {
   TYPES,
   ICreateUserApplication,
@@ -15,13 +16,13 @@ export class CreateUserApplication implements ICreateUserApplication {
     @Inject(TYPES.services.ICreateUserService)
     private readonly createUserService: ICreateUserService,
   ) {}
-  async execute(createUserDto: CreateUserDto): Promise<boolean> {
+  async execute(createUserDto: CreateUserDto): Promise<ReadUserDto> {
     const password = await hashPassword(createUserDto.password);
-    await this.createUserService.execute({
+    const user = await this.createUserService.execute({
       ...createUserDto,
       password,
     });
 
-    return true;
+    return plainToClass(ReadUserDto, user);
   }
 }

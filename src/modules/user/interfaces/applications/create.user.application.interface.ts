@@ -1,5 +1,5 @@
-import { CreateUserDto } from '../../dto';
+import { CreateUserDto, ReadUserDto } from '../../dto';
 
 export interface ICreateUserApplication {
-  execute(createUserDto: CreateUserDto): Promise<boolean>;
+  execute(createUserDto: CreateUserDto): Promise<ReadUserDto>;
 }

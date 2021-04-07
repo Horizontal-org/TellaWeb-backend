@@ -11,6 +11,7 @@ import {
   servicesUserProviders,
   checkPasswordUserApplicationProvider,
 } from './user.providers';
+import { userControllers } from './controllers';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import {
     ConsoleModule,
     ReportModule,
   ],
-
+  controllers: [...userControllers],
   providers: [
     UserCommander,
     ...applicationsUserProviders,
