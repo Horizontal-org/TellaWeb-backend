@@ -6,8 +6,8 @@ import { OrmConfig } from './ormconfig';
 
 import { UserModule } from 'modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { ReportsModule } from './modules/reports/reports.module';
-import { FilesModule } from './modules/files/files.module';
+import { ReportModule } from './modules/report/report.module';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -17,8 +17,8 @@ import { FilesModule } from './modules/files/files.module';
     }),
     ConsoleModule,
     UserModule,
-    ReportsModule,
-    FilesModule,
+    ReportModule,
+    FileModule,
     AuthModule,
   ],
 })

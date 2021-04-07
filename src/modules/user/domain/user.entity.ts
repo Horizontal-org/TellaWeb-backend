@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ReportEntity } from 'modules/reports/domain/report.entity';
+import { ReportEntity } from 'modules/report/domain/report.entity';
 
 import { RolesUser } from './roles.user.enum';
 
