@@ -4,6 +4,7 @@ import { ICreateReportService } from 'modules/reports/interfaces/services/create
 import { Repository } from 'typeorm';
 import { CreateReportDto } from '../dto/create.report.dto';
 import { ReportEntity } from '../domain/report.entity';
+import { ReadUserDto } from 'modules/user/dto';
 
 @Injectable()
 export class CreateReportService implements ICreateReportService {
@@ -12,10 +13,14 @@ export class CreateReportService implements ICreateReportService {
     private readonly reportRepository: Repository<ReportEntity>,
   ) {}
 
-  async execute(createReportDto: CreateReportDto): Promise<ReportEntity> {
+  async execute(
+    createReportDto: CreateReportDto,
+    authorDto: ReadUserDto,
+  ): Promise<ReportEntity> {
     const report = new ReportEntity();
     report.title = createReportDto.title;
     report.description = createReportDto.description;
+    report.author = authorDto.toEntity();
 
     return this.reportRepository.save(report);
   }

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReadReportDto, CreateReportDto } from '../dto';
 import {
@@ -15,8 +16,14 @@ export class CreateReportApplication implements ICreateReportApplication {
     private readonly createReportService: ICreateReportService,
   ) {}
 
-  async execute(createReportDto: CreateReportDto): Promise<ReadReportDto> {
-    const report = await this.createReportService.execute(createReportDto);
+  async execute(
+    createReportDto: CreateReportDto,
+    authorDto: ReadUserDto,
+  ): Promise<ReadReportDto> {
+    const report = await this.createReportService.execute(
+      createReportDto,
+      authorDto,
+    );
     return plainToClass(ReadReportDto, report);
   }
 }
