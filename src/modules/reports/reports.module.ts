@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesModule } from 'modules/files/files.module';
 
 import { ReportEntity } from './domain';
-import { ReportsController } from './controller';
+import { reportControllers } from './controller';
 import {
   applicationsReportProviders,
   servicesReportProviders,
@@ -12,7 +12,7 @@ import {
 
 @Module({
   imports: [TypeOrmModule.forFeature([ReportEntity]), FilesModule],
-  controllers: [ReportsController],
+  controllers: [...reportControllers],
   providers: [...applicationsReportProviders, ...servicesReportProviders],
 })
 export class ReportsModule {}

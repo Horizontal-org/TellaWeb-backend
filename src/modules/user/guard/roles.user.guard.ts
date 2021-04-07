@@ -8,10 +8,7 @@ export class RolesUserGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<RolesUser[]>(
-      'roles',
-      context.getHandler(),
-    );
+    const roles = this.reflector.get<RolesUser[]>('roles', context.getClass());
     if (typeof roles === 'undefined') return true;
 
     const request = context.switchToHttp().getRequest();
