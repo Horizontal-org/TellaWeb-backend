@@ -16,7 +16,7 @@ export class GetByIdReportController {
 
   @ApiOkResponse({ type: ReadReportDto })
   @Get(':reportId')
-  async findReportHandler(@Param('reportId') reportId: string) {
+  async handler(@Param('reportId') reportId: string) {
     return this.getByIdReportApplication.execute(reportId);
   }
 }

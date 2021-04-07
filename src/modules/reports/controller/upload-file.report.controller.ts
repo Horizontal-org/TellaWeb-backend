@@ -19,7 +19,7 @@ export class UploadFileReportController {
 
   @ApiCreatedResponse({ type: FileDto })
   @Put(':reportId/:fileName')
-  async uploadFileHandler(
+  async handler(
     @Req() stream: Request,
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,

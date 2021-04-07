@@ -27,7 +27,7 @@ export class GetFileSizeReportController {
     },
   })
   @Head(':reportId/:fileName')
-  async getFileSizeHandler(
+  async handler(
     @Res() res: Response,
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,

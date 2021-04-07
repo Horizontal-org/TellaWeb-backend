@@ -18,7 +18,7 @@ export class CreateReportController {
 
   @ApiCreatedResponse({ type: ReadReportDto })
   @Post('')
-  async createReportHandler(
+  async handler(
     @Body() reportDomain: CreateReportDto,
     //@LoggedUser() user: UserEntity,
   ) {

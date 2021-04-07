@@ -22,7 +22,7 @@ export class CloseFileReportController {
   ) {}
 
   @Post(':reportId/:fileName')
-  async closeFileHandler(
+  async handler(
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
   ) {
