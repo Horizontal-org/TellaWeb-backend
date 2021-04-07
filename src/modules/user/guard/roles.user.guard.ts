@@ -9,7 +9,7 @@ export class RolesUserGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.get<RolesUser[]>('roles', context.getClass());
-    if (typeof roles === 'undefined') return true;
+    if (typeof roles === 'undefined' || roles.length === 0) return true;
 
     const request = context.switchToHttp().getRequest();
     const user: UserEntity = request.user;
