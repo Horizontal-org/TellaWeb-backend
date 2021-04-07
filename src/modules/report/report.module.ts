@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileModule } from 'modules/file/file.module';
 
 import { ReportEntity } from './domain';
-import { reportControllers } from './controller';
+import { reportControllers } from './controllers';
 import {
   applicationsReportProviders,
   servicesReportProviders,
