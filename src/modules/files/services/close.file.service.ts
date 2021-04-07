@@ -7,6 +7,7 @@ import { FileEntity } from '../domain';
 import { FileNotFound } from '../exceptions';
 import { StorageFileHandler } from '../handlers';
 import { TYPES, ICloseFileService } from '../interfaces';
+import { ReadReportDto } from 'modules/reports/dto';
 
 @Injectable()
 export class CloseFileService implements ICloseFileService {
@@ -17,7 +18,10 @@ export class CloseFileService implements ICloseFileService {
     private readonly fileHandler: StorageFileHandler,
   ) {}
 
-  async execute(closeFileDto: CloseFileDto): Promise<void> {
+  async execute(
+    closeFileDto: CloseFileDto,
+    readReportDto: ReadReportDto,
+  ): Promise<void> {
     const file = await this.fileRepository.findOne({
       where: {
         bucket: closeFileDto.bucket,
@@ -28,6 +32,8 @@ export class CloseFileService implements ICloseFileService {
     if (!file) throw new FileNotFound(closeFileDto.fileName);
 
     await this.fileHandler.close(closeFileDto);
+
+    file.report = readReportDto.toEntity();
     await this.fileRepository.save(file);
 
     return;

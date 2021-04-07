@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { FileDto } from 'modules/files/dto';
 import { ReadUserDto } from 'modules/user/dto';
+import { ReportEntity } from '../domain';
 
 @Exclude()
 export class ReadReportDto {
@@ -31,4 +32,11 @@ export class ReadReportDto {
   @Expose()
   @Type(() => ReadUserDto)
   author: ReadUserDto;
+
+  public toEntity() {
+    const report = new ReportEntity();
+    report.id = this.id;
+
+    return report;
+  }
 }
