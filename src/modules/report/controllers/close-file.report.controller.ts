@@ -1,4 +1,4 @@
-import { Inject, Param, Post } from '@nestjs/common';
+import { Inject, Param, Post, UseGuards } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
@@ -7,6 +7,7 @@ import {
   ICloseFileApplication,
 } from 'modules/file/interfaces';
 import { NotFoundReportException } from '../exceptions';
+import { OnlyAuthor } from '../guard/only-author.report.guard';
 import { IGetByIdReportApplication, TYPES } from '../interfaces';
 
 @AuthController('reports')
@@ -18,6 +19,7 @@ export class CloseFileReportController {
     private readonly closeFileApplication: ICloseFileApplication,
   ) {}
 
+  @UseGuards(OnlyAuthor)
   @Post(':reportId/:fileName')
   async handler(
     @Param('reportId') reportId: string,

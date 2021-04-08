@@ -1,4 +1,4 @@
-import { Inject, Param, Put, Req } from '@nestjs/common';
+import { Inject, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 
@@ -9,6 +9,7 @@ import {
   TYPES as TYPES_FILES,
   ICreateFileApplication,
 } from 'modules/file/interfaces';
+import { OnlyAuthor } from '../guard/only-author.report.guard';
 
 @AuthController('reports')
 export class UploadFileReportController {
@@ -18,6 +19,7 @@ export class UploadFileReportController {
   ) {}
 
   @ApiCreatedResponse({ type: FileDto })
+  @UseGuards(OnlyAuthor)
   @Put(':reportId/:fileName')
   async handler(
     @Req() stream: Request,

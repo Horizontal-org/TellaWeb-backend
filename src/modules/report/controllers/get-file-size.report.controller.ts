@@ -1,4 +1,4 @@
-import { Head, Inject, Param, Res } from '@nestjs/common';
+import { Head, Inject, Param, Res, UseGuards } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -8,6 +8,7 @@ import {
   TYPES as TYPES_FILE,
   IGetByNameAndBucketFileApplication,
 } from 'modules/file/interfaces';
+import { OnlyAuthor } from '../guard/only-author.report.guard';
 
 @AuthController('reports')
 export class GetFileSizeReportController {
@@ -26,6 +27,7 @@ export class GetFileSizeReportController {
       },
     },
   })
+  @UseGuards(OnlyAuthor)
   @Head(':reportId/:fileName')
   async handler(
     @Res() res: Response,
