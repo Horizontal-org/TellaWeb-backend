@@ -9,6 +9,8 @@ import { CreateUserService } from './services/create.user.service';
 import { FindByUsernameUserService } from './services/find-by-username.user.service';
 import { ListUserService } from './services/list.user.service';
 import { SetRoleUserService } from './services/set-role.user.service';
+import { EditUserService } from './services/edit.user.service';
+import { EditUserApplication } from './applications/edit.user.application';
 
 export const rolesUserGuardProvider = {
   provide: TYPES.guards.IRolesUserGuard,
@@ -40,6 +42,11 @@ export const checkPasswordUserApplicationProvider = {
   useClass: CheckPasswordUserApplication,
 };
 
+export const editUserApplicationProvider = {
+  provide: TYPES.applications.IEditUserApplication,
+  useClass: EditUserApplication,
+};
+
 export const findByUernameUserServiceProvider = {
   provide: TYPES.services.IFindByUsernameUserService,
   useClass: FindByUsernameUserService,
@@ -60,12 +67,18 @@ export const createUserServiceProvider = {
   useClass: CreateUserService,
 };
 
+export const editUserServiceProvider = {
+  provide: TYPES.services.IEditUserService,
+  useClass: EditUserService,
+};
+
 export const applicationsUserProviders = [
   findByUsernameUserApplicationProvider,
   toggleRoleByUsernameUserApplicationProvider,
   listUserApplicationProvider,
   createUserApplicationProvider,
   checkPasswordUserApplicationProvider,
+  editUserApplicationProvider,
 ];
 
 export const servicesUserProviders = [
@@ -73,4 +86,5 @@ export const servicesUserProviders = [
   listUserServiceProvider,
   setRoleUserServiceProvider,
   createUserServiceProvider,
+  editUserServiceProvider,
 ];

@@ -1,10 +1,4 @@
 export const TYPES = {
-  services: {
-    IFindByUsernameUserService: 'IFindByUsernameUserService',
-    IListUserService: 'IListUserService',
-    ISetRoleService: 'ISetRoleService',
-    ICreateUserService: 'ICreateUserService',
-  },
   applications: {
     ICheckPasswordUserApplication: 'ICheckPasswordUserApplication',
     IFindByUsernameUserApplication: 'IFindByUsernameUserApplication',
@@ -12,6 +6,14 @@ export const TYPES = {
       'IToggleRoleByUsernameUserApplication',
     IListUserApplication: 'IListUserApplication',
     ICreateUserApplication: 'ICreateUserApplication',
+    IEditUserApplication: 'IEditUserApplication',
+  },
+  services: {
+    IFindByUsernameUserService: 'IFindByUsernameUserService',
+    IListUserService: 'IListUserService',
+    ISetRoleService: 'ISetRoleService',
+    ICreateUserService: 'ICreateUserService',
+    IEditUserService: 'IEditUserService',
   },
   guards: {
     IRolesUserGuard: 'IRolesUsersGuard',
