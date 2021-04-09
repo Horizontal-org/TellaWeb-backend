@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  UpdateDateColumn,
+  BeforeInsert,
 } from 'typeorm';
 
 import { FileEntity } from 'modules/file/domain/file.entity';
@@ -30,4 +32,15 @@ export class ReportEntity {
     eager: true,
   })
   author: UserEntity;
+
+  @Column({ name: 'created_at' })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt!: Date;
+
+  @BeforeInsert()
+  private beforeInsert(): void {
+    this.createdAt = new Date();
+  }
 }

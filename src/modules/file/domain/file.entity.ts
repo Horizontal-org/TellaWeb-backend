@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 import { ReportEntity } from 'modules/report/domain/report.entity';
 import { Exclude, Expose } from 'class-transformer';
@@ -19,6 +26,17 @@ export class FileEntity {
 
   @ManyToOne(() => ReportEntity, (report: ReportEntity) => report.files)
   report: ReportEntity;
+
+  @Column({ name: 'created_at' })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt!: Date;
+
+  @BeforeInsert()
+  private beforeInsert(): void {
+    this.createdAt = new Date();
+  }
 
   public attachToReport(reportId: string) {
     const report = new ReportEntity();
