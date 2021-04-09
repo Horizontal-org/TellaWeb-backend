@@ -9,7 +9,7 @@ import { ReadUserDto } from 'modules/user/dto';
 import { CreateReportDto, ReadReportDto } from '../dto';
 import { TYPES, ICreateReportApplication } from '../interfaces';
 
-@AuthController('reports')
+@AuthController('report')
 export class CreateReportController {
   constructor(
     @Inject(TYPES.applications.ICreateReportApplication)

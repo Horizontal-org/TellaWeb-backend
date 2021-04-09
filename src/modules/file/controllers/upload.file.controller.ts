@@ -4,17 +4,15 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-import { FileDto } from 'modules/file/dto';
-import {
-  TYPES as TYPES_FILES,
-  ICreateFileApplication,
-} from 'modules/file/interfaces';
-import { OnlyAuthor } from '../guard/only-author.report.guard';
+import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
-@AuthController('reports')
+import { FileDto } from '../dto';
+import { TYPES, ICreateFileApplication } from '../interfaces';
+
+@AuthController('file')
 export class UploadFileReportController {
   constructor(
-    @Inject(TYPES_FILES.applications.ICreateFileApplication)
+    @Inject(TYPES.applications.ICreateFileApplication)
     private createFileApplication: ICreateFileApplication,
   ) {}
 

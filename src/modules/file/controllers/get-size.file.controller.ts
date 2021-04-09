@@ -4,16 +4,14 @@ import { Response } from 'express';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-import {
-  TYPES as TYPES_FILE,
-  IGetByNameAndBucketFileApplication,
-} from 'modules/file/interfaces';
-import { OnlyAuthor } from '../guard/only-author.report.guard';
+import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
-@AuthController('reports')
-export class GetFileSizeReportController {
+import { TYPES, IGetByNameAndBucketFileApplication } from '../interfaces';
+
+@AuthController('file')
+export class GetSizeFileController {
   constructor(
-    @Inject(TYPES_FILE.applications.IGetByNameAndBucketFileApplication)
+    @Inject(TYPES.applications.IGetByNameAndBucketFileApplication)
     private getByNameAndBucketFileApplication: IGetByNameAndBucketFileApplication,
   ) {}
 

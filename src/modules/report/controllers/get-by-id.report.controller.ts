@@ -7,7 +7,7 @@ import { ReadReportDto } from '../dto';
 import { TYPES, IGetByIdReportApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-@AuthController('reports', [RolesUser.ADMIN])
+@AuthController('report', [RolesUser.ADMIN])
 export class GetByIdReportController {
   constructor(
     @Inject(TYPES.applications.IGetByIdReportApplication)
