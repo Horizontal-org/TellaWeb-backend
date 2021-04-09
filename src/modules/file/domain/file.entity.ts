@@ -19,4 +19,10 @@ export class FileEntity {
 
   @ManyToOne(() => ReportEntity, (report: ReportEntity) => report.files)
   report: ReportEntity;
+
+  public attachToReport(reportId: string) {
+    const report = new ReportEntity();
+    report.id = reportId;
+    this.report = report;
+  }
 }

@@ -11,11 +11,8 @@ export class CloseFileApplication implements ICloseFileApplication {
     private readonly closeFileService: ICloseFileService,
   ) {}
 
-  async execute(
-    input: CloseFileDto,
-    readReportDto: ReadReportDto,
-  ): Promise<void> {
-    await this.closeFileService.execute(input, readReportDto);
+  async execute(input: CloseFileDto, reportId: string): Promise<void> {
+    await this.closeFileService.execute(input, reportId);
 
     return;
   }

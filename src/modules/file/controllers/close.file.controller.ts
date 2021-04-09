@@ -2,8 +2,6 @@ import { Inject, Param, Post, UseGuards } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-import { ParamReport } from 'modules/report/decorators';
-import { ReadReportDto } from 'modules/report/dto';
 import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, ICloseFileApplication } from '../interfaces';
@@ -18,15 +16,15 @@ export class CloseFileReportController {
   @UseGuards(OnlyAuthor)
   @Post(':reportId/:fileName')
   async handler(
-    @ParamReport('reportId') report: ReadReportDto,
+    @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
   ) {
     await this.closeFileApplication.execute(
       {
         fileName,
-        bucket: report.id,
+        bucket: reportId,
       },
-      report,
+      reportId,
     );
 
     return;
