@@ -4,6 +4,7 @@ export const TYPES = {
     IGetByIdFileApplication: 'IGetByIdFileApplication',
     ICreateFileApplication: 'ICreateFileApplication',
     ICloseFileApplication: 'ICloseFileApplication',
+    IGetAssetFileApplication: 'IGetAssetFileApplication',
   },
   services: {
     IGetByIdFileService: 'IGetByIdFileService',
@@ -11,6 +12,7 @@ export const TYPES = {
     IGetOrCreateFileService: 'IGetOrCreateFileService',
     IStoreFileService: 'IStoreFileService',
     ICloseFileService: 'ICloseFileService',
+    IFetchFileService: 'IFetchFileService',
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',

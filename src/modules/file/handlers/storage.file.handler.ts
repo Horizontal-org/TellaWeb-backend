@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { existsSync, mkdirSync, renameSync, statSync } from 'fs';
+import {
+  existsSync,
+  mkdirSync,
+  renameSync,
+  statSync,
+  createReadStream,
+  ReadStream,
+} from 'fs';
 import * as path from 'path';
 
 import {
   AlreadyClosedFileException,
   CantBeClosedFileException,
+  NotFoundFileException,
 } from '../exceptions';
 import { IStorageFileHandler } from '../interfaces';
 import {
@@ -24,6 +32,13 @@ export class StorageFileHandler implements IStorageFileHandler {
   constructor() {
     this.basePath = './data';
     this.appendableSuffix = '.part';
+  }
+
+  async fetch(input: ReadFileDto): Promise<ReadStream> {
+    if (!this.fileExist(input, false))
+      throw new NotFoundFileException(input.fileName);
+
+    return createReadStream(this.getPath(input, false));
   }
 
   public async get(

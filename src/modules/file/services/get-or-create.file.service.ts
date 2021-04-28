@@ -15,10 +15,11 @@ export class GetOrCreateFileService implements IGetOrCreateFileService {
   ) {}
 
   async execute({ fileName, bucket }: ReadFileDto): Promise<FileDto> {
-    const newFile = await this.fileRepository.save({
-      fileName,
-      bucket,
-    });
+    const file = new FileEntity();
+    file.fileName = fileName;
+    file.bucket = bucket;
+
+    const newFile = await this.fileRepository.save(file);
 
     return plainToClass(FileDto, newFile);
   }
