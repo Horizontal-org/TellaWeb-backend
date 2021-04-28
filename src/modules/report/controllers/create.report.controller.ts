@@ -4,12 +4,13 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
 import { LoggedUser } from 'modules/auth/decorators';
+import { RolesUser } from 'modules/user/domain';
 import { ReadUserDto } from 'modules/user/dto';
 
 import { CreateReportDto, ReadReportDto } from '../dto';
 import { TYPES, ICreateReportApplication } from '../interfaces';
 
-@AuthController('report')
+@AuthController('report', [RolesUser.USER, RolesUser.ADMIN])
 export class CreateReportController {
   constructor(
     @Inject(TYPES.applications.ICreateReportApplication)
@@ -19,12 +20,13 @@ export class CreateReportController {
   @ApiCreatedResponse({ type: ReadReportDto })
   @Post('')
   async handler(
-    @Body() reportDomain: CreateReportDto,
-    @LoggedUser() user: ReadUserDto,
-  ) {
+    @Body() createReportDto: CreateReportDto,
+    @LoggedUser() author: ReadUserDto,
+  ): Promise<ReadReportDto> {
+    console.log(createReportDto);
     const report = await this.createReportApplication.execute(
-      reportDomain,
-      user,
+      createReportDto,
+      author,
     );
 
     //Todo add report to user

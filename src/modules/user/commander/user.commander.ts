@@ -91,13 +91,13 @@ export class UserCommander {
     prompt.start();
     const { password } = await prompt.get(['password']);
 
-    const userId = await this.createUserApplication.execute({
+    const user = await this.createUserApplication.execute({
       username,
       isAdmin,
       password: password.toString(),
     });
 
-    console.log(`User ${username} was created with id ${userId}`);
+    console.log(`User ${username} was created with id ${user.id}`);
   }
 }
 
