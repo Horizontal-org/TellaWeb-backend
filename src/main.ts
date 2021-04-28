@@ -16,10 +16,10 @@ async function bootstrap() {
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, swaggerDocument);
 
-  await app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      transformOptions: { excludeExtraneousValues: true },
+      whitelist: true,
     }),
   );
   await app.useGlobalInterceptors(new TransformInterceptor()).listen(3000);
