@@ -3,6 +3,8 @@ import { CreateReportApplication } from '../../applications/create.report.applic
 import { ReadReportDto } from '../../dto/read.report.dto';
 import { ReportEntity } from '../../domain/report.entity';
 import { TYPES } from '../../interfaces/types';
+import { UserEntity } from 'modules/user/domain';
+import { ReadUserDto } from 'modules/user/dto';
 
 class CreateReportServiceMock {
   execute(report: ReadReportDto) {
@@ -29,14 +31,15 @@ describe('CreateReportApplication', () => {
 
   describe('create', () => {
     it('should create a report', async () => {
-      const report: ReportEntity = {
+      const report = {
         id: '111AAA',
-        title: 'Test report',
-        description: 'Test report for test cases',
-        files: [],
-      };
+      } as ReadReportDto;
 
-      expect(await application.execute(report)).toEqual(report);
+      const author = {
+        toEntity: () => ({ id: 'AAA111' } as UserEntity),
+      } as ReadUserDto;
+
+      expect(await application.execute(report, author)).toEqual(report);
     });
   });
 });

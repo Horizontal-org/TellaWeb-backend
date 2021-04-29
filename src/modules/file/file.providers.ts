@@ -9,6 +9,8 @@ import { GetByIdFileService } from './services/get-by-id.file.service';
 import { GetInfoFileService } from './services/get-info.file.application';
 import { GetOrCreateFileService } from './services/get-or-create.file.service';
 import { StoreFileService } from './services/store.file.service';
+import { GetAssetFileApplication } from './applications/get-asset.file.application';
+import { FetchFileService } from './services/fetch.file.service';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
@@ -33,6 +35,11 @@ export const createFileApplicationProvider = {
 export const closeFileApplicationProvider = {
   provide: TYPES.applications.ICloseFileApplication,
   useClass: CloseFileApplication,
+};
+
+export const getAssetFileApplicationProvider = {
+  provide: TYPES.applications.IGetAssetFileApplication,
+  useClass: GetAssetFileApplication,
 };
 
 export const getByIdFileServiceProvider = {
@@ -60,6 +67,11 @@ export const closeFileServiceProvider = {
   useClass: CloseFileService,
 };
 
+export const fetchFileServiceProvider = {
+  provide: TYPES.services.IFetchFileService,
+  useClass: FetchFileService,
+};
+
 export const handlersFileProviders = [storageFileHandlerProvider];
 
 export const applicationsFileProviders = [
@@ -67,6 +79,7 @@ export const applicationsFileProviders = [
   getByIdFileApplicationProvider,
   createFileApplicationProvider,
   closeFileApplicationProvider,
+  getAssetFileApplicationProvider,
 ];
 
 export const servicesFileProviders = [
@@ -75,4 +88,5 @@ export const servicesFileProviders = [
   getOrCreateFileServiceProvider,
   storeFileSericeProvider,
   closeFileServiceProvider,
+  fetchFileServiceProvider,
 ];

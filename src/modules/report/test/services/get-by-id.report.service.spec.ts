@@ -37,14 +37,13 @@ describe('GetByIdReportService', () => {
 
   describe('findById', () => {
     it('should find report by id', async () => {
-      const report: ReportEntity = {
+      const report: Partial<ReportEntity> = {
         id: '111AAA',
-        title: 'Test report',
-        description: 'Test report for test cases',
-        files: [],
       };
 
-      jest.spyOn(repositoryMock, 'findOne').mockResolvedValue(report);
+      jest
+        .spyOn(repositoryMock, 'findOne')
+        .mockResolvedValue(report as ReportEntity);
 
       expect(await service.execute(report.id)).toEqual(report);
     });

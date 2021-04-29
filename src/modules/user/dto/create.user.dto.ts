@@ -9,7 +9,6 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsString()
-  @Length(59, 60)
   password: string;
 
   @ApiProperty({ type: Boolean, default: false })

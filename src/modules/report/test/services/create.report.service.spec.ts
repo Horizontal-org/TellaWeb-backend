@@ -5,6 +5,8 @@ import { CreateReportService } from '../../services/create.report.service';
 import { ReportEntity } from '../../domain/report.entity';
 import { TYPES } from '../../interfaces/types';
 import { ICreateReportService } from '../../interfaces/services/create.report.service.interface';
+import { ReadUserDto } from 'modules/user/dto';
+import { UserEntity } from 'modules/user/domain';
 
 describe('CreateReportService', () => {
   let service: ICreateReportService;
@@ -36,19 +38,26 @@ describe('CreateReportService', () => {
 
   describe('create', () => {
     it('should create a report', async () => {
-      const report: ReportEntity = {
+      const report = {
         id: '111AAA',
         title: 'Test report',
         description: 'Test report for test cases',
         files: [],
-      };
+      } as ReportEntity;
+
+      const author = {
+        toEntity: () => ({ id: 'AAA111' } as UserEntity),
+      } as ReadUserDto;
 
       jest.spyOn(repositoryMock, 'save').mockResolvedValue(report);
 
-      const result = await service.execute({
-        title: report.title,
-        description: report.description,
-      });
+      const result = await service.execute(
+        {
+          title: report.title,
+          description: report.description,
+        },
+        author,
+      );
 
       expect(result).toEqual(report);
       expect(repositoryMock.save).toBeCalled();
