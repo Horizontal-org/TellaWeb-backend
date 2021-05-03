@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   const swaggerConfig = new DocumentBuilder()
     .addBasicAuth()
@@ -22,6 +23,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  await app.useGlobalInterceptors(new TransformInterceptor()).listen(3000);
+  await app
+    .useGlobalInterceptors(new TransformInterceptor())
+    .listen(process.env.PORT || 3000);
 }
 bootstrap();
