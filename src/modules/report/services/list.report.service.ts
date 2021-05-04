@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Connection, MoreThan, Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
 
@@ -18,10 +18,13 @@ export class ListReportService implements IListReportService {
     take: number,
     skip: number,
   ): Promise<PartialResult<ReportEntity>> {
-    const [reports, total] = await this.reportRepository.findAndCount({
-      take,
-      skip,
-    });
+    const [reports, total] = await this.reportRepository
+      .createQueryBuilder('report')
+      .innerJoinAndSelect('report.files', 'files')
+      .innerJoinAndSelect('report.author', 'author')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
     return {
       total: total,
