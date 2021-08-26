@@ -19,6 +19,7 @@ export class GetByIdFileService implements IGetByIdFileService {
       id,
       bucket: file.bucket,
       fileName: file.fileName,
+      type: file.type,
     };
   }
 }

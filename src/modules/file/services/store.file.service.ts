@@ -26,6 +26,7 @@ export class StoreFileService implements IStoreFileService {
       id: file.id,
       bucket: file.bucket,
       fileName: file.fileName,
+      type: file.type,
     };
   }
 }

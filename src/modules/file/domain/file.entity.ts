@@ -9,6 +9,7 @@ import {
 
 import { ReportEntity } from 'modules/report/domain/report.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { FileType } from './file-type.file.enum';
 
 @Exclude()
 @Entity()
@@ -32,6 +33,9 @@ export class FileEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
+
+  @Column()
+  type: FileType;
 
   @BeforeInsert()
   private beforeInsert(): void {
