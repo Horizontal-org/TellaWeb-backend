@@ -13,16 +13,16 @@ import {
   AlreadyClosedFileException,
   CantBeClosedFileException,
   NotFoundFileException,
-} from '../exceptions';
-import { IStorageFileHandler } from '../interfaces';
+} from '../../exceptions';
+import { IStorageFileHandler } from '../../interfaces';
 import {
   ReadFileDto,
   WriteStreamFileDto,
   InfoFileDto,
   CloseFileDto,
-} from '../dto';
+} from '../../dto';
 
-import { createWritePromise } from './utils/writeAsPromise.utils';
+import { createWritePromise } from '../utils/writeAsPromise.utils';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {

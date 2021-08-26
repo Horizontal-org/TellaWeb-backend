@@ -1,1 +1,1 @@
-export { StorageFileHandler } from './storage.file.handler';
+export { StorageFileHandler } from './storage/storage.file.handler';

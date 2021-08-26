@@ -1,6 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { FileType } from '../domain/file-type.file.enum';
 
 @Exclude()
 export class FileDto {
@@ -18,4 +19,9 @@ export class FileDto {
   @Expose()
   @IsString()
   bucket: string;
+
+  @ApiProperty()
+  @Expose()
+  @IsEnum(FileType)
+  type: FileType;
 }

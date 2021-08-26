@@ -5,6 +5,7 @@ export const TYPES = {
     ICreateFileApplication: 'ICreateFileApplication',
     ICloseFileApplication: 'ICloseFileApplication',
     IGetAssetFileApplication: 'IGetAssetFileApplication',
+    IGetThumbnailByIdFileApplication: 'IGetThumbnailByIdFileApplication',
   },
   services: {
     IGetByIdFileService: 'IGetByIdFileService',
@@ -13,8 +14,11 @@ export const TYPES = {
     IStoreFileService: 'IStoreFileService',
     ICloseFileService: 'ICloseFileService',
     IFetchFileService: 'IFetchFileService',
+    ICreateThumbnailFileService: 'ICreateThumbnailFileService',
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',
+    ICreatorThumbnailFileHandler: 'ICreatorThumbnailFileHandler',
+    IThumbnailFileHandler: 'IThumbnailFileHandler',
   },
 };

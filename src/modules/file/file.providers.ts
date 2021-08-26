@@ -3,7 +3,7 @@ import { CloseFileApplication } from './applications/close.file.application';
 import { CreateFileApplication } from './applications/create.file.application';
 import { GetByNameAndBucketFileApplication } from './applications/get-by-bucket-and-file-name.file.application';
 import { GetByIdFileApplication } from './applications/get-by-id.file.application';
-import { StorageFileHandler } from './handlers/storage.file.handler';
+import { StorageFileHandler } from './handlers/storage/storage.file.handler';
 import { CloseFileService } from './services/close.file.service';
 import { GetByIdFileService } from './services/get-by-id.file.service';
 import { GetInfoFileService } from './services/get-info.file.application';
@@ -11,10 +11,25 @@ import { GetOrCreateFileService } from './services/get-or-create.file.service';
 import { StoreFileService } from './services/store.file.service';
 import { GetAssetFileApplication } from './applications/get-asset.file.application';
 import { FetchFileService } from './services/fetch.file.service';
+import { GetThumbnailByIdFileApplication } from './applications/get-thumbnail-by-id.file.application';
+import { CreateThumbnailFileService } from './services/create-thumbnail.file.service';
+import { ImageThumbnailCreator } from './handlers/thumbnail/creators/image.thumbnail.creator';
+import { VideoThumbnailCreator } from './handlers/thumbnail/creators/video.thumbnail.creator';
+import { ThumbnailFileHandler } from './handlers/thumbnail/thumbnail.file.handler';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
   useClass: StorageFileHandler,
+};
+
+export const creatorsThumbnailFileHandlerProvider = {
+  provide: TYPES.handlers.ICreatorThumbnailFileHandler,
+  useValue: [new ImageThumbnailCreator(), new VideoThumbnailCreator()],
+};
+
+export const thumbnailFileHandlerProvider = {
+  provide: TYPES.handlers.IThumbnailFileHandler,
+  useClass: ThumbnailFileHandler,
 };
 
 export const getByNameAndBucketFileApplicationProvider = {
@@ -40,6 +55,11 @@ export const closeFileApplicationProvider = {
 export const getAssetFileApplicationProvider = {
   provide: TYPES.applications.IGetAssetFileApplication,
   useClass: GetAssetFileApplication,
+};
+
+export const getThumbnailByIdFileApplication = {
+  provide: TYPES.applications.IGetThumbnailByIdFileApplication,
+  useClass: GetThumbnailByIdFileApplication,
 };
 
 export const getByIdFileServiceProvider = {
@@ -72,6 +92,11 @@ export const fetchFileServiceProvider = {
   useClass: FetchFileService,
 };
 
+export const createThumbnailFileServiceProvider = {
+  provide: TYPES.services.ICreateThumbnailFileService,
+  useClass: CreateThumbnailFileService,
+};
+
 export const handlersFileProviders = [storageFileHandlerProvider];
 
 export const applicationsFileProviders = [
@@ -80,6 +105,7 @@ export const applicationsFileProviders = [
   createFileApplicationProvider,
   closeFileApplicationProvider,
   getAssetFileApplicationProvider,
+  getThumbnailByIdFileApplication,
 ];
 
 export const servicesFileProviders = [
@@ -89,4 +115,7 @@ export const servicesFileProviders = [
   storeFileSericeProvider,
   closeFileServiceProvider,
   fetchFileServiceProvider,
+  creatorsThumbnailFileHandlerProvider,
+  thumbnailFileHandlerProvider,
+  createThumbnailFileServiceProvider,
 ];
