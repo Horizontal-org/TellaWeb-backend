@@ -26,13 +26,9 @@ import { createWritePromise } from '../utils/writeAsPromise.utils';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {
-  private basePath: string;
-  private appendableSuffix: string;
-
-  constructor() {
-    this.basePath = './data';
-    this.appendableSuffix = '.part';
-  }
+  private basePath = './data';
+  private partialFolder = 'partial';
+  private fullFolder = 'full';
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {
     if (!this.fileExist(input, false))
@@ -89,16 +85,21 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   private getPath(input: ReadFileDto, isPartial: boolean) {
-    const fileName = isPartial
-      ? input.fileName + this.appendableSuffix
-      : input.fileName;
-    return path.join(this.basePath, input.bucket, fileName);
+    return path.join(
+      this.basePath,
+      input.bucket,
+      isPartial ? this.partialFolder : this.fullFolder,
+      input.fileName,
+    );
   }
 
   private async createBucket(bucket: string) {
-    const dir = path.join(this.basePath, bucket);
-    if (existsSync(dir)) return;
-    mkdirSync(dir, { mode: 0o755, recursive: true });
+    const reportDir = path.join(this.basePath, bucket);
+    const fullDir = path.join(reportDir, this.fullFolder);
+    const partialDir = path.join(reportDir, this.partialFolder);
+    if (existsSync(reportDir)) return;
+    mkdirSync(fullDir, { mode: 0o755, recursive: true });
+    mkdirSync(partialDir, { mode: 0o755, recursive: true });
   }
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {
