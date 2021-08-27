@@ -6,6 +6,7 @@ import {
   statSync,
   createReadStream,
   ReadStream,
+  readdirSync,
 } from 'fs';
 import * as path from 'path';
 
@@ -26,12 +27,21 @@ import { createWritePromise } from '../utils/writeAsPromise.utils';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {
-  private basePath: string;
-  private appendableSuffix: string;
+  private basePath = './data';
+  private partialFolder = 'partial';
+  private fullFolder = 'full';
 
-  constructor() {
-    this.basePath = './data';
-    this.appendableSuffix = '.part';
+  async getBucket(bucketId: string): Promise<ReadStream[]> {
+    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    return bucketFullFiles
+      .filter((diferent) => diferent.isFile())
+      .map((diferent) =>
+        createReadStream(path.join(bucketFullPath, diferent.name)),
+      );
   }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {
@@ -89,16 +99,21 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   private getPath(input: ReadFileDto, isPartial: boolean) {
-    const fileName = isPartial
-      ? input.fileName + this.appendableSuffix
-      : input.fileName;
-    return path.join(this.basePath, input.bucket, fileName);
+    return path.join(
+      this.basePath,
+      input.bucket,
+      isPartial ? this.partialFolder : this.fullFolder,
+      input.fileName,
+    );
   }
 
   private async createBucket(bucket: string) {
-    const dir = path.join(this.basePath, bucket);
-    if (existsSync(dir)) return;
-    mkdirSync(dir, { mode: 0o755, recursive: true });
+    const reportDir = path.join(this.basePath, bucket);
+    const fullDir = path.join(reportDir, this.fullFolder);
+    const partialDir = path.join(reportDir, this.partialFolder);
+    if (existsSync(reportDir)) return;
+    mkdirSync(fullDir, { mode: 0o755, recursive: true });
+    mkdirSync(partialDir, { mode: 0o755, recursive: true });
   }
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {

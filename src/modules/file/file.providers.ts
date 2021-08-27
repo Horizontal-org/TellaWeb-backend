@@ -16,6 +16,9 @@ import { CreateThumbnailFileService } from './services/create-thumbnail.file.ser
 import { ImageThumbnailCreator } from './handlers/thumbnail/creators/image.thumbnail.creator';
 import { VideoThumbnailCreator } from './handlers/thumbnail/creators/video.thumbnail.creator';
 import { ThumbnailFileHandler } from './handlers/thumbnail/thumbnail.file.handler';
+import { ZipBucketFileService } from './services/zip-bucket.file.service';
+import { CompressionFileHandler } from './handlers/compression/compression.file.handler';
+import { GetZippedBucketFileApplication } from './applications/get-zipped-bucket.file.application';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
@@ -30,6 +33,11 @@ export const creatorsThumbnailFileHandlerProvider = {
 export const thumbnailFileHandlerProvider = {
   provide: TYPES.handlers.IThumbnailFileHandler,
   useClass: ThumbnailFileHandler,
+};
+
+export const compressionFileHandlerProvider = {
+  provide: TYPES.handlers.ICompressionFileHandler,
+  useClass: CompressionFileHandler,
 };
 
 export const getByNameAndBucketFileApplicationProvider = {
@@ -60,6 +68,11 @@ export const getAssetFileApplicationProvider = {
 export const getThumbnailByIdFileApplication = {
   provide: TYPES.applications.IGetThumbnailByIdFileApplication,
   useClass: GetThumbnailByIdFileApplication,
+};
+
+export const getZippedBucketFileApplication = {
+  provide: TYPES.applications.IGetZippedBucketFileApplication,
+  useClass: GetZippedBucketFileApplication,
 };
 
 export const getByIdFileServiceProvider = {
@@ -97,7 +110,16 @@ export const createThumbnailFileServiceProvider = {
   useClass: CreateThumbnailFileService,
 };
 
-export const handlersFileProviders = [storageFileHandlerProvider];
+export const zipBucketFilseServiceProvider = {
+  provide: TYPES.services.IZipBucketFileService,
+  useClass: ZipBucketFileService,
+};
+
+export const handlersFileProviders = [
+  storageFileHandlerProvider,
+  creatorsThumbnailFileHandlerProvider,
+  compressionFileHandlerProvider,
+];
 
 export const applicationsFileProviders = [
   getByNameAndBucketFileApplicationProvider,
@@ -106,6 +128,7 @@ export const applicationsFileProviders = [
   closeFileApplicationProvider,
   getAssetFileApplicationProvider,
   getThumbnailByIdFileApplication,
+  getZippedBucketFileApplication,
 ];
 
 export const servicesFileProviders = [
@@ -115,7 +138,7 @@ export const servicesFileProviders = [
   storeFileSericeProvider,
   closeFileServiceProvider,
   fetchFileServiceProvider,
-  creatorsThumbnailFileHandlerProvider,
   thumbnailFileHandlerProvider,
   createThumbnailFileServiceProvider,
+  zipBucketFilseServiceProvider,
 ];
