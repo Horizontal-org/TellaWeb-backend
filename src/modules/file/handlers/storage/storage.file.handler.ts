@@ -6,6 +6,7 @@ import {
   statSync,
   createReadStream,
   ReadStream,
+  readdirSync,
 } from 'fs';
 import * as path from 'path';
 
@@ -29,6 +30,19 @@ export class StorageFileHandler implements IStorageFileHandler {
   private basePath = './data';
   private partialFolder = 'partial';
   private fullFolder = 'full';
+
+  async getBucket(bucketId: string): Promise<ReadStream[]> {
+    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    return bucketFullFiles
+      .filter((diferent) => diferent.isFile())
+      .map((diferent) =>
+        createReadStream(path.join(bucketFullPath, diferent.name)),
+      );
+  }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {
     if (!this.fileExist(input, false))
