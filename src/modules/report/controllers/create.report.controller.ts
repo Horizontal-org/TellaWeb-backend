@@ -23,7 +23,6 @@ export class CreateReportController {
     @Body() createReportDto: CreateReportDto,
     @LoggedUser() author: ReadUserDto,
   ): Promise<ReadReportDto> {
-    console.log(createReportDto);
     const report = await this.createReportApplication.execute(
       createReportDto,
       author,
