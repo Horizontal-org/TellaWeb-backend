@@ -1,12 +1,11 @@
 import { Controller, Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
-
-//import { AuthController } from 'common/decorators/auth-controller.decorator';
-//import { RolesUser } from 'modules/user/domain';
+import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetThumbnailByIdFileApplication } from '../interfaces';
 
-//@AuthController('file', [RolesUser.ADMIN])
+@AuthController('file', [RolesUser.ADMIN])
 @Controller('file')
 export class GetThumbnailByIdFileController {
   constructor(

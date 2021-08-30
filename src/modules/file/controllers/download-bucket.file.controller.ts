@@ -1,9 +1,11 @@
-import { Controller, Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
+import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetZippedBucketFileApplication } from '../interfaces';
 
-@Controller('file')
+@AuthController('file', [RolesUser.ADMIN])
 export class DownloadBucketFileController {
   constructor(
     @Inject(TYPES.applications.IGetZippedBucketFileApplication)
