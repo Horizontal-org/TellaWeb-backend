@@ -1,28 +1,27 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { BasicStrategy as Strategy } from 'passport-http';
 
+import { ReadUserDto } from 'modules/user/dto';
 import {
   ICheckPasswordUserApplication,
   TYPES as TYPES_USER,
 } from 'modules/user/interfaces';
 
+import { LoginAuthDto } from '../domain';
+import { IValidateAuthService } from '../interfaces';
+
 @Injectable()
-export class BasicStrategy extends PassportStrategy(Strategy) {
+export class ValidateAuthService implements IValidateAuthService {
   constructor(
     @Inject(TYPES_USER.applications.ICheckPasswordUserApplication)
-    private readonly checkPasswordUserApplication: ICheckPasswordUserApplication,
-  ) {
-    super();
-  }
+    private checkPasswordUserApplication: ICheckPasswordUserApplication,
+  ) {}
 
-  async validate(username: string, password: string) {
+  async execute({ username, password }: LoginAuthDto): Promise<ReadUserDto> {
     try {
       const user = await this.checkPasswordUserApplication.execute({
         username,
         password,
       });
-
       return user;
     } catch (_) {
       throw new UnauthorizedException();

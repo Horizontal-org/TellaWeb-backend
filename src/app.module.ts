@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
+import { ConfigModule } from '@nestjs/config';
 
 import { OrmConfig } from './ormconfig';
 
@@ -11,6 +12,7 @@ import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       ...OrmConfig,
       autoLoadEntities: true,

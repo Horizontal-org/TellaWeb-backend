@@ -2,7 +2,7 @@
 
 This module solves the problem of basic authorization headers
 
-- Read and parse authorization headers
+- Read and parse authorization headers/cookies
 - Check if the credentials are valid for the user
 
 ### Current implementation
@@ -12,7 +12,7 @@ This module consumes the password verification that the user module exports. It 
 The **LoggedUser** decorator allows to extract the user infromation from the request.
 
 ```ts
-@AuthController()
+@AuthController('example')
 class SomeExample {
   @Get()
   getData(@LoggedUser() user: ReadUserDto) {

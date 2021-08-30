@@ -10,6 +10,7 @@ import {
   applicationsUserProviders,
   servicesUserProviders,
   checkPasswordUserApplicationProvider,
+  getByIdUserApplicationProvider,
 } from './user.providers';
 import { userControllers } from './controllers';
 
@@ -25,6 +26,9 @@ import { userControllers } from './controllers';
     ...applicationsUserProviders,
     ...servicesUserProviders,
   ],
-  exports: [checkPasswordUserApplicationProvider],
+  exports: [
+    checkPasswordUserApplicationProvider,
+    getByIdUserApplicationProvider,
+  ],
 })
 export class UserModule {}
