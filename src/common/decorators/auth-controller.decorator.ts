@@ -1,6 +1,6 @@
 import { applyDecorators, Controller, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBasicAuth } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { Roles } from 'modules/user/decorators/roles.user.decorator';
 import { RolesUser } from 'modules/user/domain';
@@ -11,9 +11,9 @@ export function AuthController(
   roles: RolesUser[] = [],
 ) {
   return applyDecorators(
-    ApiBasicAuth(),
     Controller(controllerName),
-    UseGuards(AuthGuard('basic')),
+    ApiBearerAuth('jwt'),
+    UseGuards(AuthGuard('jwt')),
     UseGuards(RolesUserGuard),
     Roles(...roles),
   );
