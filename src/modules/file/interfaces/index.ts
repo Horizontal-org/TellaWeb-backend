@@ -5,6 +5,7 @@ export { IGetByIdFileApplication } from './applications/get-by-id.file.applicati
 export { IGetAssetFileApplication } from './applications/get-asset.file.application.interface';
 export { IGetThumbnailByIdFileApplication } from './applications/get-thumbnail-by-id.file.application.interface';
 export { IGetZippedBucketFileApplication } from './applications/get-zipped-bucket.file.application.interface';
+export { IDeleteFileApplication } from './applications/delete.file.application.interface';
 
 export { ICloseFileService } from './services/close.file.service.interface';
 export { IStoreFileService } from './services/store.file.service.interface';
@@ -14,6 +15,8 @@ export { IGetOrCreateFileService } from './services/get-or-create.file.service.i
 export { IFetchFileService } from './services/fetch.file.service.interface';
 export { ICreateThumbnailFileService } from './services/create-thumbnail.file.service.interface';
 export { IZipBucketFileService } from './services/zip-bucket.service.interface';
+export { IDeleteFileService } from './services/delete.file.service.interface';
+export { IDeleteThumbnailFileService } from './services/delete-thumbnail.file.service.interface';
 
 export { IStorageFileHandler } from './handlers/storage.file.handler.inteface';
 export {
