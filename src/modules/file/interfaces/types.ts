@@ -7,6 +7,7 @@ export const TYPES = {
     IGetAssetFileApplication: 'IGetAssetFileApplication',
     IGetThumbnailByIdFileApplication: 'IGetThumbnailByIdFileApplication',
     IGetZippedBucketFileApplication: 'IGetZippedBucketFileApplication',
+    IDeleteFileApplication: 'IDeleteFileApplication',
   },
   services: {
     IGetByIdFileService: 'IGetByIdFileService',
@@ -17,6 +18,9 @@ export const TYPES = {
     IFetchFileService: 'IFetchFileService',
     ICreateThumbnailFileService: 'ICreateThumbnailFileService',
     IZipBucketFileService: 'IZipBucketFileService',
+    IDeleteFileService: 'IDeleteFileService',
+    IDeleteFullFileService: 'IDeleteFullFileService',
+    IDeleteThumbnailFileService: 'IDeleteThumbnailFileService',
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',

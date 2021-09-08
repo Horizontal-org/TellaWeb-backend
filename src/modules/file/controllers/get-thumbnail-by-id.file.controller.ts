@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { Get, Header, Inject, Param, Res } from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
 import { RolesUser } from 'modules/user/domain';
@@ -6,7 +6,6 @@ import { RolesUser } from 'modules/user/domain';
 import { TYPES, IGetThumbnailByIdFileApplication } from '../interfaces';
 
 @AuthController('file', [RolesUser.ADMIN])
-@Controller('file')
 export class GetThumbnailByIdFileController {
   constructor(
     @Inject(TYPES.applications.IGetThumbnailByIdFileApplication)
@@ -21,10 +20,10 @@ export class GetThumbnailByIdFileController {
     @Param('size') size: number,
     @Res() res: Response,
   ) {
-    const fileStream = await this.getThumbnailByIdFileApplication.execute(
+    const thumbnailReadable = await this.getThumbnailByIdFileApplication.execute(
       fileId,
       { width: size | 200 },
     );
-    fileStream.pipe(res);
+    thumbnailReadable.pipe(res);
   }
 }

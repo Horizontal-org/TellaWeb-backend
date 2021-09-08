@@ -35,7 +35,7 @@ export class FileEntity {
   updatedAt!: Date;
 
   @Column()
-  type: FileType;
+  type: FileType = FileType.OTHER;
 
   @BeforeInsert()
   private beforeInsert(): void {

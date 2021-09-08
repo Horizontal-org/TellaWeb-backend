@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 import { ThumbnailOptions } from '../domain';
 import {
@@ -25,7 +25,7 @@ export class GetThumbnailByIdFileApplication
   async execute(
     fileId: string,
     { width }: ThumbnailOptions = {},
-  ): Promise<ReadStream> {
+  ): Promise<Readable> {
     const file = await this.getByIdFileApplication.execute(fileId);
     const fileStream = await this.fetchFileService.execute(file);
     const thumbnailStream = await this.createThumbnailFileService.execute(

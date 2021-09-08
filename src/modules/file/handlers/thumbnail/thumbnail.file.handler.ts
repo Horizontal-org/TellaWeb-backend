@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 import { ThumbnailCreatorNotFound } from 'modules/file/exceptions';
 import {
@@ -20,13 +21,21 @@ export class ThumbnailFileHandler implements IThumbnailFileHandler {
     type: FileType,
     fileStream: ReadStream,
     options: ThumbnailOptions,
-  ): Promise<ReadStream> {
+  ): Promise<Readable> {
+    /* TODO: Add get or create for cache */
     const thumbnailCreatorForTheType = this.thumbnailCreators.find(
       (thumbnailCreator) => thumbnailCreator.type === type,
     );
-
     if (!thumbnailCreatorForTheType) throw new ThumbnailCreatorNotFound(type);
+    const result = await thumbnailCreatorForTheType.execute(
+      fileStream,
+      options,
+    );
+    return result;
+  }
 
-    return thumbnailCreatorForTheType.execute(fileStream, options);
+  public async delete(): Promise<boolean> {
+    /* TODO: Delete saved cache */
+    return true;
   }
 }

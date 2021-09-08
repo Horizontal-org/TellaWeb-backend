@@ -1,9 +1,11 @@
 import { ReadStream } from 'fs';
+import { ReadFileDto } from '../../dto';
 import { ThumbnailOptions, FileType } from '../../domain';
+import { Readable } from 'stream';
 
 export interface ICreatorThumbnailFileHandler {
   type: FileType;
-  execute(fileStream, options: ThumbnailOptions): Promise<ReadStream>;
+  execute(fileStream, options: ThumbnailOptions): Promise<Readable>;
 }
 
 export interface IThumbnailFileHandler {
@@ -11,5 +13,7 @@ export interface IThumbnailFileHandler {
     type: FileType,
     fileStream: ReadStream,
     options: ThumbnailOptions,
-  ): Promise<ReadStream>;
+  ): Promise<Readable>;
+
+  delete(readFileDto: ReadFileDto): Promise<boolean>;
 }
