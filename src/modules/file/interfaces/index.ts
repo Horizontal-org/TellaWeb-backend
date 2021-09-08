@@ -16,6 +16,7 @@ export { IFetchFileService } from './services/fetch.file.service.interface';
 export { ICreateThumbnailFileService } from './services/create-thumbnail.file.service.interface';
 export { IZipBucketFileService } from './services/zip-bucket.service.interface';
 export { IDeleteFileService } from './services/delete.file.service.interface';
+export { IDeleteFullFileService } from './services/delete-full.file.service.interface';
 export { IDeleteThumbnailFileService } from './services/delete-thumbnail.file.service.interface';
 
 export { IStorageFileHandler } from './handlers/storage.file.handler.inteface';

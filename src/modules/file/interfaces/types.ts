@@ -19,6 +19,7 @@ export const TYPES = {
     ICreateThumbnailFileService: 'ICreateThumbnailFileService',
     IZipBucketFileService: 'IZipBucketFileService',
     IDeleteFileService: 'IDeleteFileService',
+    IDeleteFullFileService: 'IDeleteFullFileService',
     IDeleteThumbnailFileService: 'IDeleteThumbnailFileService',
   },
   handlers: {

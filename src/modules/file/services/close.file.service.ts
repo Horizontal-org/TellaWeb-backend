@@ -5,8 +5,7 @@ import { Repository } from 'typeorm';
 import { CloseFileDto } from '../dto';
 import { FileEntity } from '../domain';
 import { NotFoundFileException } from '../exceptions';
-import { StorageFileHandler } from '../handlers';
-import { TYPES, ICloseFileService } from '../interfaces';
+import { TYPES, ICloseFileService, IStorageFileHandler } from '../interfaces';
 
 @Injectable()
 export class CloseFileService implements ICloseFileService {
@@ -14,7 +13,7 @@ export class CloseFileService implements ICloseFileService {
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
     @Inject(TYPES.handlers.IStorageFileHandler)
-    private readonly fileHandler: StorageFileHandler,
+    private readonly fileHandler: IStorageFileHandler,
   ) {}
 
   async execute(closeFileDto: CloseFileDto, reportId: string): Promise<void> {
@@ -27,7 +26,7 @@ export class CloseFileService implements ICloseFileService {
     if (!file) throw new NotFoundFileException(closeFileDto.fileName);
 
     await this.fileHandler.close(closeFileDto);
-
+    file.type = await this.fileHandler.getType(closeFileDto);
     file.attachToReport(reportId);
     await this.fileRepository.save(file);
 

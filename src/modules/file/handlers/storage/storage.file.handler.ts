@@ -7,8 +7,10 @@ import {
   createReadStream,
   ReadStream,
   readdirSync,
+  unlinkSync,
 } from 'fs';
 import * as path from 'path';
+import * as GetFileType from 'file-type';
 
 import {
   AlreadyClosedFileException,
@@ -24,12 +26,23 @@ import {
 } from '../../dto';
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
+import { FileType } from '../../domain';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {
   private basePath = './data';
   private partialFolder = 'partial';
   private fullFolder = 'full';
+
+  async delete(readFileDto: ReadFileDto): Promise<boolean> {
+    const filePath = this.getPath(readFileDto, false);
+    try {
+      unlinkSync(filePath);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   async getBucket(bucketId: string): Promise<ReadStream[]> {
     const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
@@ -96,6 +109,15 @@ export class StorageFileHandler implements IStorageFileHandler {
     } catch (e) {
       throw new CantBeClosedFileException(input.fileName);
     }
+  }
+
+  public async getType(input: ReadFileDto): Promise<FileType> {
+    const filePath = this.getPath(input, false);
+    const { mime } = await GetFileType.fromFile(filePath);
+    if (mime.includes('video')) return FileType.VIDEO;
+    if (mime.includes('audio')) return FileType.AUDIO;
+    if (mime.includes('image')) return FileType.IMAGE;
+    return FileType.OTHER;
   }
 
   private getPath(input: ReadFileDto, isPartial: boolean) {

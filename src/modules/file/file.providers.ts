@@ -19,6 +19,10 @@ import { ThumbnailFileHandler } from './handlers/thumbnail/thumbnail.file.handle
 import { ZipBucketFileService } from './services/zip-bucket.file.service';
 import { CompressionFileHandler } from './handlers/compression/compression.file.handler';
 import { GetZippedBucketFileApplication } from './applications/get-zipped-bucket.file.application';
+import { DeleteFileApplication } from './applications/delete.file.application';
+import { DeleteFileService } from './services/delete.file.service';
+import { DeleteFullFileService } from './services/delete-full.file.service';
+import { DeleteThumbnailFileService } from './services/delete-thumbnail.file.service';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
@@ -75,6 +79,11 @@ export const getZippedBucketFileApplication = {
   useClass: GetZippedBucketFileApplication,
 };
 
+export const deleteFileApplicationProvider = {
+  provide: TYPES.applications.IDeleteFileApplication,
+  useClass: DeleteFileApplication,
+};
+
 export const getByIdFileServiceProvider = {
   provide: TYPES.services.IGetByIdFileService,
   useClass: GetByIdFileService,
@@ -115,6 +124,21 @@ export const zipBucketFilseServiceProvider = {
   useClass: ZipBucketFileService,
 };
 
+export const deleteFileServiceProvider = {
+  provide: TYPES.services.IDeleteFileService,
+  useClass: DeleteFileService,
+};
+
+export const deleteFullFileServiceProvider = {
+  provide: TYPES.services.IDeleteFullFileService,
+  useClass: DeleteFullFileService,
+};
+
+export const deleteThumbnailFileServiceProvider = {
+  provide: TYPES.services.IDeleteThumbnailFileService,
+  useClass: DeleteThumbnailFileService,
+};
+
 export const handlersFileProviders = [
   storageFileHandlerProvider,
   creatorsThumbnailFileHandlerProvider,
@@ -129,6 +153,8 @@ export const applicationsFileProviders = [
   getAssetFileApplicationProvider,
   getThumbnailByIdFileApplication,
   getZippedBucketFileApplication,
+  deleteFileApplicationProvider,
+  deleteThumbnailFileServiceProvider,
 ];
 
 export const servicesFileProviders = [
@@ -141,4 +167,6 @@ export const servicesFileProviders = [
   thumbnailFileHandlerProvider,
   createThumbnailFileServiceProvider,
   zipBucketFilseServiceProvider,
+  deleteFileServiceProvider,
+  deleteFullFileServiceProvider,
 ];

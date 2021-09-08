@@ -1,9 +1,9 @@
 import { ThumbnailOptions } from 'modules/file/domain';
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 export interface IGetThumbnailByIdFileApplication {
   execute(
     fileId: string,
     thumbnailOptions?: ThumbnailOptions,
-  ): Promise<ReadStream>;
+  ): Promise<Readable>;
 }

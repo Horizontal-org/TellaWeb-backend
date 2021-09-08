@@ -1,5 +1,3 @@
-import { ReadFileDto } from '../../dto';
-
 export interface IDeleteFileApplication {
-  execute(readFileDto: ReadFileDto): Promise<boolean>;
+  execute(fileId: string): Promise<boolean>;
 }

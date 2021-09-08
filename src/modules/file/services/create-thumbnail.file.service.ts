@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 import { FileType } from '../domain/file-type.file.enum';
 import { ThumbnailOptions } from '../domain/thumbnail-options.file.vo';
 import {
@@ -18,9 +19,11 @@ export class CreateThumbnailFileService implements ICreateThumbnailFileService {
     type: FileType,
     fileStream: ReadStream,
     { width }: ThumbnailOptions = { width: 200 },
-  ): Promise<ReadStream> {
-    return this.thumbnailFileHandler.create(type, fileStream, {
+  ): Promise<Readable> {
+    const result = await this.thumbnailFileHandler.create(type, fileStream, {
       width,
     });
+
+    return result;
   }
 }
