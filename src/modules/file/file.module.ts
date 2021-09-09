@@ -9,6 +9,7 @@ import {
   applicationsFileProviders,
   closeFileApplicationProvider,
   createFileApplicationProvider,
+  deleteFileApplicationProvider,
   getByNameAndBucketFileApplicationProvider,
   handlersFileProviders,
   servicesFileProviders,
@@ -26,6 +27,7 @@ import {
     getByNameAndBucketFileApplicationProvider,
     createFileApplicationProvider,
     closeFileApplicationProvider,
+    deleteFileApplicationProvider,
   ],
 })
 export class FileModule {}
