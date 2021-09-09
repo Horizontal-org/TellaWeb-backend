@@ -9,7 +9,7 @@ import {
 } from 'modules/file/interfaces';
 
 @Injectable()
-export class deleteByIdReportService implements IDeleteByIdReportService {
+export class DeleteByIdReportService implements IDeleteByIdReportService {
   constructor(
     @InjectRepository(ReportEntity)
     private reportRepository: Repository<ReportEntity>,

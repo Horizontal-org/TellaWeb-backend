@@ -5,6 +5,8 @@ import { CreateReportService } from './services/create.report.service';
 import { GetByIdReportService } from './services/get-by-id.report.service';
 import { ListReportService } from './services/list.report.service';
 import { ListReportApplication } from './applications/list.report.application';
+import { DeleteByIdReportService } from './services/delete-by-id.report.service';
+import { DeleteByIdReportApplication } from './applications/delete-by-id.report.application';
 
 export const createReportApplicationProvider = {
   provide: TYPES.applications.ICreateReportApplication,
@@ -18,6 +20,11 @@ export const getByIdReportApplicationProvider = {
 export const listReportApplicationProvider = {
   provide: TYPES.applications.IListReportApplication,
   useClass: ListReportApplication,
+};
+
+export const deleteByIdReportApplicationProvider = {
+  provide: TYPES.applications.IDeleteByIdReportApplication,
+  useClass: DeleteByIdReportApplication,
 };
 
 export const createReportServiceProvider = {
@@ -35,14 +42,21 @@ export const listReportServiceProvider = {
   useClass: ListReportService,
 };
 
+export const deleteByIdReportServiceProvider = {
+  provide: TYPES.services.IDeleteByIdReportService,
+  useClass: DeleteByIdReportService,
+};
+
 export const applicationsReportProviders = [
   createReportApplicationProvider,
   getByIdReportApplicationProvider,
   listReportApplicationProvider,
+  deleteByIdReportApplicationProvider,
 ];
 
 export const servicesReportProviders = [
   createReportServiceProvider,
   getByIdServiceProvider,
   listReportServiceProvider,
+  deleteByIdReportServiceProvider,
 ];
