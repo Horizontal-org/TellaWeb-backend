@@ -4,12 +4,12 @@ import { NotFoundReportException } from '../exceptions';
 import {
   TYPES,
   IDeleteByIdReportService,
-  IDeletedByIdReportApplication,
+  IDeleteByIdReportApplication,
 } from '../interfaces';
 
 @Injectable()
 export class DeleteByIdReportApplication
-  implements IDeletedByIdReportApplication {
+  implements IDeleteByIdReportApplication {
   constructor(
     @Inject(TYPES.services.IDeleteByIdReportService)
     private deleteByIdReportService: IDeleteByIdReportService,
