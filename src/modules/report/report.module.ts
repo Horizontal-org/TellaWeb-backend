@@ -8,9 +8,10 @@ import {
   getByIdReportApplicationProvider,
   servicesReportProviders,
 } from './report.providers';
+import { FileModule } from 'modules/file/file.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ReportEntity])],
+  imports: [TypeOrmModule.forFeature([ReportEntity]), FileModule],
   controllers: [...reportControllers],
   providers: [...applicationsReportProviders, ...servicesReportProviders],
   exports: [getByIdReportApplicationProvider],

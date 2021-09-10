@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IDeleteByIdReportService } from '../interfaces';
 import { ReportEntity } from '../domain';
 import {
-  IDeleteFileApplication,
-  TYPES as FILE_TYPES,
+  IDeleteBucketFileApplication,
+  TYPES as TYPES_FILE,
 } from 'modules/file/interfaces';
 
 @Injectable()
@@ -13,19 +13,14 @@ export class DeleteByIdReportService implements IDeleteByIdReportService {
   constructor(
     @InjectRepository(ReportEntity)
     private reportRepository: Repository<ReportEntity>,
-    @Inject(FILE_TYPES.applications.IDeleteFileApplication)
-    private deleteFileApplication: IDeleteFileApplication,
+    @Inject(TYPES_FILE.applications.IDeleteBucketFileApplication)
+    private deleteBucketFileApplication: IDeleteBucketFileApplication,
   ) {}
 
   async execute(reportId: string): Promise<boolean> {
-    const report = await this.reportRepository.findOne(reportId);
-
-    if (report.files && report.files.length === 0) {
-      await Promise.all(
-        report.files.map((file) => this.deleteFileApplication.execute(file.id)),
-      );
-    }
-
-    return (await this.reportRepository.delete({ id: reportId })).affected > 0;
+    const { affected } = await this.reportRepository.delete({ id: reportId });
+    if (affected === 0) return false;
+    await this.deleteBucketFileApplication.execute(reportId);
+    return true;
   }
 }

@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   Inject,
+  forwardRef,
 } from '@nestjs/common';
 
 import { UserEntity } from 'modules/user/domain';
