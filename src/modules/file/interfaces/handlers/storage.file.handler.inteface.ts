@@ -5,6 +5,7 @@ import { InfoFileDto, ReadFileDto, WriteStreamFileDto } from '../../dto';
 export interface IStorageFileHandler {
   get(input: ReadFileDto): Promise<InfoFileDto>;
   getBucket(bucketId: string): Promise<ReadStream[]>;
+  deleteBucket(bucketId: string): Promise<boolean>;
   append(input: WriteStreamFileDto): Promise<boolean>;
   delete(input: ReadFileDto): Promise<boolean>;
   fetch(input: ReadFileDto): Promise<ReadStream>;

@@ -6,6 +6,7 @@ import {
   ManyToOne,
   UpdateDateColumn,
   BeforeInsert,
+  BeforeRemove,
 } from 'typeorm';
 
 import { FileEntity } from 'modules/file/domain/file.entity';
@@ -30,6 +31,7 @@ export class ReportEntity {
 
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.reports, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   author: UserEntity;
 

@@ -8,6 +8,7 @@ import {
   ReadStream,
   readdirSync,
   unlinkSync,
+  rmSync,
 } from 'fs';
 import * as path from 'path';
 import * as GetFileType from 'file-type';
@@ -55,6 +56,16 @@ export class StorageFileHandler implements IStorageFileHandler {
       .map((diferent) =>
         createReadStream(path.join(bucketFullPath, diferent.name)),
       );
+  }
+
+  async deleteBucket(bucketId: string): Promise<boolean> {
+    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    try {
+      rmSync(bucketFullPath, { recursive: true, force: true });
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {

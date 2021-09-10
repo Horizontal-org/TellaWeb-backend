@@ -23,6 +23,8 @@ import { DeleteFileApplication } from './applications/delete.file.application';
 import { DeleteFileService } from './services/delete.file.service';
 import { DeleteFullFileService } from './services/delete-full.file.service';
 import { DeleteThumbnailFileService } from './services/delete-thumbnail.file.service';
+import { DeleteBucketFileService } from './services/delete-bucket.file.service';
+import { DeleteBucketFileApplication } from './applications/delete-bucket.file.application';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
@@ -84,6 +86,11 @@ export const deleteFileApplicationProvider = {
   useClass: DeleteFileApplication,
 };
 
+export const deleteBucketFileApplicationProvider = {
+  provide: TYPES.applications.IDeleteBucketFileApplication,
+  useClass: DeleteBucketFileApplication,
+};
+
 export const getByIdFileServiceProvider = {
   provide: TYPES.services.IGetByIdFileService,
   useClass: GetByIdFileService,
@@ -139,6 +146,11 @@ export const deleteThumbnailFileServiceProvider = {
   useClass: DeleteThumbnailFileService,
 };
 
+export const deleteBucketFileServiceProvider = {
+  provide: TYPES.services.IDeleteBucketFileService,
+  useClass: DeleteBucketFileService,
+};
+
 export const handlersFileProviders = [
   storageFileHandlerProvider,
   creatorsThumbnailFileHandlerProvider,
@@ -154,7 +166,7 @@ export const applicationsFileProviders = [
   getThumbnailByIdFileApplication,
   getZippedBucketFileApplication,
   deleteFileApplicationProvider,
-  deleteThumbnailFileServiceProvider,
+  deleteBucketFileApplicationProvider,
 ];
 
 export const servicesFileProviders = [
@@ -169,4 +181,6 @@ export const servicesFileProviders = [
   zipBucketFilseServiceProvider,
   deleteFileServiceProvider,
   deleteFullFileServiceProvider,
+  deleteThumbnailFileServiceProvider,
+  deleteBucketFileServiceProvider,
 ];

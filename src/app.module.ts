@@ -19,8 +19,8 @@ import { FileModule } from './modules/file/file.module';
     }),
     ConsoleModule,
     UserModule,
-    ReportModule,
     FileModule,
+    ReportModule,
     AuthModule,
   ],
 })
