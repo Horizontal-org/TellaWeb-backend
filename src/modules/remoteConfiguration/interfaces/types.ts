@@ -16,6 +16,6 @@ export const TYPES = {
     IDeleteByIdRemoteConfigurationService:
       'IDeleteByIdRemoteConfigurationService',
     ICreateRemoteConfigurationService: 'ICreateRemoteConfigurationService',
+    IEditRemoteConfigurationService: 'IEditRemoteConfigurationService',
   },
-  IEditRemoteConfigurationService: 'IEditRemoteConfigurationService',
 };
