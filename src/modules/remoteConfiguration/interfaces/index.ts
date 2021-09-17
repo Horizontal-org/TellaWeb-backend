@@ -6,5 +6,7 @@ export { IDeleteByIdRemoteConfigurationApplication } from './application/delete.
 export { IDeleteByIdRemoteConfigurationService } from './service/delete-by-id.remote-configuration.service.interface';
 export { ICreateRemoteConfigurationApplication } from './application/create.remote-configuration.application.interface';
 export { ICreateRemoteConfigurationService } from './service/create.remote-configuration.service.interface';
+export { IEditRemoteConfigurationApplication } from './application/edit.remote-configuration.application.interface';
+export { IEditRemoteConfigurationService } from './service/edit.remote-configuration.service.interface';
 
 export { TYPES } from './types';

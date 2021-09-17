@@ -7,6 +7,7 @@ export const TYPES = {
       'IDeleteByIdRemoteConfigurationApplication',
     ICreateRemoteConfigurationApplication:
       'ICreateRemoteConfigurationApplication',
+    IEditRemoteConfigurationApplication: 'IEditRemoteConfigurationApplication',
   },
   services: {
     IGetByShortCodeRemoteConfigurationService:
@@ -16,4 +17,5 @@ export const TYPES = {
       'IDeleteByIdRemoteConfigurationService',
     ICreateRemoteConfigurationService: 'ICreateRemoteConfigurationService',
   },
+  IEditRemoteConfigurationService: 'IEditRemoteConfigurationService',
 };
