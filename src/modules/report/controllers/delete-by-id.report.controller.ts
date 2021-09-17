@@ -1,4 +1,4 @@
-import { Delete, Get, Inject, Param } from '@nestjs/common';
+import { Delete, Inject, Param } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 import { RolesUser } from 'modules/user/domain';
