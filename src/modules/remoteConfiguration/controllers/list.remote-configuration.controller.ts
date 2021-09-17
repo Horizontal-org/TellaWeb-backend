@@ -6,7 +6,7 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
 
 import { RolesUser } from 'modules/user/domain';
-import { RemoteConfigurationReadDto } from '../dto';
+import { ReadRemoteConfigurationDto } from '../dto';
 
 import { IListRemoteConfigurationApplication, TYPES } from '../interfaces';
 
@@ -18,12 +18,12 @@ export class ListRemoteConfigurationController {
     private listRemoteConfigurationApplication: IListRemoteConfigurationApplication,
   ) {}
 
-  @ApiPaginatedResponse(RemoteConfigurationReadDto)
+  @ApiPaginatedResponse(ReadRemoteConfigurationDto)
   @Get('')
   async handler(
     @Query('limit', new ParseIntPipe()) limit = 0,
     @Query('offset', new ParseIntPipe()) offset = 0,
-  ): Promise<PaginatedDto<RemoteConfigurationReadDto>> {
+  ): Promise<PaginatedDto<ReadRemoteConfigurationDto>> {
     const response = await this.listRemoteConfigurationApplication.execute(
       limit,
       offset,

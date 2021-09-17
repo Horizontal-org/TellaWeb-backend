@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
-import { RemoteConfigurationReadDto } from '../dto';
+import { ReadRemoteConfigurationDto } from '../dto';
 
 import {
   TYPES,
@@ -21,7 +21,7 @@ export class ListRemoteConfigurationApplication
   async execute(
     take: number,
     skip: number,
-  ): Promise<PaginatedDto<RemoteConfigurationReadDto>> {
+  ): Promise<PaginatedDto<ReadRemoteConfigurationDto>> {
     const {
       results,
       total,
@@ -32,7 +32,7 @@ export class ListRemoteConfigurationApplication
       offset: skip,
       total: total,
       results: results.map((configuration) =>
-        plainToClass(RemoteConfigurationReadDto, configuration),
+        plainToClass(ReadRemoteConfigurationDto, configuration),
       ),
     };
   }

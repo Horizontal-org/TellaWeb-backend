@@ -1,10 +1,9 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsArray, IsDate, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { boolean } from 'yargs';
 
 @Exclude()
-export class RemoteConfigurationReadDto {
+export class ReadRemoteConfigurationDto {
   @ApiProperty()
   @Expose()
   @IsUUID('4')

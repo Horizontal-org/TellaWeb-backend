@@ -7,7 +7,7 @@ import {
   IGetByShortCodeRemoteConfigurationApplication,
   TYPES,
 } from '../interfaces';
-import { RemoteConfigurationReadDto } from '../dto/remote-configuration-read.dto';
+import { ReadRemoteConfigurationDto } from '../dto/read.remote-configuration.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
@@ -18,12 +18,12 @@ export class GetByShortCodeRemoteConfigurationController {
     private readonly getByShortCode: IGetByShortCodeRemoteConfigurationApplication,
   ) {}
 
-  @ApiResponse({ type: RemoteConfigurationReadDto })
+  @ApiResponse({ type: ReadRemoteConfigurationDto })
   @Get('shortcode/:shortcode')
   async handler(
     @Param('shortcode') shortCode: string,
-  ): Promise<RemoteConfigurationReadDto> {
+  ): Promise<ReadRemoteConfigurationDto> {
     const configuration = await this.getByShortCode.execute(shortCode);
-    return plainToClass(RemoteConfigurationReadDto, configuration);
+    return plainToClass(ReadRemoteConfigurationDto, configuration);
   }
 }
