@@ -1,10 +1,8 @@
-import {
-  CreateRemoteConfigurationDto,
-  ReadRemoteConfigurationDto,
-} from '../../dto';
+import { RemoteConfigurationEntity } from 'modules/remoteConfiguration/domain';
+import { EditRemoteConfigurationDto } from '../../dto';
 
 export interface IEditRemoteConfigurationService {
   execute(
-    editRemoteConfigurationDto: CreateRemoteConfigurationDto,
-  ): Promise<ReadRemoteConfigurationDto>;
+    editRemoteConfigurationDto: EditRemoteConfigurationDto,
+  ): Promise<RemoteConfigurationEntity>;
 }

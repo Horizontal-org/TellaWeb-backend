@@ -1,10 +1,10 @@
 import {
-  CreateRemoteConfigurationDto,
+  EditRemoteConfigurationDto,
   ReadRemoteConfigurationDto,
 } from '../../dto';
 
 export interface IEditRemoteConfigurationApplication {
   execute(
-    editRemoteConfigurationDto: CreateRemoteConfigurationDto,
+    editRemoteConfigurationDto: EditRemoteConfigurationDto,
   ): Promise<ReadRemoteConfigurationDto>;
 }
