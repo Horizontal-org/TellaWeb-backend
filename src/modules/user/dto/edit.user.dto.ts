@@ -10,4 +10,8 @@ export class EditUserDto {
   @ApiProperty({ type: Boolean })
   @Expose()
   isAdmin?: boolean;
+
+  @ApiProperty({ type: String })
+  @Expose()
+  password?: string;
 }
