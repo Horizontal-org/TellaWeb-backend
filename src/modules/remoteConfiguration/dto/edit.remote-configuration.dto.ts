@@ -17,4 +17,12 @@ export class EditRemoteConfigurationDto {
   @ApiProperty()
   @IsArray()
   camoflage: boolean[] = [false, false, false];
+
+  @ApiProperty()
+  @IsString()
+  defaultUser?: string;
+
+  @ApiProperty()
+  @IsString()
+  apiUrl?: string;
 }

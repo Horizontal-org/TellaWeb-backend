@@ -25,6 +25,8 @@ export class EditRemoteConfigurationService
       configuration.name = editRemoteConfigurationDto.name;
       configuration.camoflage = editRemoteConfigurationDto.camoflage;
       configuration.applock = editRemoteConfigurationDto.applock;
+      configuration.apiUrl = editRemoteConfigurationDto.apiUrl;
+      configuration.defaultUser = editRemoteConfigurationDto.defaultUser;
 
       return this.remoteConfigurationRepository.save(configuration);
     } catch (_) {

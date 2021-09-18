@@ -20,6 +20,14 @@ export class ReadRemoteConfigurationDto {
   name: string;
 
   @ApiProperty()
+  @IsString()
+  defaultUser?: string;
+
+  @ApiProperty()
+  @IsString()
+  apiUrl?: string;
+
+  @ApiProperty()
   @Expose()
   @IsArray()
   applock: boolean[];

@@ -22,6 +22,8 @@ export class CreateRemoteConfigurationService
     configuration.name = createRemoteConfigurationDto.name;
     configuration.applock = createRemoteConfigurationDto.applock;
     configuration.camoflage = createRemoteConfigurationDto.camoflage;
+    configuration.apiUrl = createRemoteConfigurationDto.apiUrl;
+    configuration.defaultUser = createRemoteConfigurationDto.defaultUser;
 
     // TODO: Add collision check
     configuration.shortCode = nanoid(8);

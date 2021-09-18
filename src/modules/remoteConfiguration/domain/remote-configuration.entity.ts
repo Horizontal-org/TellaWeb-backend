@@ -31,6 +31,14 @@ export class RemoteConfigurationEntity {
   @Column('simple-array')
   camoflage: boolean[];
 
+  @Expose()
+  @Column()
+  defaultUser?: string;
+
+  @Expose()
+  @Column()
+  apiUrl?: string;
+
   @Column({ name: 'created_at' })
   createdAt!: Date;
 
