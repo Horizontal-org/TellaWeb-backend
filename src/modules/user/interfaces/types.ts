@@ -8,6 +8,7 @@ export const TYPES = {
     ICreateUserApplication: 'ICreateUserApplication',
     IEditUserApplication: 'IEditUserApplication',
     IGetUserByIdApplication: 'IGetUserByIdApplication',
+    IMakePublicUserApplication: 'IMakePublicUserApplication',
   },
   services: {
     IFindByUsernameUserService: 'IFindByUsernameUserService',
