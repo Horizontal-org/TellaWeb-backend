@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsArray, IsDate, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -20,6 +20,7 @@ export class ReadRemoteConfigurationDto {
   name: string;
 
   @ApiProperty()
+  @Expose()
   @IsString()
   defaultUser?: string;
 
@@ -30,11 +31,21 @@ export class ReadRemoteConfigurationDto {
   @ApiProperty()
   @Expose()
   @IsArray()
+  @Transform(({ value }) =>
+    value.map(
+      (option: string | boolean) => option !== 'false' && option !== false,
+    ),
+  )
   applock: boolean[];
 
   @ApiProperty()
   @Expose()
   @IsArray()
+  @Transform(({ value }) =>
+    value.map(
+      (option: string | boolean) => option !== 'false' && option !== false,
+    ),
+  )
   camoflage: boolean[];
 
   @ApiProperty()
