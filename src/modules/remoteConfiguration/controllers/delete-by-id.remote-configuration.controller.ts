@@ -10,7 +10,7 @@ import {
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { boolean } from 'yargs';
 
-@AuthController('report', [RolesUser.ADMIN])
+@AuthController('config', [RolesUser.ADMIN])
 export class DeleteByIdRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdRemoteConfigurationApplication)
