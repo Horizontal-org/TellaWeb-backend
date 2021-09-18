@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { hashPassword } from 'common/utils/password.utils';
-import { RolesUser } from '../domain';
+import { create, update } from 'lodash';
+import { RolesUser, UserEntity } from '../domain';
 
 import { EditUserDto, ReadUserDto } from '../dto';
 import { AdminCantBePublicUserException } from '../exceptions/admin-not-public.user.exception';
@@ -25,24 +26,35 @@ export class MakePublicUserApplication implements IMakePublicUserApplication {
   ) {}
 
   async execute(username: string): Promise<ReadUserDto> {
+    let user = new UserEntity();
     try {
-      const user = await this.findByUsernameUserService.execute(username);
-      if (user.role === RolesUser.ADMIN)
-        throw new AdminCantBePublicUserException();
-      user.password = await hashPassword(username);
-      const updatedUser = await this.editUserService.execute(
-        plainToClass(EditUserDto, user),
-      );
-      return plainToClass(ReadUserDto, updatedUser);
-    } catch (error) {
-      if (error instanceof AdminCantBePublicUserException) throw error;
-
-      const userCreated = this.createUserService.execute({
-        username,
-        password: username,
-        isAdmin: false,
-      });
-      return plainToClass(ReadUserDto, userCreated);
+      user = await this.findByUsernameUserService.execute(username);
+    } catch (_) {
+      //do nothing
     }
+
+    console.log({ user });
+    const publicUser = await (user.id
+      ? this.update(user)
+      : this.create(username));
+
+    return plainToClass(ReadUserDto, publicUser);
+  }
+
+  private async create(username: string): Promise<UserEntity> {
+    const password = await hashPassword(username);
+    return this.createUserService.execute({
+      username,
+      password,
+      isAdmin: false,
+    });
+  }
+
+  private async update(user: UserEntity): Promise<UserEntity> {
+    if (user.role === RolesUser.ADMIN)
+      throw new AdminCantBePublicUserException();
+    user.password = await hashPassword(user.username);
+    const userDto = plainToClass(EditUserDto, user);
+    return await this.editUserService.execute(userDto);
   }
 }
