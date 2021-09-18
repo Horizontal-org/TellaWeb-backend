@@ -11,7 +11,7 @@ import { ListUserService } from './services/list.user.service';
 import { SetRoleUserService } from './services/set-role.user.service';
 import { EditUserService } from './services/edit.user.service';
 import { EditUserApplication } from './applications/edit.user.application';
-import { getByIdUserApplication } from './applications/get-by-id.user.application';
+import { GetByIdUserApplication } from './applications/get-by-id.user.application';
 import { FindByidUserService } from './services/find-by-id.user.service';
 
 export const rolesUserGuardProvider = {
@@ -51,7 +51,8 @@ export const editUserApplicationProvider = {
 
 export const getByIdUserApplicationProvider = {
   provide: TYPES.applications.IGetUserByIdApplication,
-  useClass: getByIdUserApplication,
+  useClass: GetByIdUserApplication,
+};
 };
 
 export const findByUernameUserServiceProvider = {
