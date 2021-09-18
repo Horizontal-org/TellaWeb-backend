@@ -11,12 +11,14 @@ import {
   applicationsRemoteConfigurationProviders,
   servicesRemoteConfigurationProviders,
 } from './remote-configuration.providers';
+import { UserModule } from 'modules/user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([RemoteConfigurationEntity]),
     ConsoleModule,
     ReportModule,
+    UserModule,
   ],
   controllers: [...remoteConfigurationControllers],
   providers: [
