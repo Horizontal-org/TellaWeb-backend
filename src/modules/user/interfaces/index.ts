@@ -5,6 +5,7 @@ export { IToggleRoleByUsernameUserApplication } from './applications/toggle-role
 export { ICheckPasswordUserApplication } from './applications/check-password.user.application.interface';
 export { IEditUserApplication } from './applications/edit.user.application.interface';
 export { IGetByIdUserApplication } from './applications/get-by-id.user.application.interface';
+export { IMakePublicUserApplication } from './applications/make-public.user.application.interface';
 
 export { ICreateUserService } from './services/create.user.service.interface';
 export { IFindByUsernameUserService } from './services/find-by-username.user.service.interface';

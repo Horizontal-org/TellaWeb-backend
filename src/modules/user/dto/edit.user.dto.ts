@@ -5,9 +5,14 @@ import { IsUUID } from 'class-validator';
 @Exclude()
 export class EditUserDto {
   @IsUUID('4')
+  @Expose()
   id?: string;
 
   @ApiProperty({ type: Boolean })
   @Expose()
   isAdmin?: boolean;
+
+  @ApiProperty({ type: String })
+  @Expose()
+  password?: string;
 }

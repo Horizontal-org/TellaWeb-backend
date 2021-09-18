@@ -8,7 +8,7 @@ import {
   IGetByIdUserApplication,
 } from '../interfaces';
 
-export class getByIdUserApplication implements IGetByIdUserApplication {
+export class GetByIdUserApplication implements IGetByIdUserApplication {
   constructor(
     @Inject(TYPES.services.IFindByIdUserService)
     private readonly findByIdUserService: IFindByUsernameUserService,

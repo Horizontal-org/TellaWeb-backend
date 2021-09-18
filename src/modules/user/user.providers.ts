@@ -11,8 +11,9 @@ import { ListUserService } from './services/list.user.service';
 import { SetRoleUserService } from './services/set-role.user.service';
 import { EditUserService } from './services/edit.user.service';
 import { EditUserApplication } from './applications/edit.user.application';
-import { getByIdUserApplication } from './applications/get-by-id.user.application';
+import { GetByIdUserApplication } from './applications/get-by-id.user.application';
 import { FindByidUserService } from './services/find-by-id.user.service';
+import { MakePublicUserApplication } from './applications/make-public.user.application';
 
 export const rolesUserGuardProvider = {
   provide: TYPES.guards.IRolesUserGuard,
@@ -51,7 +52,12 @@ export const editUserApplicationProvider = {
 
 export const getByIdUserApplicationProvider = {
   provide: TYPES.applications.IGetUserByIdApplication,
-  useClass: getByIdUserApplication,
+  useClass: GetByIdUserApplication,
+};
+
+export const makePublicUserApplicationProvider = {
+  provide: TYPES.applications.IMakePublicUserApplication,
+  useClass: MakePublicUserApplication,
 };
 
 export const findByUernameUserServiceProvider = {
@@ -92,6 +98,7 @@ export const applicationsUserProviders = [
   checkPasswordUserApplicationProvider,
   editUserApplicationProvider,
   getByIdUserApplicationProvider,
+  makePublicUserApplicationProvider,
 ];
 
 export const servicesUserProviders = [

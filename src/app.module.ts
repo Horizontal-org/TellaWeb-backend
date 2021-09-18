@@ -9,6 +9,7 @@ import { UserModule } from 'modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ReportModule } from './modules/report/report.module';
 import { FileModule } from './modules/file/file.module';
+import { RemoteConfigurationModule } from 'modules/remoteConfiguration/remote-configuration.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FileModule } from './modules/file/file.module';
     FileModule,
     ReportModule,
     AuthModule,
+    RemoteConfigurationModule,
   ],
 })
 export class AppModule {}
