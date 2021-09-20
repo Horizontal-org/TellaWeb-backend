@@ -4,7 +4,7 @@ export const OrmConfig: SqliteConnectionOptions = {
   type: 'sqlite',
   database: './tellaDb.sql',
   synchronize: true,
-  migrationsRun: true,
+  migrationsRun: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   cli: {
     migrationsDir: './src/migrations',
