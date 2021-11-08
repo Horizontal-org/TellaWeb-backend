@@ -3,9 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { createReadStream, ReadStream } from 'fs';
 import * as path from 'path';
 import * as ffmpeg from 'fluent-ffmpeg';
+import * as ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 
 import { FileType, ThumbnailOptions } from 'modules/file/domain';
 import { ICreatorThumbnailFileHandler } from '../../../interfaces';
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 @Injectable()
 export class VideoThumbnailCreator implements ICreatorThumbnailFileHandler {

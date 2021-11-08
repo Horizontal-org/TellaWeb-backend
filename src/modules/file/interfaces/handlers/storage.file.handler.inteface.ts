@@ -11,4 +11,6 @@ export interface IStorageFileHandler {
   fetch(input: ReadFileDto): Promise<ReadStream>;
   close(input: ReadFileDto): Promise<boolean>;
   getType(input: ReadFileDto): Promise<FileType>;
+  fileSize(input: ReadFileDto, isPartial: boolean): Promise<number>;
+  getPath(input: ReadFileDto, isPartial: boolean): string;
 }
