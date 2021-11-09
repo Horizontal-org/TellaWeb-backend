@@ -131,7 +131,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     return FileType.OTHER;
   }
 
-  private getPath(input: ReadFileDto, isPartial: boolean) {
+  public getPath(input: ReadFileDto, isPartial: boolean) {
     return path.join(
       this.basePath,
       input.bucket,
@@ -154,7 +154,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     return existsSync(filePath);
   }
 
-  private async fileSize(input: ReadFileDto, isPartial: boolean) {
+  public async fileSize(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
     return statSync(filePath).size;
   }
