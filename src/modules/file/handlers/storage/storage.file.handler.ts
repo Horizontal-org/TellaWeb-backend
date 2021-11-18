@@ -28,6 +28,7 @@ import {
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
 import { FileType } from '../../domain';
+import { StreamFileDto } from 'modules/file/dto/stream.file.dto';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {
@@ -66,6 +67,27 @@ export class StorageFileHandler implements IStorageFileHandler {
     } catch (_) {
       return false;
     }
+  }
+
+  async stream(input: ReadFileDto, range: string): Promise<StreamFileDto> {
+    const fileSize = await this.fileSize(input, false);
+    const filePath = this.getPath(input, false);
+
+    const rangeArray = range.replace('bytes=', '').split('-');
+    const start = parseInt(rangeArray[0], 10);
+    const end = rangeArray[1] ? parseInt(rangeArray[1], 10) : fileSize - 1;
+    const chunk = 1024 * 1000;
+
+    const responseOptions = {
+      'Content-Length': chunk,
+      'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+      'Accept-Ranges': 'bytes',
+    };
+
+    return {
+      stream: createReadStream(filePath, { start: start, end: end }),
+      response: responseOptions,
+    };
   }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {

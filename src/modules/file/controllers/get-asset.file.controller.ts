@@ -29,33 +29,16 @@ export class GetAssetFileController {
     @Res() res: Response,
     @Headers('range') range: string,
   ) {
-    const file = await this.getByIdFileApplication.execute(fileId);
-    const fileSize = await this.storageFileHandler.fileSize(file, false);
-    const filePath = this.storageFileHandler.getPath(file, false);
+    const applicationResponse = await this.getAssetFileApplication.execute(
+      fileId,
+      range,
+    );
 
-    if (file.type === FileType.IMAGE) {
-      const fileImageStream = await this.getAssetFileApplication.execute(
-        fileId,
-      );
-      fileImageStream.pipe(res);
-      return;
-    }
-
-    const rangeArray = range.replace('bytes=', '').split('-');
-    const start = parseInt(rangeArray[0], 10);
-    const end = rangeArray[1] ? parseInt(rangeArray[1], 10) : fileSize - 1;
-    const chunk = 1024 * 1000;
-    res.set({
-      'Content-Length': chunk,
-      'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
-      'Accept-Ranges': 'bytes',
-    });
-
+    res.set(applicationResponse.response);
     res.status(206);
-
-    const fileStream = createReadStream(filePath, { start: start, end: end })
+    applicationResponse.stream
       .on('open', function () {
-        fileStream.pipe(res);
+        applicationResponse.stream.pipe(res);
       })
       .on('error', function (err) {
         res.end(err);
