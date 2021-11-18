@@ -35,4 +35,4 @@ lerna-debug.log*
 
 # Data
 /data
-tellaDb.sql
+/db
