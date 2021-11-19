@@ -14,6 +14,7 @@ export { IGetInfoFileService } from './services/get-info.file.service.interface'
 export { IGetByIdFileService } from './services/getById.file.service.interface';
 export { IGetOrCreateFileService } from './services/get-or-create.file.service.interface';
 export { IFetchFileService } from './services/fetch.file.service.interface';
+export { IStreamFileService } from './services/stream.file.service.interface';
 export { ICreateThumbnailFileService } from './services/create-thumbnail.file.service.interface';
 export { IZipBucketFileService } from './services/zip-bucket.service.interface';
 export { IDeleteFileService } from './services/delete.file.service.interface';

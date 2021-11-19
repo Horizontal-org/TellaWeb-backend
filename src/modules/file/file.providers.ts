@@ -25,6 +25,7 @@ import { DeleteFullFileService } from './services/delete-full.file.service';
 import { DeleteThumbnailFileService } from './services/delete-thumbnail.file.service';
 import { DeleteBucketFileService } from './services/delete-bucket.file.service';
 import { DeleteBucketFileApplication } from './applications/delete-bucket.file.application';
+import { StreamFileService } from './services/stream.file.service';
 
 export const storageFileHandlerProvider = {
   provide: TYPES.handlers.IStorageFileHandler,
@@ -121,6 +122,11 @@ export const fetchFileServiceProvider = {
   useClass: FetchFileService,
 };
 
+export const streamFileServiceProvider = {
+  provide: TYPES.services.IStreamFileService,
+  useClass: StreamFileService,
+};
+
 export const createThumbnailFileServiceProvider = {
   provide: TYPES.services.ICreateThumbnailFileService,
   useClass: CreateThumbnailFileService,
@@ -176,6 +182,7 @@ export const servicesFileProviders = [
   storeFileSericeProvider,
   closeFileServiceProvider,
   fetchFileServiceProvider,
+  streamFileServiceProvider,
   thumbnailFileHandlerProvider,
   createThumbnailFileServiceProvider,
   zipBucketFilseServiceProvider,
