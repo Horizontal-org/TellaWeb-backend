@@ -73,20 +73,30 @@ export class StorageFileHandler implements IStorageFileHandler {
     const fileSize = await this.fileSize(input, false);
     const filePath = this.getPath(input, false);
 
-    const rangeArray = range.replace('bytes=', '').split('-');
-    const start = parseInt(rangeArray[0], 10);
-    const end = rangeArray[1] ? parseInt(rangeArray[1], 10) : fileSize - 1;
-    const chunk = 1024 * 1000;
+    let start = 0;
+    let end = fileSize - 1;
 
+    if (range && range.length > 0) {
+      const rangeArray = range.replace('bytes=', '').split('-');
+      start = parseInt(rangeArray[0], 10);
+      end = rangeArray[1] ? parseInt(rangeArray[1], 10) : end;
+    }
+
+    const chunk = 1024 * 1000;
     const responseOptions = {
       'Content-Length': chunk,
       'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
       'Accept-Ranges': 'bytes',
     };
 
+    const stream = createReadStream(filePath, { start: start, end: end })
+    stream.on('error', (err) => {
+      throw new NotFoundFileException(input.fileName);
+    });
+
     return {
-      stream: createReadStream(filePath, { start: start, end: end }),
       response: responseOptions,
+      stream,
     };
   }
 
@@ -153,7 +163,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     return FileType.OTHER;
   }
 
-  public getPath(input: ReadFileDto, isPartial: boolean) {
+  private getPath(input: ReadFileDto, isPartial: boolean) {
     return path.join(
       this.basePath,
       input.bucket,
@@ -176,7 +186,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     return existsSync(filePath);
   }
 
-  public async fileSize(input: ReadFileDto, isPartial: boolean) {
+  private async fileSize(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
     return statSync(filePath).size;
   }

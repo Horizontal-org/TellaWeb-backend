@@ -25,12 +25,8 @@ export class GetAssetFileController {
 
     res.set(applicationResponse.response);
     res.status(206);
-    applicationResponse.stream
-      .on('open', function () {
-        applicationResponse.stream.pipe(res);
-      })
-      .on('error', function (err) {
-        res.end(err);
-      });
+    applicationResponse.stream.on('open', function () {
+      applicationResponse.stream.pipe(res);
+    });
   }
 }
