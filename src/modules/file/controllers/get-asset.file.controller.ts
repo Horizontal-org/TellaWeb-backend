@@ -1,8 +1,7 @@
-import { Get, Inject, Param, Res } from '@nestjs/common';
+import { Get, Inject, Param, Res, Headers } from '@nestjs/common';
 import { Response } from 'express';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
-
 import { TYPES, IGetAssetFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
 
@@ -14,8 +13,20 @@ export class GetAssetFileController {
   ) {}
 
   @Get('asset/:reportId/:fileId')
-  async handler(@Param('fileId') fileId: string, @Res() res: Response) {
-    const fileStream = await this.getAssetFileApplication.execute(fileId);
-    fileStream.pipe(res);
+  async handler(
+    @Param('fileId') fileId: string,
+    @Res() res: Response,
+    @Headers('range') range: string,
+  ) {
+    const applicationResponse = await this.getAssetFileApplication.execute(
+      fileId,
+      range,
+    );
+
+    res.set(applicationResponse.response);
+    res.status(206);
+    applicationResponse.stream.on('open', function () {
+      applicationResponse.stream.pipe(res);
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReadStream } from 'fs';
+import { StreamFileDto } from '../dto/stream.file.dto';
 import {
-  IFetchFileService,
+  IStreamFileService,
   IGetAssetFileApplication,
   IGetByIdFileApplication,
   TYPES,
@@ -12,14 +12,14 @@ export class GetAssetFileApplication implements IGetAssetFileApplication {
   constructor(
     @Inject(TYPES.applications.IGetByIdFileApplication)
     private readonly getByIdFileApplication: IGetByIdFileApplication,
-    @Inject(TYPES.services.IFetchFileService)
-    private readonly fetchFileService: IFetchFileService,
+    @Inject(TYPES.services.IStreamFileService)
+    private readonly streamFileService: IStreamFileService,
   ) {}
 
-  async execute(fileId: string): Promise<ReadStream> {
+  async execute(fileId: string, range: string): Promise<StreamFileDto> {
     const file = await this.getByIdFileApplication.execute(fileId);
-    const stream = await this.fetchFileService.execute(file);
+    const streamResponse = await this.streamFileService.execute(file, range);
 
-    return stream;
+    return streamResponse;
   }
 }

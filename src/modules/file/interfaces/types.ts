@@ -17,6 +17,7 @@ export const TYPES = {
     IStoreFileService: 'IStoreFileService',
     ICloseFileService: 'ICloseFileService',
     IFetchFileService: 'IFetchFileService',
+    IStreamFileService: 'IStreamFileService',
     ICreateThumbnailFileService: 'ICreateThumbnailFileService',
     IZipBucketFileService: 'IZipBucketFileService',
     IDeleteFileService: 'IDeleteFileService',
