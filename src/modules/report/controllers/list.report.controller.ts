@@ -23,8 +23,17 @@ export class ListReportController {
   async handler(
     @Query('limit', new ParseIntPipe()) limit = 0,
     @Query('offset', new ParseIntPipe()) offset = 0,
+    @Query('sort') sort = '',
+    @Query('order') order = '',
+    @Query('search') search = '',
   ): Promise<PaginatedDto<ReadReportDto>> {
-    const response = await this.listReportApplication.execute(limit, offset);
+    const response = await this.listReportApplication.execute(
+      limit,
+      offset,
+      sort,
+      order,
+      search,
+    );
     return response;
   }
 }

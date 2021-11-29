@@ -23,6 +23,11 @@ export class ReadReportDto {
   @IsString()
   readonly description: string;
 
+  @ApiProperty()
+  @Expose()
+  @IsString()
+  readonly createdAt: string;
+
   @ApiProperty({ type: [FileDto] })
   @Expose()
   @Type(() => FileDto)
