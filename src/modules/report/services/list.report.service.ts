@@ -17,15 +17,31 @@ export class ListReportService implements IListReportService {
   async execute(
     take: number,
     skip: number,
+    sort: string,
+    order: string,
+    search: string,
   ): Promise<PartialResult<ReportEntity>> {
-    const [reports, total] = await this.reportRepository
+    const query = this.reportRepository
       .createQueryBuilder('report')
       .innerJoinAndSelect('report.files', 'files')
       .innerJoinAndSelect('report.author', 'author')
       .skip(skip)
-      .take(take)
-      .getManyAndCount();
+      .take(take);
 
+    if (search && search.length > 0) {
+      query.where(
+        'report.title like :search OR report.description like :search',
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    if (sort && sort.length > 0) {
+      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
+    }
+
+    const [reports, total] = await query.getManyAndCount();
     return {
       total: total,
       results: reports,

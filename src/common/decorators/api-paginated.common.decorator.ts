@@ -21,6 +21,21 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
       name: 'offset',
       type: Number,
     }),
+    ApiQuery({
+      name: 'sort',
+      type: String,
+      required: false,
+    }),
+    ApiQuery({
+      name: 'order',
+      type: String,
+      required: false,
+    }),
+    ApiQuery({
+      name: 'search',
+      type: String,
+      required: false,
+    }),
     ApiOkResponse({
       schema: {
         allOf: [

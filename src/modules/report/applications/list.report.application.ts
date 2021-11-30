@@ -20,10 +20,16 @@ export class ListReportApplication implements IListReportApplication {
   async execute(
     take: number,
     skip: number,
+    sort: string,
+    order: string,
+    search: string,
   ): Promise<PaginatedDto<ReadReportDto>> {
     const { results: reports, total } = await this.listReportService.execute(
       take,
       skip,
+      sort,
+      order,
+      search,
     );
 
     return {
