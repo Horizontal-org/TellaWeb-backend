@@ -4,7 +4,10 @@ import { Repository } from 'typeorm';
 
 import { UserEntity } from '../domain';
 import { EditUserDto } from '../dto';
-import { NotFoundUserException } from '../exceptions';
+import {
+  AlreadyExistUserException,
+  NotFoundUserException,
+} from '../exceptions';
 import { IEditUserService } from '../interfaces';
 
 @Injectable()
@@ -17,6 +20,17 @@ export class EditUserService implements IEditUserService {
   async execute(editUserDto: EditUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOne(editUserDto.id);
     if (!user) throw new NotFoundUserException();
+
+    if (editUserDto.username) {
+      const taken = await this.userRepository
+        .createQueryBuilder('user')
+        .where('user.id <> :id', { id: editUserDto.id })
+        .where('user.username = :username', { username: editUserDto.username })
+        .getCount();
+      if (taken) {
+        throw new AlreadyExistUserException(editUserDto.username);
+      }
+    }
 
     user.update(editUserDto);
     const updatedUser = await this.userRepository.save(user);

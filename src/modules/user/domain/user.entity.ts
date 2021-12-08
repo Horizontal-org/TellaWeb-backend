@@ -29,5 +29,6 @@ export class UserEntity {
   public update(editUserDto: EditUserDto) {
     this.role = editUserDto.isAdmin ? RolesUser.ADMIN : RolesUser.USER;
     this.password = editUserDto.password || this.password;
+    this.username = editUserDto.username || this.username;
   }
 }
