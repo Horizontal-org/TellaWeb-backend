@@ -23,7 +23,7 @@ export class ListReportService implements IListReportService {
   ): Promise<PartialResult<ReportEntity>> {
     const query = this.reportRepository
       .createQueryBuilder('report')
-      .innerJoinAndSelect('report.files', 'files')
+      .leftJoinAndSelect('report.files', 'files')
       .innerJoinAndSelect('report.author', 'author')
       .skip(skip)
       .take(take);
