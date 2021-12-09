@@ -25,7 +25,7 @@ export class ChangePasswordUserController {
   @ApiResponse({ type: Boolean })
   @Post('change-password')
   async handler(
-    @LoggedUser() { id, username }: ReadUserDto,
+    @LoggedUser() { id, username, role }: ReadUserDto,
     @Body() changePasswordUserDto: ChangePasswordUserDto,
   ): Promise<boolean> {
     await this.checkPasswordUserApplication.execute({
@@ -36,6 +36,7 @@ export class ChangePasswordUserController {
     await this.editUserApplication.execute({
       id,
       password: await hashPassword(changePasswordUserDto.new),
+      isAdmin: role === RolesUser.ADMIN,
     });
 
     return true;

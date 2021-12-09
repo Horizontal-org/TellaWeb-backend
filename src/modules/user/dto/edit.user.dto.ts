@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsUUID } from 'class-validator';
+import { IsUUID, IsEmail } from 'class-validator';
 
 @Exclude()
 export class EditUserDto {
@@ -15,4 +15,9 @@ export class EditUserDto {
   @ApiProperty({ type: String })
   @Expose()
   password?: string;
+
+  @ApiProperty({ type: String })
+  @IsEmail()
+  @Expose()
+  username?: string;
 }
