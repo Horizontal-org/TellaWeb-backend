@@ -2,6 +2,8 @@ FROM node:12.19.0-alpine3.9 AS development
 
 WORKDIR /usr/src/app
 
+RUN apk add ffmpeg
+
 COPY package*.json ./
 
 COPY yarn.lock ./
