@@ -5,6 +5,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
