@@ -29,6 +29,9 @@ export class LoginAuthController {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
         domain: process.env.COOKIE_DOMAIN,
       })
-      .send(authToken);
+      .send({
+        ...authToken,
+        user,
+      });
   }
 }
