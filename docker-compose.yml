@@ -11,6 +11,7 @@ services:
     command: yarn start:debug
     ports:
       - 3000:3000
+      - 3001:3001
       - 9229:9229
     networks:
       - api-network
@@ -28,6 +29,7 @@ services:
     command: yarn start:prod
     ports:
       - 3000:3000
+      - 3001:3001
       - 9229:9229
     networks:
       - api-network
