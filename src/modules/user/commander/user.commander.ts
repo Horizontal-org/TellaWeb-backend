@@ -37,7 +37,7 @@ export class UserCommander {
         command: 'list',
         description: 'List user and role',
       },
-      () => this.listUsers(),
+      () => this.listUsers(0, 0, '', '', ''),
       groupCommand,
     );
 
@@ -66,12 +66,24 @@ export class UserCommander {
     );
   }
 
-  async listUsers() {
-    const users = await this.listUserApplication.execute();
-    if (users.length === 0)
+  async listUsers(
+    limit: number,
+    offset: number,
+    sort: string,
+    order: string,
+    search: string,
+  ) {
+    const users = await this.listUserApplication.execute(
+      limit,
+      offset,
+      sort,
+      order,
+      search,
+    );
+    if (users.results.length === 0)
       return console.log('No users found in the application');
 
-    const userToLog = users.map((user) => ({
+    const userToLog = users.results.map((user) => ({
       username: user.username,
       role: getUserRole(user),
     }));
