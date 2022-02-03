@@ -18,7 +18,7 @@ export class ListUserApplication implements IListUserApplication {
     order: string,
     search: string,
   ): Promise<PaginatedDto<ReadUserDto>> {
-    const { results: reports, total } = await this.listUserService.execute(
+    const { results: users, total } = await this.listUserService.execute(
       take,
       skip,
       sort,
@@ -30,7 +30,7 @@ export class ListUserApplication implements IListUserApplication {
       limit: take,
       offset: skip,
       total: total,
-      results: reports.map((report) => plainToClass(ReadUserDto, report)),
+      results: users.map((user) => plainToClass(ReadUserDto, user)),
     };
   }
 }

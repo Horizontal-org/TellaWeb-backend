@@ -14,7 +14,8 @@ import { EditUserApplication } from './applications/edit.user.application';
 import { GetByIdUserApplication } from './applications/get-by-id.user.application';
 import { FindByidUserService } from './services/find-by-id.user.service';
 import { MakePublicUserApplication } from './applications/make-public.user.application';
-
+import { DeleteByIdUserApplication } from './applications/delete-by-id.user.application';
+import { DeleteByIdUserService } from './services/delete-by-id.user.service';
 export const rolesUserGuardProvider = {
   provide: TYPES.guards.IRolesUserGuard,
   useClass: RolesUserGuard,
@@ -60,6 +61,11 @@ export const makePublicUserApplicationProvider = {
   useClass: MakePublicUserApplication,
 };
 
+export const deleteByIdUserApplication = {
+  provide: TYPES.applications.IDeleteByIdUserApplication,
+  useClass: DeleteByIdUserApplication,
+};
+
 export const findByUernameUserServiceProvider = {
   provide: TYPES.services.IFindByUsernameUserService,
   useClass: FindByUsernameUserService,
@@ -90,6 +96,11 @@ export const findByIdUserServiceProvider = {
   useClass: FindByidUserService,
 };
 
+export const deleteByIdUserServiceProvider = {
+  provide: TYPES.services.IDeleteByIdUserService,
+  useClass: DeleteByIdUserService,
+};
+
 export const applicationsUserProviders = [
   findByUsernameUserApplicationProvider,
   toggleRoleByUsernameUserApplicationProvider,
@@ -99,6 +110,7 @@ export const applicationsUserProviders = [
   editUserApplicationProvider,
   getByIdUserApplicationProvider,
   makePublicUserApplicationProvider,
+  deleteByIdUserApplication,
 ];
 
 export const servicesUserProviders = [
@@ -108,4 +120,5 @@ export const servicesUserProviders = [
   createUserServiceProvider,
   editUserServiceProvider,
   findByIdUserServiceProvider,
+  deleteByIdUserServiceProvider,
 ];
