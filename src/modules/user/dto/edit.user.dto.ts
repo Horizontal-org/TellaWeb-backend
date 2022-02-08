@@ -20,4 +20,8 @@ export class EditUserDto {
   @IsEmail()
   @Expose()
   username?: string;
+
+  @ApiProperty({ type: String })
+  @Expose()
+  note?: string;
 }

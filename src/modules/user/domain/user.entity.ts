@@ -20,7 +20,7 @@ export class UserEntity {
   id?: string;
 
   @Expose()
-  @Column({ length: 40 })
+  @Column({ length: 80 })
   username: string;
 
   @Column()
@@ -28,6 +28,9 @@ export class UserEntity {
 
   @Column()
   role: RolesUser;
+
+  @Column({ nullable: true })
+  note: string;
 
   @Expose()
   @Column({ name: 'created_at' })
@@ -45,5 +48,6 @@ export class UserEntity {
     this.role = editUserDto.isAdmin ? RolesUser.ADMIN : RolesUser.USER;
     this.password = editUserDto.password || this.password;
     this.username = editUserDto.username || this.username;
+    this.note = editUserDto.note || this.note;
   }
 }

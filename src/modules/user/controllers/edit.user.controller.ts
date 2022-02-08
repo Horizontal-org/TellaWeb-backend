@@ -20,6 +20,7 @@ export class EditUserController {
     @Body() editUserDto: Partial<EditUserDto>,
     @Param('userId', new ParseUUIDPipe()) userId: string,
   ): Promise<ReadUserDto> {
+    console.log(editUserDto);
     editUserDto.id = userId;
     const user = await this.editUserApplication.execute(editUserDto);
 

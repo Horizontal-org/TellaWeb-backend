@@ -26,6 +26,10 @@ export class ReadUserDto {
   @IsString()
   readonly createdAt: string;
 
+  @ApiProperty({ type: String })
+  @Expose()
+  note?: string;
+
   public toEntity() {
     const user = new UserEntity();
     user.id = this.id;

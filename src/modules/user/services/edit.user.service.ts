@@ -32,9 +32,11 @@ export class EditUserService implements IEditUserService {
       }
     }
 
+    console.log('editUserDto', editUserDto);
     user.update(editUserDto);
+    console.log(user);
     const updatedUser = await this.userRepository.save(user);
-
+    console.log(updatedUser);
     return updatedUser;
   }
 }
