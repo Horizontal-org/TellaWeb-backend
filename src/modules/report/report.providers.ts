@@ -9,11 +9,14 @@ import { DeleteByIdReportService } from './services/delete-by-id.report.service'
 import { DeleteByIdReportApplication } from './applications/delete-by-id.report.application';
 import { BatchDeleteReportService } from './services/batch-delete.report.service';
 import { BatchDeleteReportApplication } from './applications/batch-delete.report.application';
+import { EditReportApplication } from './applications/edit.report.application';
+import { EditReportService } from './services/edit.report.service';
 
 export const createReportApplicationProvider = {
   provide: TYPES.applications.ICreateReportApplication,
   useClass: CreateReportApplication,
 };
+
 export const getByIdReportApplicationProvider = {
   provide: TYPES.applications.IGetByIdReportApplication,
   useClass: GetByIdReportApplication,
@@ -59,12 +62,23 @@ export const batchDeleteReportApplicationProvider = {
   useClass: BatchDeleteReportApplication,
 };
 
+export const editReportApplicationProvider = {
+  provide: TYPES.applications.IEditReportApplication,
+  useClass: EditReportApplication,
+};
+
+export const editReportServiceProvider = {
+  provide: TYPES.services.IEditReportService,
+  useClass: EditReportService,
+};
+
 export const applicationsReportProviders = [
   createReportApplicationProvider,
   getByIdReportApplicationProvider,
   listReportApplicationProvider,
   deleteByIdReportApplicationProvider,
   batchDeleteReportApplicationProvider,
+  editReportApplicationProvider,
 ];
 
 export const servicesReportProviders = [
@@ -73,4 +87,5 @@ export const servicesReportProviders = [
   listReportServiceProvider,
   deleteByIdReportServiceProvider,
   batchDeleteReportServiceProvider,
+  editReportServiceProvider,
 ];

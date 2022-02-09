@@ -3,6 +3,7 @@ import { DeleteByIdReportController } from './delete-by-id.report.controller';
 import { GetByIdReportController } from './get-by-id.report.controller';
 import { ListReportController } from './list.report.controller';
 import { BatchDeleteReportController } from './batch-delete.report.controller';
+import { EditReportController } from './edit.report.controller';
 
 export const reportControllers = [
   CreateReportController,
@@ -10,4 +11,5 @@ export const reportControllers = [
   ListReportController,
   DeleteByIdReportController,
   BatchDeleteReportController,
+  EditReportController,
 ];
