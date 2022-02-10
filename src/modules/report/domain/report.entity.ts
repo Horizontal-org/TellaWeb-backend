@@ -11,6 +11,7 @@ import {
 
 import { FileEntity } from 'modules/file/domain/file.entity';
 import { UserEntity } from 'modules/user/domain/user.entity';
+import { EditReportDto } from '../dto/edit.report.dto';
 
 @Entity()
 export class ReportEntity {
@@ -44,5 +45,10 @@ export class ReportEntity {
   @BeforeInsert()
   private beforeInsert(): void {
     this.createdAt = new Date();
+  }
+
+  public update(editReportDto: EditReportDto) {
+    this.title = editReportDto.title || this.title;
+    this.description = editReportDto.description || this.description;
   }
 }

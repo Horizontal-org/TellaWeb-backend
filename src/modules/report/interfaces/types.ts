@@ -5,6 +5,7 @@ export const TYPES = {
     IListReportApplication: 'IListReportApplication',
     IDeleteByIdReportApplication: 'IDeleteByIdReportApplication',
     IBatchDeleteReportApplication: 'IBatchDeleteReportApplication',
+    IEditReportApplication: 'IEditReportApplication',
   },
   services: {
     ICreateReportService: 'ICreateReportService',
@@ -12,5 +13,6 @@ export const TYPES = {
     IListReportService: 'IListReportService',
     IDeleteByIdReportService: 'IDeleteByIdReportService',
     IBatchDeleteReportService: 'IBatchDeleteReportService',
+    IEditReportService: 'IEditReportService',
   },
 };
