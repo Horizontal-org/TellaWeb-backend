@@ -1,5 +1,11 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { ReportEntity } from 'modules/report/domain/report.entity';
 
@@ -14,7 +20,7 @@ export class UserEntity {
   id?: string;
 
   @Expose()
-  @Column({ length: 40 })
+  @Column({ length: 80 })
   username: string;
 
   @Column()
@@ -23,12 +29,25 @@ export class UserEntity {
   @Column()
   role: RolesUser;
 
+  @Column({ nullable: true })
+  note: string;
+
+  @Expose()
+  @Column({ name: 'created_at' })
+  createdAt!: Date;
+
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.author)
   reports: ReportEntity[];
+
+  @BeforeInsert()
+  private beforeInsert(): void {
+    this.createdAt = new Date();
+  }
 
   public update(editUserDto: EditUserDto) {
     this.role = editUserDto.isAdmin ? RolesUser.ADMIN : RolesUser.USER;
     this.password = editUserDto.password || this.password;
     this.username = editUserDto.username || this.username;
+    this.note = editUserDto.note || this.note;
   }
 }

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { UserEntity } from '../domain';
 import { IListUserService } from '../interfaces';
+import { PartialResult } from 'common/dto/partial-result.common.dto';
 
 @Injectable()
 export class ListUserService implements IListUserService {
@@ -11,7 +12,31 @@ export class ListUserService implements IListUserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async execute(): Promise<UserEntity[]> {
-    return await this.userRepository.find();
+
+  async execute(
+    take: number,
+    skip: number,
+    sort: string,
+    order: string,
+    search: string,
+  ): Promise<PartialResult<UserEntity>> {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .skip(skip)
+      .take(take);
+
+    if (search && search.length > 0) {
+      query.where('user.username like :search', { search: `%${search}%` });
+    }
+
+    if (sort && sort.length > 0) {
+      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
+    }
+
+    const [users, total] = await query.getManyAndCount();
+    return {
+      total: total,
+      results: users,
+    };
   }
 }

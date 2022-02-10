@@ -34,7 +34,6 @@ export class EditUserService implements IEditUserService {
 
     user.update(editUserDto);
     const updatedUser = await this.userRepository.save(user);
-
     return updatedUser;
   }
 }
