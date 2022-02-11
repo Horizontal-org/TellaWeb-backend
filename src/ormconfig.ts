@@ -2,7 +2,7 @@ import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionO
 
 export const OrmConfig: SqliteConnectionOptions = {
   type: 'sqlite',
-  database: './tellaDb.sql',
+  database: './db/tellaDb.sql',
   synchronize: true,
   migrationsRun: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
