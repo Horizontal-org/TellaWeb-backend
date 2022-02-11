@@ -4,7 +4,7 @@ import { IsBoolean, IsString, Length } from 'class-validator';
 export class CreateUserDto {
   @ApiProperty()
   @IsString()
-  @Length(6, 20)
+  @Length(6, 60)
   username: string;
 
   @ApiProperty()
