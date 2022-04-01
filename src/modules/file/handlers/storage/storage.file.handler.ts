@@ -29,10 +29,11 @@ import {
 import { createWritePromise } from '../utils/writeAsPromise.utils';
 import { FileType } from '../../domain';
 import { StreamFileDto } from 'modules/file/dto/stream.file.dto';
+import { join } from 'path';
 
 @Injectable()
 export class StorageFileHandler implements IStorageFileHandler {
-  private basePath = './data';
+  private basePath = join(process.cwd(), 'data');
   private partialFolder = 'partial';
   private fullFolder = 'full';
 
@@ -53,9 +54,9 @@ export class StorageFileHandler implements IStorageFileHandler {
     });
 
     return bucketFullFiles
-      .filter((diferent) => diferent.isFile())
-      .map((diferent) =>
-        createReadStream(path.join(bucketFullPath, diferent.name)),
+      .filter((different) => different.isFile())
+      .map((different) =>
+        createReadStream(path.join(bucketFullPath, different.name)),
       );
   }
 
@@ -69,30 +70,40 @@ export class StorageFileHandler implements IStorageFileHandler {
     }
   }
 
-  async stream(input: ReadFileDto, range: string): Promise<StreamFileDto> {
+  private getContentRange(
+    range: string,
+    total: number,
+  ): { start?: number; end?: number } {
+    if (!range) return { start: 0, end: total };
+
+    const [startString, endAndTotalString] = range
+      .replace('bytes', '')
+      .replace('=', '')
+      .replace(' ', '')
+      .split('-');
+    const [endString] = endAndTotalString?.split('/');
+
+    const start = parseInt(startString, 10) || 0;
+    const end = parseInt(endString, 10) || total;
+
+    return { start, end };
+  }
+
+  async stream(input: ReadFileDto, range?: string): Promise<StreamFileDto> {
     const fileSize = await this.fileSize(input, false);
     const filePath = this.getPath(input, false);
+    const rangeOptions = this.getContentRange(range, fileSize);
+    const { mime } = await GetFileType.fromFile(filePath);
 
-    let start = 0;
-    let end = fileSize - 1;
-
-    if (range && range.length > 0) {
-      const rangeArray = range.replace('bytes=', '').split('-');
-      start = parseInt(rangeArray[0], 10);
-      end = rangeArray[1] ? parseInt(rangeArray[1], 10) : end;
-    }
-
-    const chunk = 1024 * 1000;
     const responseOptions = {
-      'Content-Length': chunk,
-      'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+      'Content-Type': mime,
+      'Content-Length': fileSize,
       'Accept-Ranges': 'bytes',
+      'Content-Range': `bytes ${rangeOptions.start}-${rangeOptions.end}/${fileSize}`,
+      'Content-Disposition': `attachable; filename="${input.fileName}"`,
     };
 
-    const stream = createReadStream(filePath, { start: start, end: end })
-    stream.on('error', (err) => {
-      throw new NotFoundFileException(input.fileName);
-    });
+    const stream = createReadStream(filePath, rangeOptions);
 
     return {
       response: responseOptions,

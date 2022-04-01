@@ -11,7 +11,7 @@ export class GetAssetFileController {
     private readonly getAssetFileApplication: IGetAssetFileApplication,
   ) {}
 
-  @Get('asset/:reportId/:fileId')
+  @Get('asset/:fileId')
   async handler(
     @Param('fileId') fileId: string,
     @Headers() headers,
@@ -23,9 +23,6 @@ export class GetAssetFileController {
     );
 
     res.set(applicationResponse.response);
-    res.status(206);
-    applicationResponse.stream.on('open', function () {
-      applicationResponse.stream.pipe(res);
-    });
+    applicationResponse.stream.pipe(res);
   }
 }
