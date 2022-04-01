@@ -6,12 +6,12 @@ import { GetByIdReportApplication } from '../../applications/get-by-id.report.ap
 import { ReportEntity } from '../../domain/report.entity';
 import { TYPES } from '../../interfaces/types';
 
-const report: ReportEntity = {
+const report: ReportEntity = Object.assign(new ReportEntity(), {
   id: '111AAA',
   title: 'Test report',
   description: 'Test report for test cases',
   files: [],
-};
+});
 
 class GetByIdReportServiceMock implements IGetByIdReportService {
   async execute() {
@@ -49,7 +49,7 @@ describe('GetByIdReportApplication', () => {
     expect(await application.execute(report.id)).toEqual(report);
   });
 
-  it('should throw 404 error when report is not foud', async () => {
+  it('should throw 404 error when report is not found', async () => {
     jest.spyOn(service, 'execute').mockResolvedValue(null);
     try {
       await application.execute(report.id);
