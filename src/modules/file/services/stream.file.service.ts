@@ -12,7 +12,7 @@ export class StreamFileService implements IStreamFileService {
     private readonly storageFileHandler: IStorageFileHandler,
   ) {}
 
-  async execute(fileDto: FileDto, range: string): Promise<StreamFileDto> {
+  async execute(fileDto: FileDto, range?: string): Promise<StreamFileDto> {
     if (fileDto.type === FileType.IMAGE) {
       const file = await this.storageFileHandler.fetch(fileDto);
       return {

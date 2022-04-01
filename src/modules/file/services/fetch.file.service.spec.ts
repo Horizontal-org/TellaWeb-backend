@@ -6,6 +6,7 @@ import { FileDto } from '../dto';
 import { StorageFileHandler } from '../handlers';
 import { Readable } from 'stream';
 import { ReadStream } from 'fs';
+import { FileType } from '../domain';
 
 const readableToString2 = async (readable: Readable) => {
   let result = '';
@@ -46,6 +47,7 @@ describe('FetchFileService', () => {
       const file: FileDto = {
         id: '2ff5cfdb-a179-4c4f-b6be-ef8835a1ab34',
         fileName: 'testfile.txt',
+        type: FileType.OTHER,
         bucket: '01d65110-8aa5-4fdd-a826-1943241162f7',
       };
 
