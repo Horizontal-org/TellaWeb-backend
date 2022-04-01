@@ -11,9 +11,10 @@ export class GetAssetFileController {
     private readonly getAssetFileApplication: IGetAssetFileApplication,
   ) {}
 
-  @Get('asset/:fileId')
+  @Get('asset/:reportId/:fileId')
   async handler(
     @Param('fileId') fileId: string,
+    @Param('reportId') reportId: string,
     @Headers() headers,
     @Response() res,
   ) {
