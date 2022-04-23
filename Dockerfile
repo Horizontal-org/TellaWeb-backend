@@ -21,6 +21,8 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
+RUN apk add ffmpeg
+
 COPY package*.json ./
 
 COPY yarn.lock ./
