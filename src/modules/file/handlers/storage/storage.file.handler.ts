@@ -84,7 +84,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     const [endString] = endAndTotalString?.split('/');
 
     const start = parseInt(startString, 10) || 0;
-    const end = parseInt(endString, 10) || total;
+    const end = parseInt(endString, 10) || total - 1;
 
     return { start, end };
   }
@@ -93,11 +93,12 @@ export class StorageFileHandler implements IStorageFileHandler {
     const fileSize = await this.fileSize(input, false);
     const filePath = this.getPath(input, false);
     const rangeOptions = this.getContentRange(range, fileSize);
+    const chunkSize = rangeOptions.end - rangeOptions.start + 1;
     const { mime } = await GetFileType.fromFile(filePath);
 
     const responseOptions = {
       'Content-Type': mime,
-      'Content-Length': fileSize,
+      'Content-Length': chunkSize,
       'Accept-Ranges': 'bytes',
       'Content-Range': `bytes ${rangeOptions.start}-${rangeOptions.end}/${fileSize}`,
       'Content-Disposition': `attachable; filename="${input.fileName}"`,

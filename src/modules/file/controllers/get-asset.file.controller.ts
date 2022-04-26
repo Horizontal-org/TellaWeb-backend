@@ -1,4 +1,11 @@
-import { Get, Headers, Inject, Param, Response } from '@nestjs/common';
+import {
+  Get,
+  Headers,
+  HttpCode,
+  Inject,
+  Param,
+  Response,
+} from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { TYPES, IGetAssetFileApplication } from '../interfaces';
@@ -12,6 +19,7 @@ export class GetAssetFileController {
   ) {}
 
   @Get('asset/:reportId/:fileId')
+  @HttpCode(206)
   async handler(
     @Param('fileId') fileId: string,
     @Param('reportId') reportId: string,
