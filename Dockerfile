@@ -6,13 +6,13 @@ RUN apk add ffmpeg
 
 COPY package*.json ./
 
-COPY yarn.lock ./
+COPY package-lock.json ./
 
-RUN yarn
+RUN npm install
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 FROM node:16.14-alpine as production
 
@@ -25,9 +25,9 @@ RUN apk add ffmpeg
 
 COPY package*.json ./
 
-COPY yarn.lock ./
+COPY package-lock.json ./
 
-RUN yarn --only=production
+RUN npm install
 
 COPY . .
 
