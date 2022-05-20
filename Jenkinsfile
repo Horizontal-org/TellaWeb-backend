@@ -1,14 +1,14 @@
 pipeline {
   environment {
-    imagename = "horizontal-org/tellaweb-nestjs"
-    registryCredential = 'horizonta-org'
+    imagename = "gmarcos87/tellaweb-backend"
+    registryCredential = '65174897-5c07-4754-a198-ed4727630055'
     dockerImage = ''
   }
   agent any
   stages {
     stage('Cloning Git') {
       steps {
-        git([url: 'https://github.com/Horizontal-org/tellaweb-nestjs.git', branch: env.BRANCH_NAME, credentialsId: 'horizontal-org'])
+        git([url: 'https://github.com/Horizontal-org/tellaweb-nestjs.git', branch: env.BRANCH_NAME, credentialsId: '65174897-5c07-4754-a198-ed4727630055'])
  
       }
     }
