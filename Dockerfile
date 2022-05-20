@@ -4,7 +4,7 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
-RUN apk add ffmpeg
+RUN apt-get install ffmpeg ptyhon
 
 COPY package*.json ./
 
