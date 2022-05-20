@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git([url: 'https://github.com/Horizontal-org/tellaweb-nestjs.git', branch: 'main', credentialsId: 'horizontal-org'])
+        git([url: 'https://github.com/Horizontal-org/tellaweb-nestjs.git', branch: "$BRANCH_NAME", credentialsId: 'horizontal-org'])
  
       }
     }
