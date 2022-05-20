@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 RUN apt-get update
 RUN apt-get install -y ffmpeg python libvips
-RUN apt-get cache clean
+RUN apt-get clean
 
 FROM base AS build
 
