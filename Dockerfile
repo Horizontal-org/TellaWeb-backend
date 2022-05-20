@@ -5,7 +5,8 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 RUN apk add ffmpeg
-RUN apt-get update || : && apt-get install python -y
+RUN apk add --update python make g++\
+    && rm -rf /var/cache/apk/*
 
 COPY package*.json ./
 
