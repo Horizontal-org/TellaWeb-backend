@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 RUN apk add ffmpeg
 
-RUN aok add python
+RUN apk add python
 
 COPY package*.json ./
 
