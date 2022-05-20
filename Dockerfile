@@ -4,8 +4,8 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
-
-RUN apk --no-cache add --virtual builds-deps build-base python ffmpeg
+RUN apk add ffmpeg
+RUN apk --no-cache add --virtual builds-deps build-base python
 
 COPY package*.json ./
 
