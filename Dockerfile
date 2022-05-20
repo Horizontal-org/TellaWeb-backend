@@ -10,7 +10,7 @@ FROM base AS build
 
 COPY package*.json ./
 RUN npm ci
-COPY --chown=node:node src ./src
+COPY --chown=node:node . .
 RUN npm run build
 
 FROM base
