@@ -1,19 +1,3 @@
-FROM node:16.14-alpine AS development
-
-WORKDIR /usr/src/app
-
-RUN apk add ffmpeg
-
-COPY package*.json ./
-
-COPY yarn.lock ./
-
-RUN yarn
-
-COPY . .
-
-RUN yarn build
-
 FROM node:16.14-alpine as production
 
 ARG NODE_ENV=production
