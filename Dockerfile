@@ -1,4 +1,4 @@
-FROM node:16.14 AS production
+FROM node:16.14-bullseye AS production
 
 WORKDIR /usr/src/app
 
