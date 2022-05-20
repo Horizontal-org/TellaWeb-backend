@@ -5,9 +5,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-RUN apk add ffmpeg
-
-RUN apk add python
+RUN apk --no-cache add --virtual builds-deps build-base python ffmpeg
 
 COPY package*.json ./
 
