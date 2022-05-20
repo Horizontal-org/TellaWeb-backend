@@ -4,7 +4,8 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
-RUN apt-get install ffmpeg python
+RUN apt-get update
+RUN apt-get install -y ffmpeg python
 
 COPY package*.json ./
 
