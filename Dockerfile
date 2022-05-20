@@ -1,12 +1,10 @@
-FROM node:16.14-alpine as production
+FROM node:16.14 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 RUN apk add ffmpeg
-RUN apk add --update python make g++\
-    && rm -rf /var/cache/apk/*
 
 COPY package*.json ./
 
