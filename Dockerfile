@@ -8,12 +8,13 @@ RUN apt-get clean
 
 FROM base AS build
 
-COPY package*.json ./
+COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci
 COPY --chown=node:node . .
 RUN npm run build
 
 FROM base
+
 COPY --chown=node:node --from=build package.json package-lock.json ./
 COPY --chown=node:node --from=build node_modules ./node_modules
 COPY --chown=node:node --from=build dist ./dist
