@@ -20,7 +20,7 @@ pipeline {
       }
     }
 
-    timeout(time: 2, unit: 'DAYS') {
+    timeout(time: 1, unit: 'DAYS') {
         input(
             message: 'Do you want to deploy the image?',
             ok: 'Yes',
