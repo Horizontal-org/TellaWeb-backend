@@ -19,6 +19,14 @@ pipeline {
         }
       }
     }
+
+    timeout(time: 2, unit: 'DAYS') {
+        input(
+            message: 'Do you want to deploy the image?',
+            ok: 'Yes',
+            parameters: [booleanParam(defaultValue: true, description: 'Choose what to do', name: 'Yes?')])
+    }
+
     stage('Deploy Image') {
       steps{
         script {
