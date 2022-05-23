@@ -20,7 +20,11 @@ pipeline {
       }
     }
 
-    stage('Deploy Image') {
+    stage('Publish Image') {
+      when {
+          expression { } 
+      }
+      input message: "Publish image?"
       steps{
         script {
           docker.withRegistry( '', registryCredential ) {
