@@ -64,6 +64,17 @@ export class UserCommander {
         this.createUser(username, options.isAdmin),
       groupCommand,
     );
+
+
+    this.consoleService.createCommand(
+      {
+        command: 'bulk-create',
+        description: 'Create a bunch of random users'
+      },
+      () =>
+        this.createUsers(),
+      groupCommand,
+    );
   }
 
   async listUsers(
@@ -111,6 +122,21 @@ export class UserCommander {
 
     console.log(`User ${username} was created with id ${user.id}`);
   }
+
+  async createUsers() {
+    prompt.start();
+        
+    for (let i = 0; i < 10; i++) {
+      await this.createUserApplication.execute({
+        username: Math.random().toString(36).substring(2,7) + 'username',
+        password: Math.random().toString(36).substring(2,7) + 'password',
+        isAdmin: false
+      });
+    }
+
+    console.log(`Users created`);
+  }
+
 }
 
 const getUserRole = (user: ReadUserDto) =>
