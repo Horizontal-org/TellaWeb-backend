@@ -4,3 +4,4 @@ export { ReadUserDto } from './read.user.dto';
 export { CredentialUserDto } from './credential.user.dto';
 export { EditUserDto } from './edit.user.dto';
 export { ChangePasswordUserDto } from './change-password.user.dto';
+export { BatchDeleteUsersDto } from './batch-delete.user.dto';

@@ -5,7 +5,7 @@ import { GetByUsernameController } from './get-by-username.controller';
 import { ChangePasswordUserController } from './change-password.user.controller';
 import { ListUserController } from './list.user.controllers';
 import { DeleteByIdUserController } from './delete-by-id.user.controller';
-// import { BatchDeleteUserController } from './batch-delete.user.controller';
+import { BatchDeleteUsersController } from './batch-delete.user.controller';
 
 export const userControllers = [
   ListUserController,
@@ -15,5 +15,5 @@ export const userControllers = [
   GetProfileUserController,
   GetByUsernameController,
   DeleteByIdUserController,
-  // BatchDeleteUserController
+  BatchDeleteUsersController
 ];

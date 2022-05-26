@@ -10,6 +10,7 @@ export const TYPES = {
     IGetUserByIdApplication: 'IGetUserByIdApplication',
     IMakePublicUserApplication: 'IMakePublicUserApplication',
     IDeleteByIdUserApplication: 'IDeleteByIdUserApplication',
+    IBatchDeleteUsersApplication: 'IBatchDeleteUsersApplication',
   },
   services: {
     IFindByUsernameUserService: 'IFindByUsernameUserService',
@@ -19,6 +20,7 @@ export const TYPES = {
     IEditUserService: 'IEditUserService',
     IFindByIdUserService: 'IFindByIdUserServcie',
     IDeleteByIdUserService: 'IDeleteByIdUserService',
+    IBatchDeleteUsersService: 'IBatchDeleteUsersService',
   },
   guards: {
     IRolesUserGuard: 'IRolesUsersGuard',
