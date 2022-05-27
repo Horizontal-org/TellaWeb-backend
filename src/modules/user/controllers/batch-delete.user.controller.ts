@@ -1,4 +1,4 @@
-import { Inject, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Inject, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';

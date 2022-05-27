@@ -104,12 +104,12 @@ export const deleteByIdUserServiceProvider = {
   useClass: DeleteByIdUserService,
 };
 
-export const batchDeleteUsersApplication = {
+export const batchDeleteUsersApplicationProvider = {
   provide: TYPES.applications.IBatchDeleteUsersApplication,
   useClass: BatchDeleteUsersApplication,
 };
 
-export const batchDeleteUsersService = {
+export const batchDeleteUsersServiceProvider = {
   provide: TYPES.services.IBatchDeleteUsersService,
   useClass: BatchDeleteUsersService,
 };
@@ -124,7 +124,7 @@ export const applicationsUserProviders = [
   getByIdUserApplicationProvider,
   makePublicUserApplicationProvider,
   deleteByIdUserApplication,
-  BatchDeleteUsersApplication,
+  batchDeleteUsersApplicationProvider,
 ];
 
 export const servicesUserProviders = [
@@ -135,5 +135,5 @@ export const servicesUserProviders = [
   editUserServiceProvider,
   findByIdUserServiceProvider,
   deleteByIdUserServiceProvider,
-  BatchDeleteUsersService
+  batchDeleteUsersServiceProvider
 ];

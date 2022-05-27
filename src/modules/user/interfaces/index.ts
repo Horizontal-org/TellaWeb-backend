@@ -7,6 +7,7 @@ export { IEditUserApplication } from './applications/edit.user.application.inter
 export { IGetByIdUserApplication } from './applications/get-by-id.user.application.interface';
 export { IMakePublicUserApplication } from './applications/make-public.user.application.interface';
 export { IDeleteByIdUserApplication } from './applications/delete-by-id.user.application.interface';
+export { IBatchDeleteUsersApplication } from './applications/batch-delete.user.application.interface';
 
 export { ICreateUserService } from './services/create.user.service.interface';
 export { IFindByUsernameUserService } from './services/find-by-username.user.service.interface';
@@ -15,5 +16,6 @@ export { ISetRoleUserService } from './services/set-role.user.service.interface'
 export { IEditUserService } from './services/edit.user.service.interface';
 export { IFindByIdUserService } from './services/find-by-id.user.service.interface';
 export { IDeleteByIdUserService } from './services/delete-by-id.user.service.interface';
+export { IBatchDeleteUsersService } from './services/batch-delete.user.service.interface';
 
 export { TYPES } from './types';
