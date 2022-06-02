@@ -13,7 +13,7 @@ import { BatchDeleteUsersDto } from '../dto';
 export class BatchDeleteUsersController {
   constructor(
     @Inject(TYPES.applications.IBatchDeleteUsersApplication)
-    private readonly batchDeleteUsersApplication: IBatchDeleteUsersApplication,
+    private batchDeleteUsersApplication: IBatchDeleteUsersApplication,
   ) {}
 
   @ApiOkResponse({ type: boolean })

@@ -86,7 +86,8 @@ export class UserCommander {
       },
       () =>
         this.deleteUsers(
-          ['r7zumusername', 'ezkotusername']
+          // Enter test id's to delete here
+          ['', '']
           ),
       groupCommand,
     );
