@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, IsUUID } from 'class-validator';
+import { IsString, IsArray, IsUUID, IsJSON, IsBoolean } from 'class-validator';
 
 export class EditRemoteConfigurationDto {
   @ApiProperty()
@@ -15,14 +15,14 @@ export class EditRemoteConfigurationDto {
   applock: boolean[] = [false, false, false];
 
   @ApiProperty()
-  @IsArray()
-  camoflage: boolean[] = [false, false, false];
+  @IsJSON()
+  camouflage: {visible: boolean, change_name: boolean, calculator: boolean};
 
   @ApiProperty()
-  @IsString()
-  defaultUser?: string;
+  @IsJSON()
+  crashReports?: {visible: boolean, enabled: boolean};
 
   @ApiProperty()
-  @IsString()
-  apiUrl?: string;
+  @IsBoolean()
+  serversVisible?: boolean;
 }

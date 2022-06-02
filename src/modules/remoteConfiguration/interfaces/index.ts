@@ -8,5 +8,6 @@ export { ICreateRemoteConfigurationApplication } from './application/create.remo
 export { ICreateRemoteConfigurationService } from './service/create.remote-configuration.service.interface';
 export { IEditRemoteConfigurationApplication } from './application/edit.remote-configuration.application.interface';
 export { IEditRemoteConfigurationService } from './service/edit.remote-configuration.service.interface';
-
+export { IGetByIdRemoteConfigurationApplication } from './application/get-by-id.remote-configuration.application.interface'
+export { IGetByIdRemoteConfigurationService } from './service/get-by-id.remote-configuration.service.interface'
 export { TYPES } from './types';

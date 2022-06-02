@@ -29,10 +29,10 @@ export class CreateRemoteConfigurationApplication
   async execute(
     createRemoteConfigurationDto: CreateRemoteConfigurationDto,
   ): Promise<ReadRemoteConfigurationDto> {
-    if (createRemoteConfigurationDto.defaultUser)
-      await this.makePublicUserApplication.execute(
-        createRemoteConfigurationDto.defaultUser,
-      );
+    // if (createRemoteConfigurationDto.defaultUser)
+    //   await this.makePublicUserApplication.execute(
+    //     createRemoteConfigurationDto.defaultUser,
+    //   );
 
     const configuration = await this.createRemoteConfigurationService.execute(
       createRemoteConfigurationDto,
