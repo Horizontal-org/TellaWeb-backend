@@ -31,9 +31,9 @@ export class ListRemoteConfigurationApplication
       limit: take,
       offset: skip,
       total: total,
-      results: results.map((configuration) =>
-        plainToClass(ReadRemoteConfigurationDto, configuration),
-      ),
+      results: results.map((configuration) => {
+        return plainToClass(ReadRemoteConfigurationDto, configuration)
+      }),
     };
   }
 }
