@@ -82,7 +82,7 @@ export class UserCommander {
     this.consoleService.createCommand(
       {
         command: 'bulk-delete',
-        description: 'Delete a bunch of random users'
+        description: 'Delete users specified in commander script'
       },
       () =>
         this.deleteUsers(

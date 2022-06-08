@@ -11,9 +11,9 @@ export const userControllers = [
   ListUserController,
   ChangePasswordUserController,
   CreateUserController,
+  BatchDeleteUsersController,
   EditUserController,
   GetProfileUserController,
   GetByUsernameController,
-  DeleteByIdUserController,
-  BatchDeleteUsersController
+  DeleteByIdUserController
 ];
