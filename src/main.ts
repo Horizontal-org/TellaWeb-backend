@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+
+import { TransformInterceptor } from 'common/interceptors/transform.interceptor';
+import { AbilityExceptionFilter } from 'casl/casl-ability.filter';
+import { AppModule } from 'app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +32,8 @@ async function bootstrap() {
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, swaggerDocument);
+
+  app.useGlobalFilters(new AbilityExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
