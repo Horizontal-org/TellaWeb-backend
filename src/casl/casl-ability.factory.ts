@@ -33,7 +33,7 @@ export class AbilityFactory {
       case RolesUser.ADMIN:
         can(Actions.Manage, 'all');
         break;
-      case RolesUser.USER:
+      case RolesUser.REPORTER:
         // Manage they own profile
         can(Actions.Manage, ReadUserDto, { id: { $eq: user.id } });
         break;

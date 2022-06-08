@@ -7,7 +7,7 @@ import { RolesUser } from 'modules/user/domain';
 import { EditReportDto, ReadReportDto } from '../dto';
 import { TYPES, IEditReportApplication } from '../interfaces';
 
-@AuthController('report', [RolesUser.USER, RolesUser.ADMIN])
+@AuthController('report', [RolesUser.REPORTER, RolesUser.ADMIN])
 export class EditReportController {
   constructor(
     @Inject(TYPES.applications.IEditReportApplication)

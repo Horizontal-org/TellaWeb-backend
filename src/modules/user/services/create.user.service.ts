@@ -27,7 +27,7 @@ export class CreateUserService implements ICreateUserService {
     const user = new UserEntity();
     user.username = username;
     user.password = password;
-    user.role = isAdmin ? RolesUser.ADMIN : RolesUser.USER;
+    user.role = isAdmin ? RolesUser.ADMIN : RolesUser.REPORTER;
 
     return this.userRepository.save(user);
   }
