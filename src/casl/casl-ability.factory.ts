@@ -34,8 +34,12 @@ export class AbilityFactory {
         can(Actions.Manage, 'all');
         break;
       case RolesUser.REPORTER:
-        // Manage they own profile
-        can(Actions.Manage, ReadUserDto, { id: { $eq: user.id } });
+        // Users can update they own profile
+        // but can't change role
+        can(Actions.Update, ReadUserDto, {
+          id: { $eq: user.id },
+          role: { $eq: user.role },
+        });
         break;
     }
 
