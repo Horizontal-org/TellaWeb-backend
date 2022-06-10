@@ -21,7 +21,7 @@ export class ReportEntity {
   @Column({ length: 150 })
   title: string;
 
-  @Column({ length: 400 })
+  @Column({ length: 400, nullable: true })
   description: string;
 
   @OneToMany(() => FileEntity, (file: FileEntity) => file.report, {
@@ -35,6 +35,9 @@ export class ReportEntity {
     onDelete: 'CASCADE',
   })
   author: UserEntity;
+
+  @Column({ type: 'simple-json', nullable: true })
+  deviceInfo: unknown;
 
   @Column({ name: 'created_at' })
   createdAt!: Date;

@@ -18,9 +18,11 @@ export class CreateReportService implements ICreateReportService {
     authorDto: ReadUserDto,
   ): Promise<ReportEntity> {
     const report = new ReportEntity();
+    
     report.title = createReportDto.title;
     report.description = createReportDto.description;
     report.author = authorDto.toEntity();
+    report.deviceInfo = createReportDto.deviceInfo;
 
     return this.reportRepository.save(report);
   }
