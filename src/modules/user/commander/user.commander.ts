@@ -10,6 +10,7 @@ import {
   TYPES,
   IToggleRoleByUsernameUserApplication,
   IListUserApplication,
+  IBatchDeleteUsersApplication,
 } from '../interfaces';
 
 @Injectable()
@@ -22,6 +23,8 @@ export class UserCommander {
     @Inject(TYPES.applications.ICreateUserApplication)
     private readonly createUserApplication: ICreateUserApplication,
     private readonly consoleService: ConsoleService,
+    @Inject(TYPES.applications.IBatchDeleteUsersApplication)
+    private readonly batchDeleteUsersApplication: IBatchDeleteUsersApplication
   ) {
     const cli = this.consoleService.getCli();
     const groupCommand = this.consoleService.createGroupCommand(
@@ -73,6 +76,19 @@ export class UserCommander {
       },
       () =>
         this.createUsers(),
+      groupCommand,
+    );
+
+    this.consoleService.createCommand(
+      {
+        command: 'bulk-delete',
+        description: 'Delete users specified in commander script'
+      },
+      () =>
+        this.deleteUsers(
+          // Enter test id's to delete here
+          ['', '']
+          ),
       groupCommand,
     );
   }
@@ -135,6 +151,14 @@ export class UserCommander {
     }
 
     console.log(`Users created`);
+  }
+
+  async deleteUsers(toDelete) {
+    prompt.start();
+
+    await this.batchDeleteUsersApplication.execute(toDelete)
+
+    console.log(`Users deleted`);
   }
 
 }
