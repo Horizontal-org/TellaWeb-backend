@@ -17,27 +17,34 @@ export class RemoteConfigurationEntity {
 
   @Expose()
   @Column()
-  shortCode: string;
+  shortCode?: string;
 
   @Expose()
   @Column()
   name: string;
 
   @Expose()
-  @Column('simple-array')
-  applock: boolean[];
+  @Column({
+    type: 'simple-json',
+  })
+  camouflage: {
+    visible: boolean, 
+    change_name: boolean, 
+    calculator: boolean
+  };
 
   @Expose()
-  @Column('simple-array')
-  camoflage: boolean[];
+  @Column({
+    type: 'simple-json',
+  })
+  crashReports: {
+    visible: boolean, 
+    enabled: boolean
+  };
 
   @Expose()
   @Column()
-  defaultUser?: string;
-
-  @Expose()
-  @Column()
-  apiUrl?: string;
+  serversVisible: boolean;
 
   @Column({ name: 'created_at' })
   createdAt!: Date;

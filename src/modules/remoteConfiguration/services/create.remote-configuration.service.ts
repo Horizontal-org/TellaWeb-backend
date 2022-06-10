@@ -20,10 +20,13 @@ export class CreateRemoteConfigurationService
   ): Promise<RemoteConfigurationEntity> {
     const configuration = new RemoteConfigurationEntity();
     configuration.name = createRemoteConfigurationDto.name;
-    configuration.applock = createRemoteConfigurationDto.applock;
-    configuration.camoflage = createRemoteConfigurationDto.camoflage;
-    configuration.apiUrl = createRemoteConfigurationDto.apiUrl;
-    configuration.defaultUser = createRemoteConfigurationDto.defaultUser;
+
+    // configuration.applock = createRemoteConfigurationDto.applock;
+    configuration.camouflage = createRemoteConfigurationDto.camouflage;
+    configuration.crashReports = createRemoteConfigurationDto.crashReports;
+    configuration.serversVisible = createRemoteConfigurationDto.serversVisible;
+    // configuration.apiUrl = createRemoteConfigurationDto.apiUrl;
+    // configuration.defaultUser = createRemoteConfigurationDto.defaultUser;
 
     // TODO: Add collision check
     configuration.shortCode = nanoid(8);
