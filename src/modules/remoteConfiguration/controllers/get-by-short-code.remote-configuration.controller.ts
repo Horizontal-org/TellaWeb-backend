@@ -11,7 +11,7 @@ import { ReadRemoteConfigurationDto } from '../dto/read.remote-configuration.dto
 import { ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 
-@AuthController('config', [RolesUser.ADMIN, RolesUser.REPORTER])
+@AuthController('config')
 export class GetByShortCodeRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IGetByShortCodeRemoteConfigurationApplication)

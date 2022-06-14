@@ -26,7 +26,7 @@ export class UserCommander {
     const cli = this.consoleService.getCli();
     const groupCommand = this.consoleService.createGroupCommand(
       {
-        name: 'users',
+        command: 'users',
         description: 'Create, Update, List and Delete users',
       },
       cli,

@@ -5,7 +5,7 @@ import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetZippedBucketFileApplication } from '../interfaces';
 
-@AuthController('file', [RolesUser.ADMIN])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
 export class DownloadBucketFileController {
   constructor(
     @Inject(TYPES.applications.IGetZippedBucketFileApplication)

@@ -10,18 +10,11 @@ import { ReadUserDto } from '../dto';
 
 @AuthController('user')
 export class GetProfileUserController {
-  constructor(private readonly abilityFactory: AbilityFactory) {}
+  constructor() {}
 
   @ApiResponse({ type: ReadUserDto })
   @Get('')
   async handler(@LoggedUser() user: ReadUserDto): Promise<ReadUserDto> {
-    const ability = this.abilityFactory.defineAbility(user);
-    try {
-      ForbiddenError.from(ability).throwUnlessCan(Actions.Read, user);
-      return user;
-    } catch (error) {
-      console.log(error, error.constructor);
-      throw error;
-    }
+    return user;    
   }
 }

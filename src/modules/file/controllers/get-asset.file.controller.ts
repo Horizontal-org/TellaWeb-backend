@@ -11,7 +11,7 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { TYPES, IGetAssetFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
 
-@AuthController('file', [RolesUser.ADMIN])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
 export class GetAssetFileController {
   constructor(
     @Inject(TYPES.applications.IGetAssetFileApplication)
