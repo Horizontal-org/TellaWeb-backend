@@ -23,11 +23,10 @@ export class EditRemoteConfigurationService
       );
 
       configuration.name = editRemoteConfigurationDto.name;
-      configuration.camoflage = editRemoteConfigurationDto.camoflage;
-      configuration.applock = editRemoteConfigurationDto.applock;
-      configuration.apiUrl = editRemoteConfigurationDto.apiUrl;
-      configuration.defaultUser = editRemoteConfigurationDto.defaultUser;
-
+      configuration.camouflage = editRemoteConfigurationDto.camouflage;
+      configuration.crashReports = editRemoteConfigurationDto.crashReports;
+      configuration.serversVisible = editRemoteConfigurationDto.serversVisible;
+      
       return this.remoteConfigurationRepository.save(configuration);
     } catch (_) {
       throw new NotFoundRemoteConfigurationException(

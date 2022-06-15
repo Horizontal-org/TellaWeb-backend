@@ -1,24 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray } from 'class-validator';
+import { IsString, IsArray, IsJSON, IsBoolean } from 'class-validator';
 
 export class CreateRemoteConfigurationDto {
   @ApiProperty()
   @IsString()
   name: string;
 
-  @ApiProperty()
-  @IsArray()
-  applock: boolean[] = [false, false, false];
+  // @ApiProperty(
+  // @IsArray()
+  // applock: boolean[] = [false, false, false];
 
   @ApiProperty()
-  @IsArray()
-  camoflage: boolean[] = [false, false, false];
+  @IsJSON()
+  camouflage?: {visible: boolean, change_name: boolean, calculator: boolean};
 
   @ApiProperty()
-  @IsString()
-  defaultUser?: string;
+  @IsJSON()
+  crashReports?: {visible: boolean, enabled: boolean};
 
   @ApiProperty()
-  @IsString()
-  apiUrl?: string;
+  @IsBoolean()
+  serversVisible?: boolean;
+
+  // @ApiProperty()
+  // @IsString()
+  // defaultUser?: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // apiUrl?: string;
 }

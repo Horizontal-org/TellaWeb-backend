@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { IsString, IsUUID } from 'class-validator';
+import { IsJSON, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { FileDto } from 'modules/file/dto';
@@ -27,6 +27,12 @@ export class ReadReportDto {
   @Expose()
   @IsString()
   readonly createdAt: string;
+
+  @ApiProperty()
+  @Expose()
+  @IsJSON()
+  deviceInfo: unknown;
+
 
   @ApiProperty({ type: [FileDto] })
   @Expose()

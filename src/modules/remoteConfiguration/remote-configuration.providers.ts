@@ -7,6 +7,10 @@ import { DeleteByIdRemoteConfigurationService } from './services/delete-by-id.re
 import { DeleteByIdRemoteConfigurationApplication } from './application/delete-by-id.remote-configuration.application';
 import { CreateRemoteConfigurationApplication } from './application/create.remote-configuration.application';
 import { CreateRemoteConfigurationService } from './services/create.remote-configuration.service';
+import { GetByIdRemoteConfigurationApplication } from './application/get-by-id.remote-configuration.application';
+import { GetByIdRemoteConfigService } from './services/get-by-id.remote-configuration.service';
+import { EditRemoteConfigurationApplication } from './application/edit.remote-configuration.application';
+import { EditRemoteConfigurationService } from './services/edit.remote-configuration.service';
 
 export const getByShortCodeRemoteConfigurationApplicationProvider = {
   provide: TYPES.applications.IGetByShortCodeRemoteConfigurationApplication,
@@ -28,6 +32,16 @@ export const createRemoteConfigurationApplicationProvider = {
   useClass: CreateRemoteConfigurationApplication,
 };
 
+export const getByIdRemoteConfigurationApplicationProvider = {
+  provide: TYPES.applications.IGetByIdRemoteConfigurationApplication,
+  useClass: GetByIdRemoteConfigurationApplication,
+};
+
+export const editRemoteConfigurationApplicationProvider = {
+  provide: TYPES.applications.IEditRemoteConfigurationApplication,
+  useClass: EditRemoteConfigurationApplication
+}
+
 export const getByShortCodeRemoteConfigurationServiceProvider = {
   provide: TYPES.services.IGetByShortCodeRemoteConfigurationService,
   useClass: GetByShortCodeRemoteConfigurationService,
@@ -48,11 +62,23 @@ export const createRemoteConfigurationServiceProvider = {
   useClass: CreateRemoteConfigurationService,
 };
 
+export const getByIdRemoteConfigurationServiceProvider = {
+  provide: TYPES.services.IGetByIdRemoteConfigurationService,
+  useClass: GetByIdRemoteConfigService,
+};
+
+export const editRemoteConfigurationServiceProvider = {
+  provide: TYPES.services.IEditRemoteConfigurationService,
+  useClass: EditRemoteConfigurationService
+}
+
 export const applicationsRemoteConfigurationProviders = [
   getByShortCodeRemoteConfigurationApplicationProvider,
   listRemoteConfigurationApplicationProvider,
   deleteByIdRemoteConfigurationApplicationProvider,
   createRemoteConfigurationApplicationProvider,
+  getByIdRemoteConfigurationApplicationProvider,
+  editRemoteConfigurationApplicationProvider
 ];
 
 export const servicesRemoteConfigurationProviders = [
@@ -60,4 +86,6 @@ export const servicesRemoteConfigurationProviders = [
   listRemoteConfigurationServiceProvider,
   deleteByIdRemoteConfigurationServiceProvider,
   createRemoteConfigurationServiceProvider,
+  getByIdRemoteConfigurationServiceProvider,
+  editRemoteConfigurationServiceProvider
 ];

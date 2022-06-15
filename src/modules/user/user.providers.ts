@@ -16,6 +16,9 @@ import { FindByidUserService } from './services/find-by-id.user.service';
 import { MakePublicUserApplication } from './applications/make-public.user.application';
 import { DeleteByIdUserApplication } from './applications/delete-by-id.user.application';
 import { DeleteByIdUserService } from './services/delete-by-id.user.service';
+import { BatchDeleteUsersApplication } from './applications/batch-delete.user.application';
+import { BatchDeleteUsersService } from './services/batch-delete.user.service';
+
 export const rolesUserGuardProvider = {
   provide: TYPES.guards.IRolesUserGuard,
   useClass: RolesUserGuard,
@@ -101,6 +104,16 @@ export const deleteByIdUserServiceProvider = {
   useClass: DeleteByIdUserService,
 };
 
+export const batchDeleteUsersApplicationProvider = {
+  provide: TYPES.applications.IBatchDeleteUsersApplication,
+  useClass: BatchDeleteUsersApplication,
+};
+
+export const batchDeleteUsersServiceProvider = {
+  provide: TYPES.services.IBatchDeleteUsersService,
+  useClass: BatchDeleteUsersService,
+};
+
 export const applicationsUserProviders = [
   findByUsernameUserApplicationProvider,
   toggleRoleByUsernameUserApplicationProvider,
@@ -111,6 +124,7 @@ export const applicationsUserProviders = [
   getByIdUserApplicationProvider,
   makePublicUserApplicationProvider,
   deleteByIdUserApplication,
+  batchDeleteUsersApplicationProvider,
 ];
 
 export const servicesUserProviders = [
@@ -121,4 +135,5 @@ export const servicesUserProviders = [
   editUserServiceProvider,
   findByIdUserServiceProvider,
   deleteByIdUserServiceProvider,
+  batchDeleteUsersServiceProvider
 ];
