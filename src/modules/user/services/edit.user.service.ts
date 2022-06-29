@@ -32,8 +32,9 @@ export class EditUserService implements IEditUserService {
       const taken = await this.userRepository
         .createQueryBuilder('user')
         .where('user.id <> :id', { id: editUserDto.id })
-        .where('user.username = :username', { username: editUserDto.username })
+        .andWhere('user.username = :username', { username: editUserDto.username })
         .getCount();
+      
       if (taken) {
         throw new AlreadyExistUserException(editUserDto.username);
       }

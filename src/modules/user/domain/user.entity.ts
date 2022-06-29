@@ -45,9 +45,9 @@ export class UserEntity {
   }
 
   public update(editUserDto: EditUserDto) {
-    this.role = editUserDto.isAdmin ? RolesUser.ADMIN : RolesUser.REPORTER;
     this.password = editUserDto.password || this.password;
     this.username = editUserDto.username || this.username;
     this.note = editUserDto.note || this.note;
+    this.role = editUserDto.role || this.role;
   }
 }

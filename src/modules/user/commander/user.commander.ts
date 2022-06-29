@@ -130,7 +130,7 @@ export class UserCommander {
 
     const user = await this.createUserApplication.execute({
       username,
-      isAdmin,
+      role: RolesUser.VIEWER,
       password: password.toString(),
     });
 
@@ -144,7 +144,7 @@ export class UserCommander {
       await this.createUserApplication.execute({
         username: Math.random().toString(36).substring(2, 7) + 'username',
         password: Math.random().toString(36).substring(2, 7) + 'password',
-        isAdmin: false,
+        role: RolesUser.VIEWER,
       });
     }
 
