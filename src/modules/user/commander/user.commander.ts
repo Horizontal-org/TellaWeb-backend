@@ -29,7 +29,7 @@ export class UserCommander {
     const cli = this.consoleService.getCli();
     const groupCommand = this.consoleService.createGroupCommand(
       {
-        name: 'users',
+        command: 'users',
         description: 'Create, Update, List and Delete users',
       },
       cli,
@@ -68,14 +68,12 @@ export class UserCommander {
       groupCommand,
     );
 
-
     this.consoleService.createCommand(
       {
         command: 'bulk-create',
-        description: 'Create a bunch of random users'
+        description: 'Create a bunch of random users',
       },
-      () =>
-        this.createUsers(),
+      () => this.createUsers(),
       groupCommand,
     );
 
@@ -132,7 +130,7 @@ export class UserCommander {
 
     const user = await this.createUserApplication.execute({
       username,
-      isAdmin,
+      role: RolesUser.VIEWER,
       password: password.toString(),
     });
 
@@ -141,12 +139,12 @@ export class UserCommander {
 
   async createUsers() {
     prompt.start();
-        
+
     for (let i = 0; i < 10; i++) {
       await this.createUserApplication.execute({
-        username: Math.random().toString(36).substring(2,7) + 'username',
-        password: Math.random().toString(36).substring(2,7) + 'password',
-        isAdmin: false
+        username: Math.random().toString(36).substring(2, 7) + 'username',
+        password: Math.random().toString(36).substring(2, 7) + 'password',
+        role: RolesUser.VIEWER,
       });
     }
 

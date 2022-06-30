@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsString, Length } from 'class-validator';
+import { RolesUser } from '../domain';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -11,7 +12,7 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @ApiProperty({ type: Boolean, default: false })
-  @IsBoolean()
-  isAdmin = false;
+  @ApiProperty({ type: String })
+  @IsString()
+  role?: RolesUser;
 }

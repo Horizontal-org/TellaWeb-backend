@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
 
 import { ReportModule } from 'modules/report/report.module';
+import { AbilityModule } from 'casl/casl.module';
 
 import { UserCommander } from './commander';
 import { UserEntity } from './domain';
@@ -20,6 +21,7 @@ import { userControllers } from './controllers';
     TypeOrmModule.forFeature([UserEntity]),
     ConsoleModule,
     ReportModule,
+    AbilityModule,
   ],
   controllers: [...userControllers],
   providers: [

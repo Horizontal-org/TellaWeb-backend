@@ -7,7 +7,7 @@ import { ReadRemoteConfigurationDto } from '../dto';
 import { TYPES, IGetByIdRemoteConfigurationApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-@AuthController('config', [RolesUser.ADMIN])
+@AuthController('config')
 export class GetByIdRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IGetByIdRemoteConfigurationApplication)

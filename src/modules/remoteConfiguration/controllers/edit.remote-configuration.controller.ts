@@ -7,7 +7,7 @@ import { RolesUser } from 'modules/user/domain';
 import { EditRemoteConfigurationDto, ReadRemoteConfigurationDto } from '../dto';
 import { TYPES, IEditRemoteConfigurationApplication } from '../interfaces';
 
-@AuthController('config', [RolesUser.USER, RolesUser.ADMIN])
+@AuthController('config', [RolesUser.ADMIN])
 export class EditRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IEditRemoteConfigurationApplication)

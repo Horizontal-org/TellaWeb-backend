@@ -4,7 +4,7 @@ import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IDeleteFileApplication } from '../interfaces';
 
-@AuthController('file', [RolesUser.ADMIN])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR])
 export class DeleteFileController {
   constructor(
     @Inject(TYPES.applications.IDeleteFileApplication)

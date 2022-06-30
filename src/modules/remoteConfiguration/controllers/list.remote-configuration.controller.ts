@@ -10,7 +10,7 @@ import { ReadRemoteConfigurationDto } from '../dto';
 
 import { IListRemoteConfigurationApplication, TYPES } from '../interfaces';
 
-@AuthController('config', [RolesUser.ADMIN])
+@AuthController('config')
 @ApiExtraModels(PaginatedDto)
 export class ListRemoteConfigurationController {
   constructor(

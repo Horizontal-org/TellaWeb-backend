@@ -1,13 +1,15 @@
+import { ForbiddenError } from '@casl/ability';
 import { Body, Inject, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
+import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { LoggedUser } from 'modules/auth/decorators';
 
-import { RolesUser } from '../domain';
 import { EditUserDto, ReadUserDto } from '../dto';
 import { IEditUserApplication, TYPES } from '../interfaces';
 
-@AuthController('user', [RolesUser.ADMIN])
+@AuthController('user')
 export class EditUserController {
   constructor(
     @Inject(TYPES.applications.IEditUserApplication)

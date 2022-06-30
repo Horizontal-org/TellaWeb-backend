@@ -7,7 +7,7 @@ import { TYPES, IDeleteByIdReportApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { boolean } from 'yargs';
 
-@AuthController('report', [RolesUser.ADMIN])
+@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR])
 export class DeleteByIdReportController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdReportApplication)

@@ -16,7 +16,7 @@ export class SetRoleUserService {
     const user = await this.userRepositorty.findOne({ where: { username } });
     if (!user) throw new NotFoundException();
 
-    user.role = isAdmin ? RolesUser.ADMIN : RolesUser.USER;
+    user.role = isAdmin ? RolesUser.ADMIN : RolesUser.REPORTER;
 
     return await this.userRepositorty.save(user);
   }

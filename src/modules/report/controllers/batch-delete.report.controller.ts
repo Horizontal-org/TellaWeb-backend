@@ -8,7 +8,7 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { boolean } from 'yargs';
 import { BatchDeleteReportDto } from '../dto/batch-delete.report.dto';
 
-@AuthController('report', [RolesUser.ADMIN])
+@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR])
 export class BatchDeleteReportController {
   constructor(
     @Inject(TYPES.applications.IBatchDeleteReportApplication)

@@ -1,7 +1,10 @@
-import { Get, Inject, Param } from '@nestjs/common';
+import { ForbiddenError } from '@casl/ability';
+import { Get, Inject, Param, UnauthorizedException } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
+import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { LoggedUser } from 'modules/auth/decorators';
 import { RolesUser } from '../domain';
 
 import { ReadUserDto } from '../dto';
@@ -16,8 +19,10 @@ export class GetByUsernameController {
 
   @ApiResponse({ type: ReadUserDto })
   @Get(':username')
-  async handler(@Param('username') username: string): Promise<ReadUserDto> {
+  async handler(
+    @Param('username') username: string,
+  ): Promise<ReadUserDto> {
     const user = await this.findByUserNameApplication.execute(username);
-    return user;
+    return user
   }
 }

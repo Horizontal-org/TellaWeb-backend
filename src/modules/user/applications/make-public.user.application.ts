@@ -46,7 +46,7 @@ export class MakePublicUserApplication implements IMakePublicUserApplication {
     return this.createUserService.execute({
       username,
       password,
-      isAdmin: false,
+      role: RolesUser.VIEWER,
     });
   }
 
