@@ -29,6 +29,8 @@ COPY package-lock.json ./
 
 RUN npm install
 
+RUN npm install -g ts-node
+
 COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
