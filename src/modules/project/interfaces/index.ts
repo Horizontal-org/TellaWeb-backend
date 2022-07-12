@@ -10,4 +10,7 @@ export { IGetByIdProjectService } from './service/get-by-id.project.service.inte
 export { IEditProjectApplication } from './application/edit.project.application.interface'
 export { IEditProjectService } from './service/edit.project.service.interface'
 
+export { IDeleteByIdProjectApplication } from './application/delete-by-id.project.application.interface'
+export { IDeleteByIdProjectService } from './service/delete-by-id.project.service.interface'
+
 export { TYPES } from './types';  

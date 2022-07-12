@@ -3,12 +3,14 @@ export const TYPES = {
     ICreateProjectApplication: 'ICreateProjectApplication',
     IListProjectApplication: 'IListProjectApplication',
     IGetByIdProjectApplication: 'IGetByIdProjectApplication',
-    IEditProjectApplication: 'IEditProjectApplication'
+    IEditProjectApplication: 'IEditProjectApplication',
+    IDeleteByIdProjectApplication: 'IDeleteByIdProjectApplication'
   },
   services: {
     ICreateProjectService: 'ICreateProjectService',
     IListProjectService: 'IListProjectService',
     IGetByIdProjectService: 'IGetByIdProjectService',
-    IEditProjectService: 'IEditProjectService'
+    IEditProjectService: 'IEditProjectService',
+    IDeleteByIdProjectService: 'IDeleteByIdProjectService'
   },
 };
