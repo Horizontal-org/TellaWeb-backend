@@ -9,6 +9,9 @@ import { ListProjectService } from './services/list.project.service';
 import { GetByIdProjectApplication } from './applications/get-by-id.project.application';
 import { GetByIdProjectService } from './services/get-by-id.project.service';
 
+import { EditProjectApplication } from './applications/edit.project.application';
+import { EditProjectService } from './services/edit.project.service';
+
 export const createProjectApplicationProvider = {
   provide: TYPES.applications.ICreateProjectApplication,
   useClass: CreateProjectApplication,
@@ -39,14 +42,26 @@ export const getByIdProjectServiceProvider = {
   useClass: GetByIdProjectService,
 };
 
+export const editProjectApplicationProvider = { 
+  provide: TYPES.applications.IEditProjectApplication,
+  useClass: EditProjectApplication,
+};
+
+export const editProjectServiceProvider = {
+  provide: TYPES.services.IEditProjectService,
+  useClass: EditProjectService,
+};
+
 export const applicationsProjectProviders = [
   createProjectApplicationProvider,
   listProjectApplicationProvider,
-  getByIdProjectApplicationProvider
+  getByIdProjectApplicationProvider,
+  editProjectApplicationProvider
 ];
 
 export const servicesProjectProviders = [
   createProjectServiceProvider,
   listProjectServiceProvider,
-  getByIdProjectServiceProvider
+  getByIdProjectServiceProvider,
+  editProjectServiceProvider
 ];
