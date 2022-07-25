@@ -2,40 +2,40 @@ pipeline {
     agent any
     
     stages {
-      stage ('Build docker image') {
-        steps {
-          script {
-            echo "Bulding docker images"
-            docker.build("horizontalorg/tellaweb-api:latest")
-          }
-        }
-      }
-      stage ('Push docker image') {
-        steps {
-          script {
-            echo "Pushing the image to docker hub"
-            def localImage = "tellaweb-api:latest"
+      // stage ('Build docker image') {
+      //   steps {
+      //     script {
+      //       echo "Bulding docker images"
+      //       docker.build("horizontalorg/tellaweb-api:latest")
+      //     }
+      //   }
+      // }
+      // stage ('Push docker image') {
+      //   steps {
+      //     script {
+      //       echo "Pushing the image to docker hub"
+      //       def localImage = "tellaweb-api:latest"
           
-            def repositoryName = "horizontalorg/${localImage}"
+      //       def repositoryName = "horizontalorg/${localImage}"
           
-            // Create a tag that going to push into DockerHub
-            // sh "docker tag ${localImage} ${repositoryName} "
+      //       // Create a tag that going to push into DockerHub
+      //       // sh "docker tag ${localImage} ${repositoryName} "
             
-            docker.withRegistry("", "DockerHubCredentials") {
-              def image = docker.image("${repositoryName}");
-              image.push()
-            }
+      //       docker.withRegistry("", "DockerHubCredentials") {
+      //         def image = docker.image("${repositoryName}");
+      //         image.push()
+      //       }
 
-          }
-        }
-      }
+      //     }
+      //   }
+      // }
 
       stage ('Deploy to staging') {
         steps{
           sshagent(credentials : ['TellawebBeta']) {
             sh '''
               [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
-              ssh-keyscan -t rsa,dsa example.com >> ~/.ssh/known_hosts
+              ssh-keyscan -t rsa,dsa beta.web.tella-app.org >> ~/.ssh/known_hosts
               ssh -o StrictHostKeyChecking=no root@beta.web.tella-app.org "cd /home/tellaweb-beta ; docker-compose pull api ; docker-compose up -d api"
             '''
           }
