@@ -14,7 +14,7 @@ pipeline {
         steps {
           script {
             echo "Pushing the image to docker hub"
-            def localImage = "horizontalorg/tellaweb-api:latest"
+            def localImage = "tellaweb-api:latest"
           
             def repositoryName = "horizontalorg/${localImage}"
           
