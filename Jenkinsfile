@@ -33,7 +33,11 @@ pipeline {
       stage ('Deploy to staging') {
         steps{
           sshagent(credentials : ['TellawebBeta']) {
-            sh 'ssh -o StrictHostKeyChecking=no root@beta.web.tella-app.org "cd /home/tellaweb-beta ; docker-compose pull api ; docker-compose up -d api"'
+            sh '''
+              [ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+              ssh-keyscan -t rsa,dsa example.com >> ~/.ssh/known_hosts
+              ssh -o StrictHostKeyChecking=no root@beta.web.tella-app.org "cd /home/tellaweb-beta ; docker-compose pull api ; docker-compose up -d api"
+            '''
           }
         }
       }
