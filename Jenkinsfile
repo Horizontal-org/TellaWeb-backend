@@ -40,7 +40,7 @@ pipeline {
 
       stage ('Clean unneccesary docker images') {
         steps{
-            sh "docker rmi $(docker images -q -f dangling=true)"
+            sh 'docker rmi $(docker images -q -f dangling=true)'
         }
       }
     }
