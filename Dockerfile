@@ -1,24 +1,22 @@
-FROM node:16.14-bullseye AS base
-RUN apt-get update
-RUN apt-get install -y ffmpeg python libvips
-RUN apt-get clean
+FROM node:16.14-alpine as production
 
-FROM base AS build
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm install
-COPY --chown=node:node . .
-RUN npm run build
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-FROM node:16.14-bullseye-slim
 WORKDIR /usr/src/app
-RUN apt-get update
-RUN apt-get install -y ffmpeg
-RUN apt-get clean
+
+RUN apk add ffmpeg
+
+COPY package*.json ./
+
+COPY package-lock.json ./
+
+RUN npm install
+
 RUN npm install -g ts-node
 
-COPY --chown=node:node --from=build package.json package-lock.json ./
-COPY --chown=node:node --from=build node_modules node_modules
-COPY --chown=node:node --from=build dist ./dist
-RUN npm prune --production
+COPY . .
+
+RUN npm run build
 
 CMD ["node", "dist/main"]
