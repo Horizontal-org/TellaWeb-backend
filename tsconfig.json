@@ -16,6 +16,9 @@
   "exclude": [
     "node_modules",
     "dist",
-    "public"
+    "public",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.mock.ts" 
   ]
 }

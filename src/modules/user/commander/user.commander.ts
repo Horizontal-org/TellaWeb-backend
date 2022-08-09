@@ -130,7 +130,7 @@ export class UserCommander {
 
     const user = await this.createUserApplication.execute({
       username,
-      role: RolesUser.VIEWER,
+      role: isAdmin ? RolesUser.ADMIN : RolesUser.VIEWER,
       password: password.toString(),
     });
 

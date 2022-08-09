@@ -23,10 +23,11 @@ export class ListUserService implements IListUserService {
     const query = this.userRepository
       .createQueryBuilder('user')
       .skip(skip)
-      .take(take);
+      .take(take)
+      .where({ deletedAt: null })
 
     if (search && search.length > 0) {
-      query.where('user.username like :search', { search: `%${search}%` });
+      query.andWhere('user.username like :search', { search: `%${search}%` });
     }
 
     if (sort && sort.length > 0) {
