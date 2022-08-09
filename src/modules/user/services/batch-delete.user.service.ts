@@ -14,10 +14,11 @@ export class BatchDeleteUsersService implements IBatchDeleteUsersService {
   async execute(toDelete: Array<string>): Promise<boolean> {
     await getConnection()
       .createQueryBuilder()
-      .delete()
-      .from(UserEntity)
+      .update(UserEntity)
+      .set({ deletedAt: new Date() })
       .where('id IN (:...toDelete)', { toDelete: toDelete }) //delete users by username
       .execute();
+      
     return true;
   }
 }

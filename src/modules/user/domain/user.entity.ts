@@ -36,6 +36,10 @@ export class UserEntity {
   @Column({ name: 'created_at' })
   createdAt!: Date;
 
+  @Expose()
+  @Column({ name: 'deleted_at', nullable: true })
+  deletedAt: Date;
+
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.author)
   reports: ReportEntity[];
 

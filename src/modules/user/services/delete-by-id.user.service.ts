@@ -12,8 +12,9 @@ export class DeleteByIdUserService implements IDeleteByIdUserService {
   ) {}
 
   async execute(userId: string): Promise<boolean> {
-    const { affected } = await this.userRepository.delete({ id: userId });
-    if (affected === 0) return false;
+    const user = await this.userRepository.findOne(userId)
+     user.update({ deletedAt: new Date() });
+
     return true;
   }
 }
