@@ -7,9 +7,11 @@ import {
   applicationsReportProviders,
   getByIdReportApplicationProvider,
   servicesReportProviders,
+  createReportApplicationProvider
 } from './report.providers';
 import { FileModule } from 'modules/file/file.module';
 import { ProjectModule } from 'modules/project/project.module';
+import { CreateReportApplication } from './applications/create.report.application';
 
 @Module({
   imports: [
@@ -19,6 +21,6 @@ import { ProjectModule } from 'modules/project/project.module';
   ],
   controllers: [...reportControllers],
   providers: [...applicationsReportProviders, ...servicesReportProviders],
-  exports: [getByIdReportApplicationProvider],
+  exports: [getByIdReportApplicationProvider, createReportApplicationProvider],
 })
 export class ReportModule {}

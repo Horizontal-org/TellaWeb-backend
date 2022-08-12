@@ -1,4 +1,4 @@
-import { Body, Inject, Post, ParseUUIDPipe, Param } from '@nestjs/common';
+import { Body, Inject, Post, ParseUUIDPipe, Param, Put } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
@@ -15,7 +15,7 @@ export class EditProjectController {
   ) {}
 
   @ApiResponse({ type: ReadProjectDto })
-  @Post(':projectId')
+  @Put(':projectId')
   async handler(
     @Body() editProjectDto: EditProjectDto,
     @Param('projectId', new ParseUUIDPipe()) projectId: string,

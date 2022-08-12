@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReportEntity } from 'modules/report/domain';
+import { ReportModule } from 'modules/report/report.module';
 
 import { UserEntity } from 'modules/user/domain';
 import { projectControllers } from './controllers';
@@ -12,6 +13,7 @@ import { applicationsProjectProviders, servicesProjectProviders } from './projec
     TypeOrmModule.forFeature([ProjectEntity]),  
     TypeOrmModule.forFeature([ReportEntity]),  
     TypeOrmModule.forFeature([UserEntity]),
+    forwardRef(() => ReportModule),
   ],
   controllers: [...projectControllers],
   providers: [...applicationsProjectProviders, ...servicesProjectProviders],
