@@ -12,6 +12,7 @@ import {
 import { FileEntity } from 'modules/file/domain/file.entity';
 import { UserEntity } from 'modules/user/domain/user.entity';
 import { EditReportDto } from '../dto/edit.report.dto';
+import { ProjectEntity } from 'modules/project/domain/project.entity';
 
 @Entity()
 export class ReportEntity {
@@ -29,6 +30,9 @@ export class ReportEntity {
     eager: true,
   })
   files: FileEntity[];
+
+  @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.reports)
+  project: ProjectEntity;
 
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.reports, {
     eager: true,

@@ -10,6 +10,7 @@ import { ReportModule } from './modules/report/report.module';
 import { FileModule } from './modules/file/file.module';
 import { RemoteConfigurationModule } from './modules/remoteConfiguration/remote-configuration.module';
 import { AbilityModule } from './casl/casl.module';
+import { ProjectModule } from 'modules/project/project.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AbilityModule } from './casl/casl.module';
     AuthModule,
     RemoteConfigurationModule,
     AbilityModule,
+    ProjectModule
   ],
 })
 export class AppModule {}
