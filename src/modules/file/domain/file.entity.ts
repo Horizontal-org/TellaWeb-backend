@@ -28,6 +28,7 @@ export class FileEntity {
   @ManyToOne(() => ReportEntity, (report: ReportEntity) => report.files)
   report: ReportEntity;
 
+  @Expose()
   @Column({ name: 'created_at' })
   createdAt!: Date;
 
@@ -36,6 +37,10 @@ export class FileEntity {
 
   @Column()
   type: FileType = FileType.OTHER;
+
+  @Expose()
+  @Column({ type: 'simple-json', nullable: true })
+  fileInfo: unknown;
 
   @BeforeInsert()
   private beforeInsert(): void {

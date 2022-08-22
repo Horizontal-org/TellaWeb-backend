@@ -29,13 +29,10 @@ export class AddReportProjectController {
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
     @LoggedUser() author: ReadUserDto,
   ): Promise<ReadReportDto> {    
+    
+    createReportDto.projectId = projectId
     const report = await this.createReportApplication.execute(createReportDto, author);
-    const editProjectDto = {
-      id: projectId,
-      reports: [report.id]
-    }
-    await this.editProjectApplication.execute(plainToClass(EditProjectDto, editProjectDto));    
-
+    
     return report;
   }
 }

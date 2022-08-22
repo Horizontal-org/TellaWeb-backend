@@ -1,5 +1,5 @@
-import { ReadFileDto } from '../../dto';
+import { CloseFileDto, ReadFileDto } from '../../dto';
 
 export interface ICloseFileApplication {
-  execute(input: ReadFileDto, reportId: string): Promise<void>;
+  execute(input: CloseFileDto, reportId: string): Promise<void>;
 }

@@ -12,10 +12,12 @@ import {
 import { FileModule } from 'modules/file/file.module';
 import { ProjectModule } from 'modules/project/project.module';
 import { CreateReportApplication } from './applications/create.report.application';
+import { ProjectEntity } from 'modules/project/domain';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ReportEntity]), 
+    TypeOrmModule.forFeature([ProjectEntity]),  
     FileModule, 
     forwardRef(() => ProjectModule),
   ],
