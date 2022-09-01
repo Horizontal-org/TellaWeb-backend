@@ -8,5 +8,6 @@ export interface IListUserApplication {
     sort: string,
     order: string,
     search: string,
+    exclude: Array<string>
   ): Promise<PaginatedDto<ReadUserDto>>;
 }

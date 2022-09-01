@@ -21,16 +21,30 @@ export class EditProjectService implements IEditProjectService {
   async execute(editProjectDto: EditProjectDto): Promise<ProjectEntity> {
     let reports = null
     let users = null
+    const project = await this.projectRepository.findOne(editProjectDto.id, { relations: ['users'] });
 
     if (editProjectDto.reports && editProjectDto.reports.length > 0) {
       reports = await this.reportRepository.findByIds(editProjectDto.reports)
     }
 
     if (editProjectDto.users && editProjectDto.users.length > 0) {
-      users = await this.userRepository.findByIds(editProjectDto.users)
+      
+      let toDelete = []
+      let toAdd = []
+      let userIds = project.users.map(pu => pu.id)
+      
+      editProjectDto.users.forEach((id) => {
+        if (userIds.includes(id)) {
+          toDelete.push(id)
+        } else {
+          toAdd.push(id)
+        }        
+      })      
+      // remove to delete
+      userIds = userIds.filter(uid => !toDelete.includes(uid))      
+      users = await this.userRepository.findByIds([...userIds, ...toAdd])
     }
 
-    const project = await this.projectRepository.findOne(editProjectDto.id, { relations: ['users'] });
     project.name = editProjectDto.name || project.name
     project.slug = (editProjectDto.name || project.name).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.reports = reports || project.reports
