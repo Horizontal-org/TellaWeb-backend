@@ -29,4 +29,8 @@ export class EditUserDto {
   @ApiProperty({ type: String })
   @Expose()
   role?: RolesUser;
+
+  @ApiProperty({ type: Date })
+  @Expose()
+  deletedAt?: Date
 }

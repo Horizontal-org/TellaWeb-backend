@@ -8,5 +8,6 @@ export interface IListUserService {
     sort: string,
     order: string,
     search: string,
+    exclude: Array<string>
   ): Promise<PartialResult<UserEntity>>;
 }

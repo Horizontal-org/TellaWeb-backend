@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   OneToMany,
+  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -11,6 +12,7 @@ import { ReportEntity } from 'modules/report/domain/report.entity';
 
 import { RolesUser } from './roles.user.enum';
 import { EditUserDto } from '../dto/edit.user.dto';
+import { ProjectEntity } from 'modules/project/domain/project.entity';
 
 @Exclude()
 @Entity()
@@ -36,8 +38,15 @@ export class UserEntity {
   @Column({ name: 'created_at' })
   createdAt!: Date;
 
+  @Expose()
+  @Column({ name: 'deleted_at', nullable: true })
+  deletedAt: Date;
+
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.author)
   reports: ReportEntity[];
+
+  @ManyToMany(() => ProjectEntity, project => project.users)
+  projects: ProjectEntity[];
 
   @BeforeInsert()
   private beforeInsert(): void {

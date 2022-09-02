@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
 
@@ -15,6 +15,7 @@ import {
   makePublicUserApplicationProvider,
 } from './user.providers';
 import { userControllers } from './controllers';
+import { ProjectModule } from 'modules/project/project.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { userControllers } from './controllers';
     ConsoleModule,
     ReportModule,
     AbilityModule,
+    forwardRef(() => ProjectModule),
   ],
   controllers: [...userControllers],
   providers: [

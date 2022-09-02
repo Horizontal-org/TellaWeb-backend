@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsEnum, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsJSON, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { FileType } from '../domain/file-type.file.enum';
 
@@ -24,4 +24,10 @@ export class FileDto {
   @Expose()
   @IsEnum(FileType)
   type: FileType;
+
+  @ApiProperty()
+  @Expose()
+  @IsJSON()
+  fileInfo?: unknown;
+
 }
