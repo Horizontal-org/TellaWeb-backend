@@ -15,4 +15,9 @@ export class CreateReportDto {
   @IsString()
   @IsOptional()
   deviceInfo?: unknown;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  projectId?: string;
 }

@@ -1,4 +1,4 @@
-import { Get, Inject, Query, ParseIntPipe } from '@nestjs/common';
+import { Get, Inject, Query, ParseIntPipe, ParseArrayPipe } from '@nestjs/common';
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { ApiExtraModels } from '@nestjs/swagger';
 
@@ -24,6 +24,7 @@ export class ListUserController {
     @Query('sort') sort = '',
     @Query('order') order = '',
     @Query('search') search = '',
+    @Query('exclude', new ParseArrayPipe({ optional: true })) exclude = [],
   ): Promise<PaginatedDto<ReadUserDto>> {
     const response = await this.listUserApplication.execute(
       limit,
@@ -31,6 +32,7 @@ export class ListUserController {
       sort,
       order,
       search,
+      exclude
     );
 
     return response;

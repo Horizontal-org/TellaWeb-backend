@@ -24,10 +24,12 @@ export class CloseFileService implements ICloseFileService {
       },
     });
     if (!file) throw new NotFoundFileException(closeFileDto.fileName);
-
+    
     await this.fileHandler.close(closeFileDto);
     file.type = await this.fileHandler.getType(closeFileDto);
     file.attachToReport(reportId);
+    file.fileInfo = closeFileDto.fileInfo
+    
     await this.fileRepository.save(file);
 
     return;

@@ -7,7 +7,7 @@ services:
     build:
       context: .
       target: development
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
     command: npm run start:debug
     ports:
       - 3001:3001
@@ -23,7 +23,6 @@ services:
     image: tellaweb-api-prod:1.0.0
     build:
       context: .
-      target: production
       dockerfile: ./Dockerfile
     command: yarn start:prod
     ports:

@@ -104,6 +104,7 @@ export class UserCommander {
       sort,
       order,
       search,
+      []
     );
     if (users.results.length === 0)
       return console.log('No users found in the application');
@@ -130,7 +131,7 @@ export class UserCommander {
 
     const user = await this.createUserApplication.execute({
       username,
-      role: RolesUser.VIEWER,
+      role: isAdmin ? RolesUser.ADMIN : RolesUser.VIEWER,
       password: password.toString(),
     });
 

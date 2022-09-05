@@ -19,14 +19,20 @@ export class ListUserService implements IListUserService {
     sort: string,
     order: string,
     search: string,
+    exclude: Array<string>
   ): Promise<PartialResult<UserEntity>> {
     const query = this.userRepository
       .createQueryBuilder('user')
       .skip(skip)
-      .take(take);
+      .take(take)
+      .where({ deletedAt: null })
 
     if (search && search.length > 0) {
-      query.where('user.username like :search', { search: `%${search}%` });
+      query.andWhere('user.username like :search', { search: `%${search}%` });
+    }
+    
+    if (exclude && exclude.length > 0) {
+      query.andWhere('user.id NOT IN (:...exclude)', { exclude: exclude })
     }
 
     if (sort && sort.length > 0) {

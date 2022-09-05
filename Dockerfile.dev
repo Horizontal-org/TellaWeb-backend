@@ -1,0 +1,15 @@
+FROM node:16.14-alpine AS development
+
+WORKDIR /usr/src/app
+
+RUN apk add ffmpeg
+
+COPY package*.json ./
+
+COPY package-lock.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
