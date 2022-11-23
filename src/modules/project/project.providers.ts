@@ -9,11 +9,24 @@ import { ListProjectService } from './services/list.project.service';
 import { GetByIdProjectApplication } from './applications/get-by-id.project.application';
 import { GetByIdProjectService } from './services/get-by-id.project.service';
 
+import { GetBySlugProjectApplication } from './applications/get-by-slug.project.application';
+import { GetBySlugProjectService } from './services/get-by-slug.project.service';
+
 import { EditProjectApplication } from './applications/edit.project.application';
 import { EditProjectService } from './services/edit.project.service';
 
 import { DeleteByIdProjectApplication } from './applications/delete-by-id.project.application';
 import { DeleteByIdProjectService } from './services/delete-by-id.project.service';
+
+export const getBySlugApplicationProvider = {
+  provide: TYPES.applications.IGetBySlugProjectApplication,
+  useClass: GetBySlugProjectApplication,
+}
+
+export const getBySlugServiceProvider = {
+  provide: TYPES.services.IGetBySlugProjectService,
+  useClass: GetBySlugProjectService,
+}
 
 export const createProjectApplicationProvider = {
   provide: TYPES.applications.ICreateProjectApplication,
@@ -70,7 +83,8 @@ export const applicationsProjectProviders = [
   listProjectApplicationProvider,
   getByIdProjectApplicationProvider,
   editProjectApplicationProvider,
-  deleteByIdProjectApplicationProvider
+  deleteByIdProjectApplicationProvider,
+  getBySlugApplicationProvider
 ];
 
 export const servicesProjectProviders = [
@@ -78,5 +92,6 @@ export const servicesProjectProviders = [
   listProjectServiceProvider,
   getByIdProjectServiceProvider,
   editProjectServiceProvider,
-  deleteByIdProjectServiceProvider
+  deleteByIdProjectServiceProvider,
+  getBySlugServiceProvider
 ];

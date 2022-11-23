@@ -7,6 +7,9 @@ export { IListProjectService } from './service/list.project.service.interface'
 export { IGetByIdProjectApplication } from './application/get-by-id.project.application.interface'
 export { IGetByIdProjectService } from './service/get-by-id.project.service.interface'
 
+export { IGetBySlugProjectApplication } from './application/get-by-slug.project.application.interface'
+export { IGetBySlugProjectService } from './service/get-by-slug.project.service.interface'
+
 export { IEditProjectApplication } from './application/edit.project.application.interface'
 export { IEditProjectService } from './service/edit.project.service.interface'
 

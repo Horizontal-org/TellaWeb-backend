@@ -45,10 +45,12 @@ export class EditProjectService implements IEditProjectService {
       users = await this.userRepository.findByIds([...userIds, ...toAdd])
     }
 
+    const slug = (editProjectDto.slug || project.slug).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.name = editProjectDto.name || project.name
-    project.slug = (editProjectDto.name || project.name).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+    project.slug = slug
     project.reports = reports || project.reports
     project.users = users || project.users
+    project.url = `${process.env.PUBLIC_DOMAIN}/p/${slug}`
 
     await this.projectRepository.save(project)
     return project;

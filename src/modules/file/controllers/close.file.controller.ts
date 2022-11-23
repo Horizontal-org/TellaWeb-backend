@@ -6,8 +6,9 @@ import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, ICloseFileApplication } from '../interfaces';
 import { CloseFileDto } from '../dto';
+import { RolesUser } from 'modules/user/domain';
 
-@AuthController('file')
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER])
 export class CloseFileReportController {
   constructor(
     @Inject(TYPES.applications.ICloseFileApplication)

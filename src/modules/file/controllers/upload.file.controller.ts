@@ -8,8 +8,9 @@ import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { FileDto } from '../dto';
 import { TYPES, ICreateFileApplication } from '../interfaces';
+import { RolesUser } from 'modules/user/domain';
 
-@AuthController('file')
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER])
 export class UploadFileReportController {
   constructor(
     @Inject(TYPES.applications.ICreateFileApplication)

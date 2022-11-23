@@ -11,6 +11,7 @@ import { FileModule } from './modules/file/file.module';
 import { RemoteConfigurationModule } from './modules/remoteConfiguration/remote-configuration.module';
 import { AbilityModule } from './casl/casl.module';
 import { ProjectModule } from 'modules/project/project.module';
+import { UtilsModule } from 'modules/utils/utils.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { ProjectModule } from 'modules/project/project.module';
     AuthModule,
     RemoteConfigurationModule,
     AbilityModule,
-    ProjectModule
+    ProjectModule,
+    UtilsModule
   ],
 })
 export class AppModule {}

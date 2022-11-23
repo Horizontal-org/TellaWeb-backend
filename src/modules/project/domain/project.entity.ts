@@ -43,6 +43,8 @@ export class ProjectEntity {
   })
   users: UserEntity[];
 
+  @Column({ nullable: true })
+  url: string;
 
   @Column({ name: 'created_at' })
   createdAt!: Date;

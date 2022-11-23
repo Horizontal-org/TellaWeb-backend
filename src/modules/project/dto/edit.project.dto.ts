@@ -13,6 +13,11 @@ export class EditProjectDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsString()
+  slug: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsArray()
   users: Array<string>
 
