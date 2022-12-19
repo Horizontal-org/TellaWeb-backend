@@ -168,10 +168,19 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async getType(input: ReadFileDto): Promise<FileType> {
     const filePath = this.getPath(input, false);
-    const { mime } = await GetFileType.fromFile(filePath);
-    if (mime.includes('video')) return FileType.VIDEO;
-    if (mime.includes('audio')) return FileType.AUDIO;
-    if (mime.includes('image')) return FileType.IMAGE;
+
+    try {
+      // TEST ONLY REMOVE
+      const { mime } = await GetFileType.fromFile(filePath);
+      if (mime.includes('video')) return FileType.VIDEO;
+      if (mime.includes('audio')) return FileType.AUDIO;
+      if (mime.includes('image')) return FileType.IMAGE;
+      // TEST ONLY REMOVE
+
+    } catch (e) {
+      console.log("SEE ERROR", e)
+    }
+
     return FileType.OTHER;
   }
 
