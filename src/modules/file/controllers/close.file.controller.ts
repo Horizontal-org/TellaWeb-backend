@@ -26,11 +26,19 @@ export class CloseFileReportController {
     closeFileDto.fileName = fileName
     closeFileDto.bucket = reportId
 
-    await this.closeFileApplication.execute(
-      closeFileDto,
-      reportId,
-    );
+    try {
+      await this.closeFileApplication.execute(
+        closeFileDto,
+        reportId,
+      )
+    } catch (err) {      
+      return {
+        success: false
+      }
+    }
 
-    return;
+    return {
+      success: true
+    }
   }
 }
