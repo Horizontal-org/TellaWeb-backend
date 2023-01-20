@@ -26,7 +26,7 @@ export class LoginAuthController {
     response
       .cookie('access_token', authToken.access_token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
         domain: process.env.COOKIE_DOMAIN,
       })
       .send({
