@@ -21,7 +21,7 @@ export class GenerateTokenAuthService implements IGenerateTokenAuthService {
   async execute(user: ReadUserDto): Promise<JWTResponse> {
     const payload: JWTPayload = { userId: user.id };
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: '23h' }),
+      access_token: this.jwtService.sign(payload, { expiresIn: '1y' }),
     };
   }
 }
