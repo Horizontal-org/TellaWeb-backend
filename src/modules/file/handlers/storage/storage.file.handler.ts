@@ -215,6 +215,7 @@ export class StorageFileHandler implements IStorageFileHandler {
   private async streamToFile(input: WriteStreamFileDto) {
     this.createBucket(input.bucket);
     const filePath = this.getPath(input, true);
+    console.log('HIDRATE ===> ', filePath)
     return await createWritePromise(filePath, input.stream);
   }
 }
