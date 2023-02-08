@@ -22,13 +22,10 @@ export class ConfirmPasswordUserController {
       ) {}
 
   @ApiResponse({ type: Boolean })
-  @Post('confirm-password')
-  async handler(
-    @LoggedUser() { id, username, role }: ReadUserDto,
-    @Body() confirmPasswordUserDto: ConfirmPasswordUserDto,
-  ): Promise<boolean> {
+  @Post('/confirm/password')
+  async handler(@Body() confirmPasswordUserDto: ConfirmPasswordUserDto, @LoggedUser() loggedUser: ReadUserDto): Promise<boolean> {
     await this.checkPasswordUserApplication.execute({
-      username,
+      username: loggedUser.username,
       password: confirmPasswordUserDto.current,
     });
 
