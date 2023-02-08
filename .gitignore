@@ -36,3 +36,4 @@ yarn.lock
 # Data
 /data
 tellaDb.sql
+/.env

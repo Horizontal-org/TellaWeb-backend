@@ -32,9 +32,14 @@ export class UtilsCommander {
   async migrate(){
     const cm = getConnectionManager()
     const connection = cm.get()
-    await connection.query('PRAGMA foreign_keys=OFF');
-    await connection.synchronize();
-    await connection.query('PRAGMA foreign_keys=ON');
-    console.log('migrated')
+
+    try {
+      await connection.query('PRAGMA foreign_keys=OFF');
+      await connection.runMigrations();
+      await connection.query('PRAGMA foreign_keys=ON');
+      console.log('migrated')
+    } catch (e) {
+      console.log('error migrating: ', e)
+    }
   }
 }

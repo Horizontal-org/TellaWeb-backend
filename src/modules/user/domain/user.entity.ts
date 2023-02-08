@@ -13,6 +13,7 @@ import { ReportEntity } from 'modules/report/domain/report.entity';
 import { RolesUser } from './roles.user.enum';
 import { EditUserDto } from '../dto/edit.user.dto';
 import { ProjectEntity } from 'modules/project/domain/project.entity';
+import { textChangeRangeIsUnchanged } from 'typescript';
 
 @Exclude()
 @Entity()
@@ -33,6 +34,15 @@ export class UserEntity {
 
   @Column({ nullable: true })
   note: string;
+
+  @Column({ nullable: true })
+  otp_secret: string;
+
+  @Column()
+  otp_active: boolean;
+
+  @Column({ nullable: true })
+  backup_key: string;
 
   @Expose()
   @Column({ name: 'created_at' })
@@ -58,5 +68,13 @@ export class UserEntity {
     this.username = editUserDto.username || this.username;
     this.note = editUserDto.note || this.note;
     this.role = editUserDto.role || this.role;
+  }
+
+  public refreshOtpSecret(otp_secret) {
+    this.otp_secret = otp_secret
+  }
+
+  public setOtpActive(value) {
+    this.otp_active = value
   }
 }

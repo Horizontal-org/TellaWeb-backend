@@ -5,9 +5,13 @@ import { UserModule } from 'modules/user/user.module';
 import { authControllers } from './controllers';
 import {
   applicationsAuthProviders,
+  handlersAuthProviders,
   servicesAuthProviders,
 } from './auth.provider';
 import { JwtStrategy } from './strategy/jwt.auth.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from 'modules/user/domain';
+
 @Module({
   imports: [
     JwtModule.register({
@@ -15,11 +19,13 @@ import { JwtStrategy } from './strategy/jwt.auth.strategy';
       signOptions: { expiresIn: '1d' },
     }),
     UserModule,
+    TypeOrmModule.forFeature([UserEntity]),
   ],
   controllers: [...authControllers],
   providers: [
     ...applicationsAuthProviders,
     ...servicesAuthProviders,
+    ...handlersAuthProviders,
     JwtStrategy,
   ],
 })
