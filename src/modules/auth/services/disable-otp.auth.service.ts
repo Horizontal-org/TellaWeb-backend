@@ -27,6 +27,7 @@ export class DisableOtpAuthService implements IDisableOtpAuthService {
     const userEntity = await this.userRepository.findOne(userId)
 
     userEntity.refreshOtpSecret(null);
+    userEntity.otp_active = false
     await this.userRepository.save(userEntity);
     
   }
