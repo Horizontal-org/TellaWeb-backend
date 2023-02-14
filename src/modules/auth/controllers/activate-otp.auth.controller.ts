@@ -12,6 +12,7 @@ import { EnableOtpResponseAuthDto } from '../dto/enable-otp-response.auth.dto';
 import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 import { IActivateOtpAuthService } from '../interfaces/services/activate-otp.auth.service.interface';
+import { ICreateRecoveryKeysService } from '../interfaces/services/create.recovery-keys.service.interface';
 
 
 @AuthController('auth')
@@ -21,12 +22,15 @@ export class ActivateOtpAuthController {
     private verifyOtpService: IVerifyOtpAuthService,
     @Inject(TYPES.services.IActivateOtpAuthService)
     private activateOtpService: IActivateOtpAuthService,
+    @Inject(TYPES.services.ICreateRecoveryKeysService)
+    private createRecoveryKeysService: ICreateRecoveryKeysService,
   ) {}
 
   @Post('/otp/activate')
-  async handler(@Body() body: OtpCodeAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<boolean> {
+  async handler(@Body() body: OtpCodeAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<string[]> {
     await this.verifyOtpService.execute(body.code, loggedUser.id)
     await this.activateOtpService.execute(loggedUser.id)
-    return true
+    const keys = await this.createRecoveryKeysService.execute(loggedUser.id)
+    return keys
   }
 }

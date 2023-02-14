@@ -11,6 +11,7 @@ import {
 import { JwtStrategy } from './strategy/jwt.auth.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
+import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserEntity } from 'modules/user/domain';
     }),
     UserModule,
     TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([RecoveryKeyEntity]),
   ],
   controllers: [...authControllers],
   providers: [

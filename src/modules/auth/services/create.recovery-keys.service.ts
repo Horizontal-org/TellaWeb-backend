@@ -2,12 +2,14 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IEnableOtpAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { IActivateOtpAuthService } from '../interfaces/services/activate-otp.auth.service.interface';
 import { randomInt } from 'crypto';
 import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
+import { ICreateRecoveryKeysService } from '../interfaces/services/create.recovery-keys.service.interface';
+
 @Injectable()
-export class ActivateOtpAuthService implements IActivateOtpAuthService {
+export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -15,12 +17,28 @@ export class ActivateOtpAuthService implements IActivateOtpAuthService {
     private readonly recoveryRepository: Repository<RecoveryKeyEntity>
   ) {}
 
-  async execute(userId): Promise<void> {
+  async execute(userId): Promise<string[]> {
     const userEntity = await this.userRepository.findOne(userId)
+    
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(RecoveryKeyEntity)
+      .where({ user: userEntity.id })
+      .execute();
 
-    userEntity.otp_active = true
-    await this.userRepository.save(userEntity)
+    let keys = []
+    for (let i = 0; i < 15; i++) {
+      const n = randomInt(10000000, 100000000)
+      keys.push(n + '')
 
-    return
+      const recoveryKey = new RecoveryKeyEntity();
+      recoveryKey.code = n + ''
+      recoveryKey.user = userEntity
+
+      await this.recoveryRepository.save(recoveryKey)      
+    }
+
+    return keys
   }
 }

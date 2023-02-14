@@ -1,7 +1,9 @@
 import { OtpAuthHandler } from './handlers/otp.auth.handler';
 import { TYPES } from './interfaces';
-import { ValidateAuthService, GenerateTokenAuthService, EnableOtpAuthService, VerifyOtpAuthService, ActivateOtpAuthService } from './services';
+import { ValidateAuthService, GenerateTokenAuthService, EnableOtpAuthService, VerifyOtpAuthService, ActivateOtpAuthService, CreateRecoveryKeysService } from './services';
 import { DisableOtpAuthService } from './services/disable-otp.auth.service';
+import { GetRecoveryKeysService } from './services/get.recovery-keys.auth';
+import { ValidateRecoveryKeysService } from './services/validate.recovery-keys.auth';
 
 export const generateTokenAuthServiceProvider = {
   provide: TYPES.services.IGenerateTokenAuthService,
@@ -33,6 +35,20 @@ export const activateOtpAuthServiceProvider = {
   useClass: ActivateOtpAuthService
 }
 
+export const createRecoveryKeysServiceProvider = {
+  provide: TYPES.services.ICreateRecoveryKeysService,
+  useClass: CreateRecoveryKeysService
+}
+
+export const validateRecoveryKeysServiceProvider = {
+  provide: TYPES.services.IValidateRecoveryKeysService,
+  useClass: ValidateRecoveryKeysService
+}
+
+export const getRecoveryKeysServiceProvider = {
+  provide: TYPES.services.IGetRecoveryKeysService,
+  useClass: GetRecoveryKeysService
+}
 export const otpHandlerProvider = {
   provide: TYPES.handlers.IOtpAuthHandler,
   useClass: OtpAuthHandler
@@ -50,5 +66,8 @@ export const servicesAuthProviders = [
   enableOtpAuthServiceProvider,
   verifyOtpAuthServiceProvider,
   disableOtpAuthServiceProvider,
-  activateOtpAuthServiceProvider
+  activateOtpAuthServiceProvider,
+  createRecoveryKeysServiceProvider,
+  validateRecoveryKeysServiceProvider,
+  getRecoveryKeysServiceProvider
 ];

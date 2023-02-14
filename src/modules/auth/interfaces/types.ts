@@ -6,7 +6,10 @@ export const TYPES = {
     IEnableOtpAuthService: 'IEnableOtpAuthService',
     IVerifyOtpAuthService: 'IVerifyOtpAuthService',
     IDisableOtpAuthService: 'IDisableOtpAuthService',
-    IActivateOtpAuthService: 'IActivateOtpAuthService'
+    IActivateOtpAuthService: 'IActivateOtpAuthService',
+    ICreateRecoveryKeysService: 'ICreateRecoveryKeysService',
+    IValidateRecoveryKeysService: 'IValidateRecoveryKeysService',
+    IGetRecoveryKeysService: 'IGetRecoveryKeysService'
   },
   handlers: {
     IOtpAuthHandler: 'IOtpAuthHandler'
