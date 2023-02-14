@@ -12,9 +12,10 @@ import { EnableOtpResponseAuthDto } from '../dto/enable-otp-response.auth.dto';
 import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 import { IValidateRecoveryKeysService } from '../interfaces/services/validate.recovery-keys.service.interface';
+import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
 
 
-@AuthController('auth')
+@Controller('auth')
 export class ValidateRecoveryKeysController {
   constructor(
     @Inject(TYPES.services.IValidateRecoveryKeysService)
@@ -22,8 +23,8 @@ export class ValidateRecoveryKeysController {
   ) {}
 
   @Post('/otp/recovery-key')
-  async handler(@Body() body: OtpCodeAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<boolean> {
-    await this.validateRecoveryKeys.execute(loggedUser.id, body.code)
+  async handler(@Body() body: LoginOtpAuthDto): Promise<boolean> {
+    await this.validateRecoveryKeys.execute(body.userId, body.code)
 
     return true
   }
