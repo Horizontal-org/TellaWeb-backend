@@ -11,9 +11,10 @@ import { JWTResponse, LoginAuthDto } from '../domain';
 import { IEnableOtpAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { EnableOtpResponseAuthDto } from '../dto/enable-otp-response.auth.dto';
 import { IDisableOtpAuthService } from '../interfaces/services/disable-otp.auth.service.interface';
+import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
 
 @Injectable()
 export class DisableOtpAuthService implements IDisableOtpAuthService {
@@ -30,5 +31,13 @@ export class DisableOtpAuthService implements IDisableOtpAuthService {
     userEntity.otp_active = false
     await this.userRepository.save(userEntity);
     
+    // delete recovery keys 
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(RecoveryKeyEntity)
+      .where({ user: userEntity.id })
+      .execute();
+
   }
 }

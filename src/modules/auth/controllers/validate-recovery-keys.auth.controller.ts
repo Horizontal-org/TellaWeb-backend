@@ -22,7 +22,7 @@ export class ValidateRecoveryKeysController {
     private validateRecoveryKeys: IValidateRecoveryKeysService,
   ) {}
 
-  @Post('/otp/recovery-key')
+  @Post('/otp/validate/recovery-key')
   async handler(@Body() body: LoginOtpAuthDto): Promise<boolean> {
     await this.validateRecoveryKeys.execute(body.userId, body.code)
 
