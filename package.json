@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@casl/ability": "^5.4.4",
+    "@nestjs/cli": "^8.2.4",
     "@nestjs/common": "^8.4.3",
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.4.3",
@@ -35,7 +36,6 @@
     "@nestjs/platform-express": "^8.4.3",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "8.0.3",
-    "@nestjs/cli": "^8.2.4",
     "@types/passport": "^1.0.7",
     "@types/passport-http": "^0.3.8",
     "@types/passport-local": "^1.0.33",
@@ -51,8 +51,10 @@
     "jszip": "^3.7.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
+    "mysql2": "^3.1.0",
     "nanoid": "^3.1.25",
     "nestjs-console": "7.0.1",
+    "otplib": "^12.0.1",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
@@ -63,11 +65,11 @@
     "rxjs": "^7.5.5",
     "sqlite3": "^5.0.2",
     "swagger-ui-express": "^4.1.6",
-    "typeorm": "0.2.34",
-    "yargs": "^16.2.0",
     "ts-node": "10.8.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.1.5"
+    "typeorm": "0.2.34",
+    "typescript": "^4.1.5",
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@nestjs/schematics": "^8.0.8",
@@ -94,7 +96,7 @@
     "prettier": "^2.2.1",
     "supertest": "^6.1.3",
     "ts-jest": "^26.5.2",
-    "ts-loader": "^8.0.17"    
+    "ts-loader": "^8.0.17"
   },
   "jest": {
     "moduleFileExtensions": [
