@@ -7,7 +7,7 @@ import { ReadProjectDto } from '../dto';
 import { TYPES, IGetByIdProjectApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
+@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], 'id')
 export class GetByIdProjectController {
   constructor(
     @Inject(TYPES.applications.IGetByIdProjectApplication)

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReadProjectDto } from '../dto';
 import {
@@ -18,6 +19,7 @@ export class ListProjectApplication implements IListProjectApplication {
   ) {}
 
   async execute(
+    user: ReadUserDto,
     take: number,
     skip: number,
     sort: string,
@@ -25,6 +27,7 @@ export class ListProjectApplication implements IListProjectApplication {
     search: string,
   ): Promise<PaginatedDto<ReadProjectDto>> {
     const { results: projects, total } = await this.listProjectService.execute(
+      user,
       take,
       skip,
       sort,

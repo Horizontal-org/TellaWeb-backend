@@ -13,13 +13,11 @@ import { TYPES, IEditProjectApplication } from '../interfaces';
 import { LoggedUser } from 'modules/auth/decorators';
 import { ReadUserDto } from 'modules/user/dto';
 
-@AuthController('project')
+@AuthController('project', [], 'id')
 export class AddReportProjectController {
   constructor(
     @Inject(REPORT_TYPES.applications.ICreateReportApplication)
     private createReportApplication: ICreateReportApplication,
-    @Inject(TYPES.applications.IEditProjectApplication)
-    private editProjectApplication: IEditProjectApplication,
   ) {}
 
   @ApiResponse({ type: ReadProjectDto })
