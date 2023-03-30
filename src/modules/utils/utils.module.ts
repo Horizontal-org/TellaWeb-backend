@@ -11,7 +11,7 @@ import { mailUtilServiceProvider, servicesUtilsProviders } from './utils.provide
   controllers: [...utilControllers],
   providers: [
     UtilsCommander,
-    ...servicesUtilsProviders
+    ...servicesUtilsProviders,
   ],
   exports: [
     mailUtilServiceProvider

@@ -50,7 +50,11 @@ export class LoginRecoveryKeysAuthController {
 
     await this.validateRecoveryKeysService.execute(body.userId, body.code)
 
-    const authToken = await this.generateTokenAuthService.execute(user);
+    const authToken = await this.generateTokenAuthService.execute({
+      user: user,
+      type: 'web',
+      expiresIn: '1d'
+    });
     
     response
       .cookie('access_token', authToken.access_token, {

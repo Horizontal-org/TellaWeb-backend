@@ -11,7 +11,7 @@ import {
 import { ICheckSuspiciousUserApplication, TYPES as USER_TYPES } from '../../user/interfaces'
 
 @Controller('login')
-export class LoginAuthController {
+export class LoginWebAuthController {
   constructor(
     @Inject(USER_TYPES.applications.ICheckSuspiciousUserApplication)
     private checkSuspiciousApplication: ICheckSuspiciousUserApplication,
@@ -22,29 +22,49 @@ export class LoginAuthController {
     
   ) {}
 
-  @Post()
+  @Post('web')
   async login(
+    @Req() req: Request,
     @Body() loginAuthDto: LoginAuthDto, 
     @Res() response: Response,
   ) {
 
+    const ip = requestIp.getClientIp(req)
     const { username, password } = loginAuthDto;
     const user = await this.validateAuthService.execute({ username, password });
-    const authToken = await this.generateTokenAuthService.execute({
-      user: user,
-      type: 'mobile',
-      expiresIn: '1y'
-    });
+    const flagged = await this.checkSuspiciousApplication.execute(ip, user.id)
 
-    response
-      .cookie('access_token', authToken.access_token, {
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-        domain: process.env.COOKIE_DOMAIN,
+    if (flagged) {
+      response.send({
+        flagged: true
       })
-      .send({
-        ...authToken,
-        user,
-      });    
+      return 
+    }
+    
+    if (user.otp_active) {
+      response.send({
+        user: {
+          id: user.id,
+          otp_active: user.otp_active
+        }
+      })
+    } else {
+      const authToken = await this.generateTokenAuthService.execute({
+        user: user,
+        type: 'web',
+        expiresIn: '1d'
+      });
+      response
+        .cookie('access_token', authToken.access_token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+          domain: process.env.COOKIE_DOMAIN,
+        })
+        .send({
+          ...authToken,
+          user,
+        });
+    }
+
   }
 }

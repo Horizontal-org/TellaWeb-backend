@@ -7,8 +7,10 @@ import { LoginOtpAuthController } from './login-otp.auth.controller';
 import { ValidateRecoveryKeysController } from './validate-recovery-keys.auth.controller';
 import { GetRecoveryKeysAuthController } from './get-recovery-keys.auth.controller';
 import { LoginRecoveryKeysAuthController } from './login-recovery-keys.auth.controller';
+import { LoginWebAuthController } from './login-web.auth.controller';
 
 export const authControllers = [
+  LoginWebAuthController,
   LoginAuthController,
   EnableOtpAuthController,
   VerifyOtpAuthController,

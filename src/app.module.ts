@@ -14,6 +14,7 @@ import { ProjectModule } from 'modules/project/project.module';
 import { UtilsModule } from 'modules/utils/utils.module';
 import { BullModule } from '@nestjs/bull';
 import { QueueModule } from 'modules/queue/queue.module';
+import { GlobalJwtModule } from 'modules/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -22,7 +23,6 @@ import { QueueModule } from 'modules/queue/queue.module';
       ...OrmConfig,
       autoLoadEntities: true,
     }),
-    QueueModule,
     ConsoleModule,
     UserModule,
     FileModule,
@@ -32,6 +32,8 @@ import { QueueModule } from 'modules/queue/queue.module';
     AbilityModule,
     ProjectModule,
     UtilsModule,
-  ]
+    QueueModule,
+    GlobalJwtModule,
+  ],
 })
 export class AppModule {}

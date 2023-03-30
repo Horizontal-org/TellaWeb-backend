@@ -10,15 +10,15 @@ import { ConfirmPasswordUserController } from './confirm-password.user.controlle
 import { UnblockUserController } from './unblock.user.controller';
 
 export const userControllers = [
-  ListUserController,
-  ChangePasswordUserController,
-  CreateUserController,
-  BatchDeleteUsersController,
-  EditUserController,
-  GetProfileUserController,
-  DeleteByIdUserController,
-  ConfirmPasswordUserController,
-  UnblockUserController,
-  // this needs to be last always
-  GetByUsernameController,
+  // ListUserController,
+  // ChangePasswordUserController,
+  // CreateUserController,
+  // BatchDeleteUsersController,
+  // EditUserController,
+  // GetProfileUserController,
+  // DeleteByIdUserController,
+  // ConfirmPasswordUserController,
+  // UnblockUserController,
+  // // this needs to be last always
+  // GetByUsernameController,
 ];

@@ -20,6 +20,7 @@ import { ProjectModule } from 'modules/project/project.module';
 import { UserVerificationCodeEntity } from './domain/user-verification-code.entity';
 import { UserWhitelistEntity } from './domain/user-whitelist.entity';
 
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
@@ -27,7 +28,7 @@ import { UserWhitelistEntity } from './domain/user-whitelist.entity';
     TypeOrmModule.forFeature([UserWhitelistEntity]),
     ConsoleModule,
     ReportModule,
-    AbilityModule,
+    AbilityModule,    
     forwardRef(() => ProjectModule),
   ],
   controllers: [...userControllers],

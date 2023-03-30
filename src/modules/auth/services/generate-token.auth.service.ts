@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { JWTPayload } from 'modules/jwt/domain/jwt-payload.auth.ov';
+import { JWTResponse } from 'modules/jwt/domain/jwt-response.auth.ov';
 
 import { ReadUserDto } from 'modules/user/dto';
 import {
@@ -7,7 +9,7 @@ import {
   TYPES as TYPES_USER,
 } from 'modules/user/interfaces';
 
-import { JWTPayload, JWTResponse } from '../domain';
+import TokenOptions from '../domain/token-options.auth';
 import { IGenerateTokenAuthService } from '../interfaces';
 
 @Injectable()
@@ -18,10 +20,13 @@ export class GenerateTokenAuthService implements IGenerateTokenAuthService {
     private jwtService: JwtService,
   ) {}
 
-  async execute(user: ReadUserDto): Promise<JWTResponse> {
-    const payload: JWTPayload = { userId: user.id };
+  async execute(tokenOptions: TokenOptions): Promise<JWTResponse> {
+    const payload: JWTPayload = { 
+      userId: tokenOptions.user.id,
+      type: tokenOptions.type
+    };
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: '1y' }),
+      access_token: this.jwtService.sign(payload, { expiresIn: tokenOptions.expiresIn }),
     };
   }
 }
