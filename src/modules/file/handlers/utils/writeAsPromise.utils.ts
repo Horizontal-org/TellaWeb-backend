@@ -11,11 +11,9 @@ export const createWritePromise = (filePath: string, stream: Stream) =>
     stream
       .on('data', (c) => {
         written += c.length
-        console.log('WRITTEN => ', written, filePath)
       })
       .pipe(createWriteStream(filePath, { flags: 'a', mode: 0o644 }))
       .on('pipe', () => {
-        console.log('Something is piping into the writer ==> ', filePath);
       })      
       .on('finish', () => res(true))
       .on('error', (error: Error) => {
