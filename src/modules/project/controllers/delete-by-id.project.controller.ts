@@ -7,7 +7,7 @@ import { TYPES, IDeleteByIdProjectApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { boolean } from 'yargs';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR])
+@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR], 'id')
 export class DeleteByIdProjectController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdProjectApplication)

@@ -17,6 +17,13 @@ import { EditProjectService } from './services/edit.project.service';
 
 import { DeleteByIdProjectApplication } from './applications/delete-by-id.project.application';
 import { DeleteByIdProjectService } from './services/delete-by-id.project.service';
+import { ProjectAccessGuard } from './guard/access.project.guard';
+
+
+export const projectAccessGuardProvider = {
+  provide: TYPES.guards.IProjectAccessGuard,
+  useClass: ProjectAccessGuard,
+};
 
 export const getBySlugApplicationProvider = {
   provide: TYPES.applications.IGetBySlugProjectApplication,
@@ -95,3 +102,7 @@ export const servicesProjectProviders = [
   deleteByIdProjectServiceProvider,
   getBySlugServiceProvider
 ];
+
+export const guardsProjectProviders = [
+  projectAccessGuardProvider
+]
