@@ -13,13 +13,18 @@ import {
   checkPasswordUserApplicationProvider,
   getByIdUserApplicationProvider,
   makePublicUserApplicationProvider,
+  checkSuspiciousApplicationProvider,
 } from './user.providers';
 import { userControllers } from './controllers';
 import { ProjectModule } from 'modules/project/project.module';
+import { UserVerificationCodeEntity } from './domain/user-verification-code.entity';
+import { UserWhitelistEntity } from './domain/user-whitelist.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserVerificationCodeEntity]),
+    TypeOrmModule.forFeature([UserWhitelistEntity]),
     ConsoleModule,
     ReportModule,
     AbilityModule,
@@ -35,6 +40,7 @@ import { ProjectModule } from 'modules/project/project.module';
     checkPasswordUserApplicationProvider,
     getByIdUserApplicationProvider,
     makePublicUserApplicationProvider,
+    checkSuspiciousApplicationProvider
   ],
 })
 export class UserModule {}

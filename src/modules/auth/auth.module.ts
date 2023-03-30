@@ -12,6 +12,7 @@ import { JwtStrategy } from './strategy/jwt.auth.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
 import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
+import { UtilsModule } from 'modules/utils/utils.module';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
       signOptions: { expiresIn: '1d' },
     }),
     UserModule,
+    UtilsModule,
     TypeOrmModule.forFeature([UserEntity]),
-    TypeOrmModule.forFeature([RecoveryKeyEntity]),
+    TypeOrmModule.forFeature([RecoveryKeyEntity])    
   ],
   controllers: [...authControllers],
   providers: [

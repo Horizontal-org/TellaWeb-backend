@@ -18,6 +18,10 @@ import { DeleteByIdUserApplication } from './applications/delete-by-id.user.appl
 import { DeleteByIdUserService } from './services/delete-by-id.user.service';
 import { BatchDeleteUsersApplication } from './applications/batch-delete.user.application';
 import { BatchDeleteUsersService } from './services/batch-delete.user.service';
+import { FlagUserAuthService } from './services/flag-user.auth.service';
+import { CheckSuspiciousUserApplication } from './applications/check-suspicious.user.application';
+import { UnblockUserService } from './services/unblock.user.service';
+import { HandleWhitelistUserService } from './services/handle-whitelist.user.service';
 
 export const rolesUserGuardProvider = {
   provide: TYPES.guards.IRolesUserGuard,
@@ -114,6 +118,26 @@ export const batchDeleteUsersServiceProvider = {
   useClass: BatchDeleteUsersService,
 };
 
+export const flagUserServiceProvider = {
+  provide: TYPES.services.IFlagUserAuthService,
+  useClass: FlagUserAuthService,
+}
+
+export const checkSuspiciousApplicationProvider = {
+  provide: TYPES.applications.ICheckSuspiciousUserApplication,
+  useClass: CheckSuspiciousUserApplication
+}
+
+export const unblockUserServiceProvider = {
+  provide: TYPES.services.IUnblockUserService,
+  useClass: UnblockUserService
+}
+
+export const handleWhitelistUserServiceProvider = {
+  provide: TYPES.services.IHandleWhitelistUserService,
+  useClass: HandleWhitelistUserService
+}
+
 export const applicationsUserProviders = [
   findByUsernameUserApplicationProvider,
   toggleRoleByUsernameUserApplicationProvider,
@@ -125,6 +149,7 @@ export const applicationsUserProviders = [
   makePublicUserApplicationProvider,
   deleteByIdUserApplication,
   batchDeleteUsersApplicationProvider,
+  checkSuspiciousApplicationProvider
 ];
 
 export const servicesUserProviders = [
@@ -135,5 +160,8 @@ export const servicesUserProviders = [
   editUserServiceProvider,
   findByIdUserServiceProvider,
   deleteByIdUserServiceProvider,
-  batchDeleteUsersServiceProvider
+  batchDeleteUsersServiceProvider,
+  flagUserServiceProvider,
+  unblockUserServiceProvider,
+  handleWhitelistUserServiceProvider
 ];

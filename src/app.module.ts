@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
 import { ConfigModule } from '@nestjs/config';
@@ -12,6 +12,8 @@ import { RemoteConfigurationModule } from './modules/remoteConfiguration/remote-
 import { AbilityModule } from './casl/casl.module';
 import { ProjectModule } from 'modules/project/project.module';
 import { UtilsModule } from 'modules/utils/utils.module';
+import { BullModule } from '@nestjs/bull';
+import { QueueModule } from 'modules/queue/queue.module';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { UtilsModule } from 'modules/utils/utils.module';
       ...OrmConfig,
       autoLoadEntities: true,
     }),
+    QueueModule,
     ConsoleModule,
     UserModule,
     FileModule,
@@ -28,7 +31,7 @@ import { UtilsModule } from 'modules/utils/utils.module';
     RemoteConfigurationModule,
     AbilityModule,
     ProjectModule,
-    UtilsModule
-  ],
+    UtilsModule,
+  ]
 })
 export class AppModule {}

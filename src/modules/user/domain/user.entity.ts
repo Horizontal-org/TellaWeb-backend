@@ -7,6 +7,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 import { ReportEntity } from 'modules/report/domain/report.entity';
@@ -16,6 +17,8 @@ import { EditUserDto } from '../dto/edit.user.dto';
 import { ProjectEntity } from 'modules/project/domain/project.entity';
 import { textChangeRangeIsUnchanged } from 'typescript';
 import { RecoveryKeyEntity } from './recovery-key.entity';
+import { UserVerificationCodeEntity } from './user-verification-code.entity';
+import { UserWhitelistEntity } from './user-whitelist.entity';
 
 @Exclude()
 @Entity()
@@ -43,6 +46,9 @@ export class UserEntity {
   @Column()
   otp_active: boolean;
 
+  @Column()
+  blocked: boolean;
+
   @Expose()
   @Column({ name: 'created_at' })
   createdAt!: Date;
@@ -50,6 +56,15 @@ export class UserEntity {
   @Expose()
   @Column({ name: 'deleted_at', nullable: true })
   deletedAt: Date;
+
+  @OneToMany(() => UserVerificationCodeEntity, (user_verification: UserVerificationCodeEntity) => user_verification.user)
+  @JoinColumn({ name: "user_id" })
+  verification_code: UserVerificationCodeEntity;
+
+  @OneToMany(() => UserWhitelistEntity, (user_whitelist: UserWhitelistEntity) => user_whitelist.user)
+  @JoinColumn({ name: "user_id" })
+  locations: UserWhitelistEntity[];
+
 
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.author)
   reports: ReportEntity[];
