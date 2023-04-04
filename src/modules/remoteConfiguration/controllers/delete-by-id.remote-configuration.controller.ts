@@ -3,14 +3,15 @@ import { ApiOkResponse } from '@nestjs/swagger';
 
 import { RolesUser } from 'modules/user/domain';
 
+import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { boolean } from 'yargs';
 import {
   IDeleteByIdRemoteConfigurationApplication,
-  TYPES,
+  TYPES
 } from '../interfaces';
-import { AuthController } from 'common/decorators/auth-controller.decorator';
-import { boolean } from 'yargs';
 
-@AuthController('config', [RolesUser.ADMIN])
+@AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)
 export class DeleteByIdRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdRemoteConfigurationApplication)

@@ -1,15 +1,12 @@
-import { Inject, UnauthorizedException } from '@nestjs/common';
-import {  
-  IFlagUserAuthService,
-  ICheckSuspiciousUserApplication,
-  TYPES,
-  IFindByUsernameUserService,
+import { InjectQueue } from '@nestjs/bull';
+import { Inject } from '@nestjs/common';
+import { Queue } from 'bull';
+import * as geoip from 'geoip-lite';
+import * as os from 'os';
+import {
+  ICheckSuspiciousUserApplication, IFindByUsernameUserService, IFlagUserAuthService, TYPES
 } from '../interfaces';
 import { IHandleWhitelistUserService } from '../interfaces/services/handle-whitelist.user.service.interface';
-import { Queue } from 'bull';
-import { InjectQueue } from '@nestjs/bull';
-import * as geoip from 'geoip-lite'
-import * as os from 'os'
 
 export class CheckSuspiciousUserApplication
   implements ICheckSuspiciousUserApplication {
@@ -27,15 +24,13 @@ export class CheckSuspiciousUserApplication
   async execute(ip, userId): Promise<boolean> {
     const user = await this.findByIdUserService.execute(userId)
     
-    // const location = geoip.lookup(ip)
     //TESTING
-    const location = geoip.lookup('190.210.141.21')    
+    const location = geoip.lookup(ip)
     if (!location) {
       return false
     }
 
     const isSuspicious = await this.handleWhitelistUserService.execute(location.country, userId)
-    console.log("🚀 ~ file: check-suspicious.user.application.ts:39 ~ execute ~ isSuspicious:", isSuspicious)
 
     // if suspicious
     if (isSuspicious) {

@@ -4,13 +4,13 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
 import { LoggedUser } from 'modules/auth/decorators';
-import { RolesUser } from 'modules/user/domain';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadUserDto } from 'modules/user/dto';
 
 import { CreateReportDto, ReadReportDto } from '../dto';
-import { TYPES, ICreateReportApplication } from '../interfaces';
+import { ICreateReportApplication, TYPES } from '../interfaces';
 
-@AuthController('report')
+@AuthController('report', [], JwtTypes.ALL)
 export class CreateReportController {
   constructor(
     @Inject(TYPES.applications.ICreateReportApplication)

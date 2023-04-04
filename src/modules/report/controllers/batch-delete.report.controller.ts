@@ -1,14 +1,15 @@
-import { Delete, Inject, Param, Post, Body } from '@nestjs/common';
+import { Body, Inject, Post } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
 import { RolesUser } from 'modules/user/domain';
 
-import { TYPES, IBatchDeleteReportApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { boolean } from 'yargs';
 import { BatchDeleteReportDto } from '../dto/batch-delete.report.dto';
+import { IBatchDeleteReportApplication, TYPES } from '../interfaces';
 
-@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR])
+@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
 export class BatchDeleteReportController {
   constructor(
     @Inject(TYPES.applications.IBatchDeleteReportApplication)

@@ -1,17 +1,18 @@
-import { Post, Inject, Param, Body } from '@nestjs/common';
-import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import { Body, Inject, Post } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 
 import { RolesUser } from 'modules/user/domain';
 
-import { ICreateRemoteConfigurationApplication, TYPES } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { ICreateRemoteConfigurationApplication, TYPES } from '../interfaces';
 
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import {
   CreateRemoteConfigurationDto,
-  ReadRemoteConfigurationDto,
+  ReadRemoteConfigurationDto
 } from '../dto';
 
-@AuthController('config', [RolesUser.ADMIN])
+@AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)
 export class CreateRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.ICreateRemoteConfigurationApplication)

@@ -1,17 +1,15 @@
-import { ForbiddenError } from '@casl/ability';
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Body, Inject, Post } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { LoggedUser } from 'modules/auth/decorators';
-import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadUserDto } from 'modules/user/dto';
-import { IEnableOtpAuthService, TYPES } from '../interfaces';
-import { EnableOtpAuthDto } from '../dto/enable-otp.auth.dto';
 import { EnableOtpResponseAuthDto } from '../dto/enable-otp-response.auth.dto';
+import { EnableOtpAuthDto } from '../dto/enable-otp.auth.dto';
+import { IEnableOtpAuthService, TYPES } from '../interfaces';
 
 
-@AuthController('auth')
+@AuthController('auth', [], JwtTypes.WEB)
 export class EnableOtpAuthController {
   constructor(
     @Inject(TYPES.services.IEnableOtpAuthService)

@@ -1,29 +1,33 @@
-import { Injectable, CanActivate, ExecutionContext, mixin, UnauthorizedException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, mixin } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 export const TokenAccessGuard = (accessType) => {
- 
+  
   @Injectable()
   class TokenAccessMixin implements CanActivate {
     
     constructor(
       public jwtService: JwtService,
-    ) {}
-
-    async canActivate(context: ExecutionContext) {      
-      // TODO REMOVE
-      return true
+      ) {}
       
+    async canActivate(context: ExecutionContext) {      
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
-      console.log("🚀 ~ file: token-access.user.guard.ts:16 ~ TokenAccessMixin ~ canActivate ~ token:", token)
-      console.log(process.env.JWT_SECRET)
+
       if (!token) {
         throw new UnauthorizedException();
       }
       
+      if (accessType === JwtTypes.ALL) {
+        return true
+      }
+
+      if (!accessType) {
+        return false
+      }
+
       try {
         const payload = await this.jwtService.verifyAsync(
           token,
@@ -31,18 +35,10 @@ export const TokenAccessGuard = (accessType) => {
             secret: process.env.JWT_SECRET
           }
         );
-        console.log("🚀 ~ file: token-access.user.guard.ts:31 ~ TokenAccessMixin ~ canActivate ~ payload:", payload)        
+        return accessType === payload.type
       } catch(e) {
-        console.log("🚀 ~ file: token-access.user.guard.ts:33 ~ TokenAccessMixin ~ canActivate ~ e:", e)
         throw new UnauthorizedException();
-      }
-      console.log("🚀 ~ file: token-access.user.guard.ts:13 ~ TokenAccessMixin ~ canActivate ~ accessType:", accessType)
-      if (!accessType) {
-        return false
-      }
-
-    
-      return true;
+      }      
     }
 
     public extractTokenFromHeader(request: Request): string | undefined {

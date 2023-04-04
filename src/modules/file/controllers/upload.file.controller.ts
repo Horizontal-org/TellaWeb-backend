@@ -9,8 +9,9 @@ import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 import { FileDto } from '../dto';
 import { TYPES, ICreateFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
 export class UploadFileReportController {
   constructor(
     @Inject(TYPES.applications.ICreateFileApplication)

@@ -11,8 +11,8 @@ import { RolesUserGuard } from 'modules/user/guard/roles.user.guard';
 export function AuthController(
   controllerName: string,
   roles: RolesUser[] = [],
-  projectKeyType: string = null,
-  // accessType: string = null
+  accessType: string = null,
+  projectKeyType: string = null
 ) {
   return applyDecorators(
     Controller(controllerName),
@@ -20,7 +20,7 @@ export function AuthController(
     UseGuards(AuthGuard('jwt')),
     UseGuards(RolesUserGuard),
     Roles(...roles),
-    // UseGuards(TokenAccessGuard(accessType)),
+    UseGuards(TokenAccessGuard(accessType)),
     UseGuards(ProjectAccessGuard(projectKeyType))
   );
 }

@@ -21,7 +21,7 @@ export class UnblockUserService implements IUnblockUserService {
   ) {}
 
   async execute(code: string, ip: string): Promise<boolean> {
-    const location = geoip.lookup(ip)    
+    const location = geoip.lookup(ip)
     if (!location) {
       return false
     }

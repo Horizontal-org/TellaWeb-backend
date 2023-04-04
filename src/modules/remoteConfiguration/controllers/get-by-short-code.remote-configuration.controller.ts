@@ -2,16 +2,16 @@ import { Get, Inject, Param } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-import { RolesUser } from 'modules/user/domain';
-import {
-  IGetByShortCodeRemoteConfigurationApplication,
-  TYPES,
-} from '../interfaces';
-import { ReadRemoteConfigurationDto } from '../dto/read.remote-configuration.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { ReadRemoteConfigurationDto } from '../dto/read.remote-configuration.dto';
+import {
+  IGetByShortCodeRemoteConfigurationApplication,
+  TYPES
+} from '../interfaces';
 
-@AuthController('config')
+@AuthController('config', [], JwtTypes.WEB)
 export class GetByShortCodeRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IGetByShortCodeRemoteConfigurationApplication)
