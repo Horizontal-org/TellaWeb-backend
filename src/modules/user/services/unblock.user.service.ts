@@ -1,14 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 
+import * as geoip from 'geoip-lite';
 import { UserEntity } from '../domain';
-import { NotFoundUserException } from '../exceptions';
-import { IFindByUsernameUserService, IUnblockUserService } from '../interfaces';
-import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
-import { UnauthorizedException } from '@nestjs/common';
 import { UserVerificationCodeEntity } from '../domain/user-verification-code.entity';
-import * as geoip from 'geoip-lite'
 import { UserWhitelistEntity } from '../domain/user-whitelist.entity';
+import { NotFoundUserException } from '../exceptions';
+import { IUnblockUserService } from '../interfaces';
 
 export class UnblockUserService implements IUnblockUserService {
   constructor(
@@ -23,7 +21,7 @@ export class UnblockUserService implements IUnblockUserService {
   async execute(code: string, ip: string): Promise<boolean> {
     const location = geoip.lookup(ip)
     if (!location) {
-      return false
+      throw new NotFoundUserException();
     }
 
     let verification = await this.userVerification.findOne({ 
