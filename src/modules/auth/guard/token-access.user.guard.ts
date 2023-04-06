@@ -15,13 +15,13 @@ export const TokenAccessGuard = (accessType) => {
     async canActivate(context: ExecutionContext) {      
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
+            
+      if (accessType === JwtTypes.ALL) {
+        return true
+      }
 
       if (!token) {
         throw new UnauthorizedException();
-      }
-      
-      if (accessType === JwtTypes.ALL) {
-        return true
       }
 
       if (!accessType) {
