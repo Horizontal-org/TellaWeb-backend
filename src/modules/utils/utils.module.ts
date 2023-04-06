@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { UtilsCommander } from './commander/utils.commander';
 import { utilControllers } from './controllers';
 import { ConsoleModule } from 'nestjs-console';
+import { mailUtilServiceProvider, servicesUtilsProviders } from './utils.providers';
 
 @Module({
   imports: [
@@ -9,7 +10,11 @@ import { ConsoleModule } from 'nestjs-console';
   ],
   controllers: [...utilControllers],
   providers: [
-    UtilsCommander
+    UtilsCommander,
+    ...servicesUtilsProviders,
+  ],
+  exports: [
+    mailUtilServiceProvider
   ]
 })
 export class UtilsModule {}

@@ -50,9 +50,22 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - api-network
-
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    networks:
+      - api-network
+    expose:
+      - '6379'
+    ports:
+      - 6379:6379
+    volumes: 
+      - redis-data:/data
+      
 networks:
   api-network:
 
 volumes:
   db-data:
+  redis-data:

@@ -1,13 +1,13 @@
 import { Get, Inject, Param } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
-import { RolesUser } from 'modules/user/domain';
 
-import { ReadRemoteConfigurationDto } from '../dto';
-import { TYPES, IGetByIdRemoteConfigurationApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { ReadRemoteConfigurationDto } from '../dto';
+import { IGetByIdRemoteConfigurationApplication, TYPES } from '../interfaces';
 
-@AuthController('config')
+@AuthController('config', [], JwtTypes.ALL)
 export class GetByIdRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IGetByIdRemoteConfigurationApplication)

@@ -5,12 +5,13 @@ import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { LoggedUser } from 'modules/auth/decorators';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from '../domain';
 
 import { ReadUserDto } from '../dto';
 import { IFindByUsernameUserApplication, TYPES } from '../interfaces';
 
-@AuthController('user', [RolesUser.ADMIN])
+@AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
 export class GetByUsernameController {
   constructor(
     @Inject(TYPES.applications.IFindByUsernameUserApplication)

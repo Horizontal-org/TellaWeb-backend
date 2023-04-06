@@ -1,5 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { JWTPayload } from '../domain';
+import { JWTPayload } from 'modules/jwt/domain/jwt-payload.auth.ov';
+
 
 export const LoggedUser = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): Partial<JWTPayload> => {

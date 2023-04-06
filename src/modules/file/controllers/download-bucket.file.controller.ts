@@ -1,11 +1,12 @@
 import { Get, Header, Inject, Param, Res } from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetZippedBucketFileApplication } from '../interfaces';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.ALL)
 export class DownloadBucketFileController {
   constructor(
     @Inject(TYPES.applications.IGetZippedBucketFileApplication)

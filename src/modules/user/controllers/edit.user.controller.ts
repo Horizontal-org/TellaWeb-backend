@@ -5,11 +5,12 @@ import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { LoggedUser } from 'modules/auth/decorators';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { EditUserDto, ReadUserDto } from '../dto';
 import { IEditUserApplication, TYPES } from '../interfaces';
 
-@AuthController('user')
+@AuthController('user', [], JwtTypes.WEB)
 export class EditUserController {
   constructor(
     @Inject(TYPES.applications.IEditUserApplication)

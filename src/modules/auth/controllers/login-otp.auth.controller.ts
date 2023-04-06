@@ -33,7 +33,11 @@ export class LoginOtpAuthController {
   async handler(@Body() body: LoginOtpAuthDto, @Res() response: Response): Promise<boolean> {
     await this.verifyOtpService.execute(body.code, body.userId)
     const user = await this.getByIdUserApplication.execute(body.userId)
-    const authToken = await this.generateTokenAuthService.execute(user);
+    const authToken = await this.generateTokenAuthService.execute({
+      user: user,
+      type: 'web',
+      expiresIn: '1d'
+    });
 
     response
       .cookie('access_token', authToken.access_token, {

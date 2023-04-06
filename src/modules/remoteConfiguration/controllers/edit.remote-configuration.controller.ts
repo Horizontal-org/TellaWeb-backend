@@ -1,13 +1,14 @@
-import { Body, Inject, Post, ParseUUIDPipe, Param } from '@nestjs/common';
+import { Body, Inject, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
 import { EditRemoteConfigurationDto, ReadRemoteConfigurationDto } from '../dto';
-import { TYPES, IEditRemoteConfigurationApplication } from '../interfaces';
+import { IEditRemoteConfigurationApplication, TYPES } from '../interfaces';
 
-@AuthController('config', [RolesUser.ADMIN])
+@AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)
 export class EditRemoteConfigurationController {
   constructor(
     @Inject(TYPES.applications.IEditRemoteConfigurationApplication)

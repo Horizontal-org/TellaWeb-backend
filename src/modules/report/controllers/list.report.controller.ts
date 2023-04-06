@@ -4,13 +4,14 @@ import { ApiExtraModels } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { RolesUser } from 'modules/user/domain';
 
 import { ReadReportDto } from '../dto';
 import { IListReportApplication, TYPES } from '../interfaces';
 
-@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
+@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
 @ApiExtraModels(PaginatedDto)
 export class ListReportController {
   constructor(

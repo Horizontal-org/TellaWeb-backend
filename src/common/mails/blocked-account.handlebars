@@ -1,0 +1,32 @@
+{{#> layout }}
+  <div>
+    <p style="margin-bottom: 4px;">
+      Hello,
+    </p>
+    <p>
+      We detected an unusual sign-in attempt to your Tella Web account {{ username }} com from a device or location you don't usually use.:      
+    </p>
+    <ul style="margin-bottom: 4px;">
+      <li>
+        Location: {{ location }}
+      </li>
+      <li>
+        IP: {{ ip }}
+      </li>
+      <li>
+        Device name: {{ device }}
+      </li>        
+    </ul>
+    <p style="margin-bottom: 4px;">
+      To prevent any unauthorized sign-in,  we blocked your account.  
+      If this was you, <a href="https://beta.web.tella-app.org/verify?code={{ token }}" target="_blank">follow this link</a> to unblock your account. The link will expire in 10 minutes.
+    </p>
+    <p style="margin-bottom: 4px;">
+      If this wasn't you, please contact your administrator.
+    </p>
+    <p>
+      Best regards,<br>
+      Tella Team
+    </p>
+  </div>
+{{/layout}}

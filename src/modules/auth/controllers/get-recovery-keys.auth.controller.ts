@@ -1,15 +1,14 @@
-import { ForbiddenError } from '@casl/ability';
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Get, Inject } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { LoggedUser } from 'modules/auth/decorators';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadUserDto } from 'modules/user/dto';
 import { TYPES } from '../interfaces';
 import { IGetRecoveryKeysService } from '../interfaces/services/get.recovery-keys.service.interface';
 
 
-@AuthController('auth')
+@AuthController('auth', [], JwtTypes.WEB)
 export class GetRecoveryKeysAuthController {
   constructor(
     @Inject(TYPES.services.IGetRecoveryKeysService)

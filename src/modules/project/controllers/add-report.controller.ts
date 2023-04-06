@@ -1,25 +1,21 @@
-import { Body, Inject, Post, ParseUUIDPipe, Param, Put } from '@nestjs/common';
+import { Body, Inject, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
-import { RolesUser } from 'modules/user/domain';
-import { plainToClass } from 'class-transformer';
 
 import { CreateReportDto, ReadReportDto } from '../../report/dto';
-import { EditProjectDto, ReadProjectDto } from '../dto';
-import { TYPES as REPORT_TYPES, ICreateReportApplication } from '../../report/interfaces';
-import { TYPES, IEditProjectApplication } from '../interfaces';
+import { ICreateReportApplication, TYPES as REPORT_TYPES } from '../../report/interfaces';
+import { ReadProjectDto } from '../dto';
 
 import { LoggedUser } from 'modules/auth/decorators';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadUserDto } from 'modules/user/dto';
 
-@AuthController('project')
+@AuthController('project', [], JwtTypes.ALL, 'id')
 export class AddReportProjectController {
   constructor(
     @Inject(REPORT_TYPES.applications.ICreateReportApplication)
     private createReportApplication: ICreateReportApplication,
-    @Inject(TYPES.applications.IEditProjectApplication)
-    private editProjectApplication: IEditProjectApplication,
   ) {}
 
   @ApiResponse({ type: ReadProjectDto })

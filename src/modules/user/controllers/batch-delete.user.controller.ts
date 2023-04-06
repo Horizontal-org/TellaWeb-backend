@@ -8,8 +8,9 @@ import { TYPES } from '../interfaces';
 import { boolean } from 'yargs';
 import { IBatchDeleteUsersApplication } from '../interfaces/applications/batch-delete.user.application.interface';
 import { BatchDeleteUsersDto } from '../dto';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('user', [RolesUser.ADMIN])
+@AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
 export class BatchDeleteUsersController {
   constructor(
     @Inject(TYPES.applications.IBatchDeleteUsersApplication)

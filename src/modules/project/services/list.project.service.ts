@@ -6,6 +6,7 @@ import { PartialResult } from 'common/dto/partial-result.common.dto';
 
 import { ProjectEntity } from '../domain';
 import { IListProjectService } from '../interfaces';
+import { ReadUserDto } from 'modules/user/dto';
 
 @Injectable()
 export class ListProjectService implements IListProjectService {
@@ -15,6 +16,7 @@ export class ListProjectService implements IListProjectService {
   ) {}
 
   async execute(
+    user: ReadUserDto,
     take: number,
     skip: number,
     sort: string,
@@ -28,6 +30,10 @@ export class ListProjectService implements IListProjectService {
       .skip(skip)
       .take(take);
 
+    if (user.role !== 'admin') {
+      query.where('users.id = :userId', { userId: user.id })
+    }
+    
     if (search && search.length > 0) {
       query.where(
         'project.name like :search',

@@ -4,6 +4,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { hashPassword } from 'common/utils/password.utils';
 import { LoggedUser } from 'modules/auth/decorators';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { RolesUser } from '../domain';
 import { ReadUserDto, ChangePasswordUserDto } from '../dto';
@@ -14,7 +15,7 @@ import {
   IEditUserApplication,
 } from '../interfaces';
 
-@AuthController('user')
+@AuthController('user', [], JwtTypes.WEB)
 export class ConfirmPasswordUserController {
   constructor(
     @Inject(TYPES.applications.ICheckPasswordUserApplication)
