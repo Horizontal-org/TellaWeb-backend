@@ -1,12 +1,12 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Inject } from '@nestjs/common';
 import { Queue } from 'bull';
-import * as geoip from 'geoip-lite';
 import * as os from 'os';
 import {
   ICheckSuspiciousUserApplication, IFindByUsernameUserService, IFlagUserAuthService, TYPES
 } from '../interfaces';
 import { IHandleWhitelistUserService } from '../interfaces/services/handle-whitelist.user.service.interface';
+import IPinfoWrapper from "node-ipinfo";
 
 export class CheckSuspiciousUserApplication
   implements ICheckSuspiciousUserApplication {
@@ -23,10 +23,11 @@ export class CheckSuspiciousUserApplication
 
   async execute(ip, userId): Promise<boolean> {
     const user = await this.findByIdUserService.execute(userId)
-    
-    //TESTING
-    const location = geoip.lookup(ip)
-    if (!location) {
+
+    const ipInfo = new IPinfoWrapper(process.env.IP_LOCATION_KEY)
+    const location = await ipInfo.lookupIp(ip)
+
+    if (!location || !location.country) {
       return false
     }
 

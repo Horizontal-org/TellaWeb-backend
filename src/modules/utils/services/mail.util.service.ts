@@ -30,7 +30,7 @@ export class MailUtilService {
     try {
       await this.transporter.sendMail({
         to: params.to,
-        from: 'noreply@support.tella-app.org', // sender address
+        from: process.env.SMTP_GLOBAL_FROM, // sender address
         subject: params.subject, // Subject line
         template: 'blocked-account',
         context: {...params.data}

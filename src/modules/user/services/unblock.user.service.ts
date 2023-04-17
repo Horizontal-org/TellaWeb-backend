@@ -1,12 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 
-import * as geoip from 'geoip-lite';
 import { UserEntity } from '../domain';
 import { UserVerificationCodeEntity } from '../domain/user-verification-code.entity';
 import { UserWhitelistEntity } from '../domain/user-whitelist.entity';
 import { NotFoundUserException } from '../exceptions';
 import { IUnblockUserService } from '../interfaces';
+import IPinfoWrapper from "node-ipinfo";
 
 export class UnblockUserService implements IUnblockUserService {
   constructor(
@@ -19,8 +19,10 @@ export class UnblockUserService implements IUnblockUserService {
   ) {}
 
   async execute(code: string, ip: string): Promise<boolean> {
-    const location = geoip.lookup(ip)
-    if (!location) {
+    const ipInfo = new IPinfoWrapper(process.env.IP_LOCATION_KEY)
+    const location = await ipInfo.lookupIp(ip)
+
+    if (!location || !location.country) {
       throw new NotFoundUserException();
     }
 

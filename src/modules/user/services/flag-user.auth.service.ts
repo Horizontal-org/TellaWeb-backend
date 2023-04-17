@@ -25,7 +25,7 @@ export class FlagUserAuthService implements IFlagUserAuthService {
     userVerification.user = user
 
     const auxDate = new Date()
-    userVerification.expiresAt = new Date(auxDate.getTime() + 30*60000)
+    userVerification.expiresAt = new Date(auxDate.getTime() + 10*60000)
     
     await this.userVerificationRepo.save(userVerification)
 

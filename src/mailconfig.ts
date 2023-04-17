@@ -1,17 +1,17 @@
-// import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
-// dotenv.config();
+dotenv.config();
 
 export const MailConfig = {
-  host: "email.wearehorizontal.org",
-  port: 25,
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT),
   secure: false,
   debug: true,
   logger: true,
   direct:true,
   auth: {
-    user: "horizontal/tellaweb-beta",
-    pass: "J96Mjt4q6Bw22risL6SHOcEQ",
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   }
 }
 
