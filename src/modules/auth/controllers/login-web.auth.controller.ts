@@ -28,7 +28,6 @@ export class LoginWebAuthController {
     @Body() loginAuthDto: LoginAuthDto, 
     @Res() response: Response,
   ) {
-
     const ip = requestIp.getClientIp(req)
     const { username, password } = loginAuthDto;
     const user = await this.validateAuthService.execute({ username, password });

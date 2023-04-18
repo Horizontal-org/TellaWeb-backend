@@ -46,7 +46,8 @@ export class CheckSuspiciousUserApplication
           location: location.country,
           ip: ip,
           device: os.hostname(),
-          token: verificationCode
+          token: verificationCode,
+          url: process.env.ADMIN_DOMAIN
         }
       })
       
