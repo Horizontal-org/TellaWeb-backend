@@ -35,7 +35,7 @@
     "@nestjs/platform-express": "^8.4.3",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "8.0.3",
-    "@nestjs/cli": "^8.2.4",
+    "@nestjs/cli": "^9.4.1",
     "@types/passport": "^1.0.7",
     "@types/passport-http": "^0.3.8",
     "@types/passport-local": "^1.0.33",
