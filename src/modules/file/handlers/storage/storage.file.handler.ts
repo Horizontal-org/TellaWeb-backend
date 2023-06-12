@@ -60,6 +60,26 @@ export class StorageFileHandler implements IStorageFileHandler {
       );
   }
 
+  async downloadFileFromBucket(
+    bucketId: string,
+    fileName: string,
+  ): Promise<ReadStream | null> {
+    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    const file = bucketFullFiles.find(
+      (file) => file.isFile() && file.name === fileName,
+    );
+    if (!file) {
+      return null; // File not found in the bucket
+    }
+
+    const filePath = path.join(bucketFullPath, file.name);
+    return createReadStream(filePath);
+  }
+
   async deleteBucket(bucketId: string): Promise<boolean> {
     const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
     try {
@@ -176,9 +196,8 @@ export class StorageFileHandler implements IStorageFileHandler {
       if (mime.includes('audio')) return FileType.AUDIO;
       if (mime.includes('image')) return FileType.IMAGE;
       // TEST ONLY REMOVE
-
     } catch (e) {
-      console.log("SEE ERROR", e)
+      console.log('SEE ERROR', e);
     }
 
     return FileType.OTHER;
