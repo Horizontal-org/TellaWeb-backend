@@ -20,4 +20,14 @@ export class ZipBucketFileService implements IZipBucketFileService {
     const filesStream = await this.storageFileHandlerl.getBucket(bucketId);
     return await this.compressionFileHandler.execute(filesStream);
   }
+  async downloadFileFromBucket(
+    bucketId: string,
+    fileName: string,
+  ): Promise<ReadStream> {
+    const fileStream = await this.storageFileHandlerl.downloadFileFromBucket(
+      bucketId,
+      fileName,
+    );
+    return fileStream;
+  }
 }
