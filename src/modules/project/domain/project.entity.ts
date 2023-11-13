@@ -1,4 +1,5 @@
 import { ReportEntity } from 'modules/report/domain';
+import { ResourceEntity } from 'modules/resource/domain';
 import { UserEntity } from 'modules/user/domain';
 import {
   Entity,
@@ -42,6 +43,21 @@ export class ProjectEntity {
     }
   })
   users: UserEntity[];
+
+  @ManyToMany(() => ResourceEntity, resource => resource.projects)
+  @JoinTable({
+    name: 'projects_users',
+    joinColumn: {
+      name: 'project_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'resource_id',
+      referencedColumnName: 'id',
+    }
+  })
+  resources: ResourceEntity[];
+
 
   @Column({ nullable: true })
   url: string;
