@@ -22,6 +22,7 @@ export class EditProjectController {
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
   ): Promise<ReadProjectDto> {
     editProjectDto.id = projectId;
+    console.log("🚀 ~ file: edit.project.controller.ts:25 ~ EditProjectController ~ editProjectDto:", editProjectDto)
     const project = await this.editProjectApplication.execute(editProjectDto);
 
     return project;

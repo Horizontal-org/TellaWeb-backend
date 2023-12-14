@@ -1,107 +1,54 @@
-// import { TYPES } from './interfaces';
+import { TYPES } from './interfaces';
 
-// import { CreateProjectApplication } from './applications/create.project.application';
-// import { CreateProjectService } from './services/create.project.service';
+import { ListResourceService } from './services/list.resource.service';
+import { UploadResourceService } from './services/upload.resource.service';
+import { CloseResourceService } from './services/close.resource.service';
+import { CheckNameResourceService } from './services/check-name.resource.service';
+import { DeleteResourceService } from './services/delete.resource.service';
+import { DownloadResourceService } from './services/download.resource.service';
 
-// import { ListProjectApplication } from './applications/list.project.application';
-// import { ListProjectService } from './services/list.project.service';
+export const listResourceServiceProvider = {
+  provide: TYPES.services.IListResourceService,
+  useClass: ListResourceService,
+};
 
-// import { GetByIdProjectApplication } from './applications/get-by-id.project.application';
-// import { GetByIdProjectService } from './services/get-by-id.project.service';
+export const uploadResourceServiceProvider = {
+  provide: TYPES.services.IUploadResourceService,
+  useClass: UploadResourceService
+}
 
-// import { GetBySlugProjectApplication } from './applications/get-by-slug.project.application';
-// import { GetBySlugProjectService } from './services/get-by-slug.project.service';
+export const closeResourceServiceProvider = {
+  provide: TYPES.services.ICloseResourceService,
+  useClass: CloseResourceService
+}
 
-// import { EditProjectApplication } from './applications/edit.project.application';
-// import { EditProjectService } from './services/edit.project.service';
+export const checkNameResourceServiceProvider = {
+  provide: TYPES.services.ICheckNameResourceService,
+  useClass: CheckNameResourceService
+}
 
-// import { DeleteByIdProjectApplication } from './applications/delete-by-id.project.application';
-// import { DeleteByIdProjectService } from './services/delete-by-id.project.service';
-// import { ProjectAccessGuard } from './guard/access.project.guard';
+export const deleteResourceServiceProvider = {
+  provide: TYPES.services.IDeleteResourceService,
+  useClass: DeleteResourceService
+}
+
+export const downloadResourceServiceProvider = {
+  provide: TYPES.services.IDownloadResourceService,
+  useClass: DownloadResourceService
+}
 
 
-// export const projectAccessGuardProvider = {
-//   provide: TYPES.guards.IProjectAccessGuard,
-//   useClass: ProjectAccessGuard,
-// };
+export const applicationsResourceProviders = [
+];
 
-// export const getBySlugApplicationProvider = {
-//   provide: TYPES.applications.IGetBySlugProjectApplication,
-//   useClass: GetBySlugProjectApplication,
-// }
-
-// export const getBySlugServiceProvider = {
-//   provide: TYPES.services.IGetBySlugProjectService,
-//   useClass: GetBySlugProjectService,
-// }
-
-// export const createProjectApplicationProvider = {
-//   provide: TYPES.applications.ICreateProjectApplication,
-//   useClass: CreateProjectApplication,
-// };
-
-// export const createProjectServiceProvider = {
-//   provide: TYPES.services.ICreateProjectService,
-//   useClass: CreateProjectService,
-// };
-
-// export const listProjectApplicationProvider = {
-//   provide: TYPES.applications.IListProjectApplication,
-//   useClass: ListProjectApplication,
-// };
-
-// export const listProjectServiceProvider = {
-//   provide: TYPES.services.IListProjectService,
-//   useClass: ListProjectService,
-// };
-
-// export const getByIdProjectApplicationProvider = {
-//   provide: TYPES.applications.IGetByIdProjectApplication,
-//   useClass: GetByIdProjectApplication,
-// };
-
-// export const getByIdProjectServiceProvider = {
-//   provide: TYPES.services.IGetByIdProjectService,
-//   useClass: GetByIdProjectService,
-// };
-
-// export const editProjectApplicationProvider = { 
-//   provide: TYPES.applications.IEditProjectApplication,
-//   useClass: EditProjectApplication,
-// };
-
-// export const editProjectServiceProvider = {
-//   provide: TYPES.services.IEditProjectService,
-//   useClass: EditProjectService,
-// };
-
-// export const deleteByIdProjectApplicationProvider = {
-//   provide: TYPES.applications.IDeleteByIdProjectApplication,
-//   useClass: DeleteByIdProjectApplication
-// };
-
-// export const deleteByIdProjectServiceProvider = {
-//   provide: TYPES.services.IDeleteByIdProjectService,
-//   useClass: DeleteByIdProjectService,
-// };
-
-// export const applicationsProjectProviders = [
-//   createProjectApplicationProvider,
-//   listProjectApplicationProvider,
-//   getByIdProjectApplicationProvider,
-//   editProjectApplicationProvider,
-//   deleteByIdProjectApplicationProvider,
-//   getBySlugApplicationProvider
-// ];
-
-// export const servicesProjectProviders = [
-//   createProjectServiceProvider,
-//   listProjectServiceProvider,
-//   getByIdProjectServiceProvider,
-//   editProjectServiceProvider,
-//   deleteByIdProjectServiceProvider,
-//   getBySlugServiceProvider
-// ];
+export const servicesResourceProviders = [
+  listResourceServiceProvider,
+  uploadResourceServiceProvider,
+  closeResourceServiceProvider,
+  checkNameResourceServiceProvider,
+  deleteResourceServiceProvider,
+  downloadResourceServiceProvider
+];
 
 // export const guardsProjectProviders = [
 //   projectAccessGuardProvider

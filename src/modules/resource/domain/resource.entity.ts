@@ -14,7 +14,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { ProjectEntity } from 'modules/project/domain';
 
 @Exclude()
-@Entity()
+@Entity("resources")
 export class ResourceEntity {
   @Expose()
   @PrimaryGeneratedColumn('uuid')
@@ -24,18 +24,24 @@ export class ResourceEntity {
   @Column()
   fileName: string;
 
+  @Expose()
+  @Column()
+  title: string;
+
+  // @ManyToMany(() => ProjectEntity, project => project.resources)
+  // @JoinTable({
+  //   name: 'projects_resources',
+  //   joinColumn: {
+  //     name: 'resource_id',
+  //     referencedColumnName: 'id',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'project_id',
+  //     referencedColumnName: 'id',
+  //   }
+  // })
+  // projects: ProjectEntity[];
   @ManyToMany(() => ProjectEntity, project => project.resources)
-  @JoinTable({
-    name: 'projects_resources',
-    joinColumn: {
-      name: 'resource_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'project_id',
-      referencedColumnName: 'id',
-    }
-  })
   projects: ProjectEntity[];
 
 
@@ -43,6 +49,11 @@ export class ResourceEntity {
   @Column({ name: 'created_at' })
   createdAt!: Date;
 
+  @Expose()
+  @Column()
+  size?: string;
+
+  @Expose()
   @Column()
   type: string;
 

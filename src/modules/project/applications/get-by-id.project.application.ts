@@ -18,6 +18,7 @@ export class GetByIdProjectApplication implements IGetByIdProjectApplication {
 
   async execute(id: string): Promise<ReadProjectDto> {
     const project = await this.getByIdProjectService.execute(id);
+    console.log("🚀 ~ file: get-by-id.project.application.ts:21 ~ GetByIdProjectApplication ~ execute ~ project:", project)
     if (!project) throw new NotFoundProjectException(id);
 
     return plainToClass(ReadProjectDto, project);

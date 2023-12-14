@@ -7,9 +7,11 @@ import { FileEntity } from './domain/file.entity';
 
 import {
   applicationsFileProviders,
+  compressionFileHandlerProvider,
   deleteBucketFileApplicationProvider,
   handlersFileProviders,
   servicesFileProviders,
+  storageFileHandlerProvider,
 } from './file.providers';
 
 @Module({
@@ -23,6 +25,6 @@ import {
     ...applicationsFileProviders,
     ...servicesFileProviders,
   ],
-  exports: [deleteBucketFileApplicationProvider],
+  exports: [deleteBucketFileApplicationProvider, storageFileHandlerProvider, compressionFileHandlerProvider],
 })
 export class FileModule {}

@@ -21,6 +21,11 @@ export class createResourcesTable1699551422241 implements MigrationInterface {
                         type: "varchar",
                     },
                     {
+                        name: "size",
+                        type: "varchar",
+                        isNullable: true
+                    },                    
+                    {
                         name: "type",
                         type: "varchar",
                     },
@@ -39,21 +44,14 @@ export class createResourcesTable1699551422241 implements MigrationInterface {
                 name: "projects_resources",
                 columns: [
                     {
-                        name: "id",
-                        type: "varchar",
-                        isPrimary: true,
-                    },
-                    {
                         name: "project_id",
                         type: "varchar",
+                        isPrimary: true
                     },
                     {
                         name: "resource_id",
                         type: "varchar",
-                    },
-                    {
-                        name: 'created_at',
-                        type: 'timestamp'
+                        isPrimary: true
                     },
                 ],
             }),
@@ -82,6 +80,19 @@ export class createResourcesTable1699551422241 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        const table = await queryRunner.getTable("projects_resources")
+        const foreignKey = table.foreignKeys.find(
+            (fk) => fk.columnNames.indexOf("project_id") !== -1,
+        )
+        await queryRunner.dropForeignKey("projects_resources", foreignKey)
+
+        const resourceForeignKey = table.foreignKeys.find(
+            (fk) => fk.columnNames.indexOf("resource_id") !== -1,
+        )
+        await queryRunner.dropForeignKey("projects_resources", resourceForeignKey)        
+        await queryRunner.dropTable("projects_resources")
+        await queryRunner.dropTable("resources")
+
     }
 
 }

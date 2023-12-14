@@ -24,5 +24,10 @@ export class EditProjectDto {
   @ApiProperty()
   @IsOptional()
   @IsArray()
+  resources: Array<string>
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
   reports: Array<string>  
 }

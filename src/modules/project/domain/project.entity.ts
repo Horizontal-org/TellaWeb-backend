@@ -46,7 +46,7 @@ export class ProjectEntity {
 
   @ManyToMany(() => ResourceEntity, resource => resource.projects)
   @JoinTable({
-    name: 'projects_users',
+    name: 'projects_resources',
     joinColumn: {
       name: 'project_id',
       referencedColumnName: 'id',
