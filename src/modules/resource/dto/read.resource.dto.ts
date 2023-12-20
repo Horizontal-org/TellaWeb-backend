@@ -1,9 +1,10 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { IsString, IsUUID } from 'class-validator';
+import { IsArray, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 
 import { ResourceEntity } from '../domain';
+import { ProjectEntity } from 'modules/project/domain';
 
 @Exclude()
 export class ReadResourceDto {
@@ -25,7 +26,19 @@ export class ReadResourceDto {
   @ApiProperty()
   @Expose()
   @IsString()
+  readonly size: string;
+
+
+  @ApiProperty()
+  @Expose()
+  @IsString()
   readonly createdAt: string;
+
+  @ApiProperty()
+  @Expose()
+  @IsArray()
+  readonly projects: ProjectEntity[];
+
 
   public toEntity() {
     const resource = new ResourceEntity();

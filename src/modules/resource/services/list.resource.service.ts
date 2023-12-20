@@ -28,8 +28,7 @@ export class ListResourceService implements IListResourceService {
 
     const query = this.resourceRepository
       .createQueryBuilder('resource')
-      // .leftJoinAndSelect('report.files', 'files')
-      // .innerJoinAndSelect('report.author', 'author')
+      .leftJoinAndSelect('resource.projects', 'project')
       .skip(skip)
       .take(take);
 
@@ -53,6 +52,7 @@ export class ListResourceService implements IListResourceService {
     }
 
     const [resources, total] = await query.getManyAndCount();
+    console.log("🚀 ~ file: list.resource.service.ts:56 ~ ListResourceService ~ resources:", resources)
 
     return {
       limit: take,

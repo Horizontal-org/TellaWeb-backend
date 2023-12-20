@@ -6,6 +6,7 @@ import { CloseResourceService } from './services/close.resource.service';
 import { CheckNameResourceService } from './services/check-name.resource.service';
 import { DeleteResourceService } from './services/delete.resource.service';
 import { DownloadResourceService } from './services/download.resource.service';
+import { GetByProjectsResourceService } from './services/get-by-projects.resource.service'
 
 export const listResourceServiceProvider = {
   provide: TYPES.services.IListResourceService,
@@ -38,6 +39,11 @@ export const downloadResourceServiceProvider = {
 }
 
 
+export const getByProjectsResourceServiceProvider = {
+  provide: TYPES.services.IGetByProjectsResourceService,
+  useClass: GetByProjectsResourceService
+}
+
 export const applicationsResourceProviders = [
 ];
 
@@ -47,7 +53,8 @@ export const servicesResourceProviders = [
   closeResourceServiceProvider,
   checkNameResourceServiceProvider,
   deleteResourceServiceProvider,
-  downloadResourceServiceProvider
+  downloadResourceServiceProvider,
+  getByProjectsResourceServiceProvider
 ];
 
 // export const guardsProjectProviders = [

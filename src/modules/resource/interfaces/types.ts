@@ -13,7 +13,8 @@ export const TYPES = {
     ICloseResourceService: 'ICloseResourceService',
     ICheckNameResourceService: 'ICheckNameResourceService',
     IDeleteResourceService: 'IDeleteResourceService',
-    IDownloadResourceService: 'IDownloadResourceService'
+    IDownloadResourceService: 'IDownloadResourceService',
+    IGetByProjectsResourceService: 'IGetByProjectsResourceService' 
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',

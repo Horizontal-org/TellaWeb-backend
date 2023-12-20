@@ -28,19 +28,6 @@ export class ResourceEntity {
   @Column()
   title: string;
 
-  // @ManyToMany(() => ProjectEntity, project => project.resources)
-  // @JoinTable({
-  //   name: 'projects_resources',
-  //   joinColumn: {
-  //     name: 'resource_id',
-  //     referencedColumnName: 'id',
-  //   },
-  //   inverseJoinColumn: {
-  //     name: 'project_id',
-  //     referencedColumnName: 'id',
-  //   }
-  // })
-  // projects: ProjectEntity[];
   @ManyToMany(() => ProjectEntity, project => project.resources)
   projects: ProjectEntity[];
 

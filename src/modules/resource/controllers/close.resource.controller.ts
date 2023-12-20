@@ -22,6 +22,7 @@ export class CloseResourceController {
     @Param('fileName') fileName: string,
     @Body() closeResourceDto: CloseResourceDto
   ) {
+    console.log("🚀 ~ file: close.resource.controller.ts:25 ~ CloseResourceController ~ closeResourceDto:", closeResourceDto)
 
     closeResourceDto.fileName = fileName
 

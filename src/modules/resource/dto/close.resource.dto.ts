@@ -9,4 +9,9 @@ export class CloseResourceDto {
   @Expose()
   @IsOptional()
   fileName: string;  
+
+  @ApiProperty()
+  @Expose()
+  @IsOptional()
+  size: string;  
 }

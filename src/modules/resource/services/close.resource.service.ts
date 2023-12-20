@@ -30,8 +30,7 @@ export class CloseResourceService implements ICloseResourceService {
     });
 
     
-    // sync with project
-    
+    file.size = closeResourceDto.size
     await this.resourceRepository.save(file);
 
     return;
