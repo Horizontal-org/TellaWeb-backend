@@ -13,6 +13,10 @@ export class GetByIdProjectService implements IGetByIdProjectService {
   ) {}
 
   async execute(projectId: string): Promise<ProjectEntity> {
-    return this.projectRepository.findOne(projectId, { relations: ['users']});
+    return this.projectRepository.findOne(projectId, { relations: [
+      'users', 
+      'resources', 
+      'resources.projects'
+    ]});
   }
 }

@@ -15,6 +15,7 @@ import { UtilsModule } from 'modules/utils/utils.module';
 import { BullModule } from '@nestjs/bull';
 import { QueueModule } from 'modules/queue/queue.module';
 import { GlobalJwtModule } from 'modules/jwt/jwt.module';
+import { ResourceModule } from 'modules/resource/resource.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GlobalJwtModule } from 'modules/jwt/jwt.module';
     RemoteConfigurationModule,
     AbilityModule,
     ProjectModule,
+    ResourceModule,
     UtilsModule,
     QueueModule,
     GlobalJwtModule,

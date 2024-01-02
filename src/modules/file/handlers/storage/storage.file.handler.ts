@@ -60,6 +60,20 @@ export class StorageFileHandler implements IStorageFileHandler {
       );
   }
 
+  async getResources(fileNames: string[]): Promise<ReadStream[]> {
+    const bucketFullPath = path.join(this.basePath, 'resources', this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    return bucketFullFiles
+      .filter((different) => different.isFile())
+      .filter((different) => fileNames.includes(different.name))
+      .map((different) =>
+        createReadStream(path.join(bucketFullPath, different.name)),
+      );
+  }
+
   async downloadFileFromBucket(
     bucketId: string,
     fileName: string,
