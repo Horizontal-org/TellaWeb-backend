@@ -1,12 +1,4 @@
 export const TYPES = {
-  // applications: {
-  //   ICreateReportApplication: 'ICreateReportApplication',
-  //   IGetByIdReportApplication: 'IGetByIdReportApplication',
-  //   IListReportApplication: 'IListReportApplication',
-  //   IDeleteByIdReportApplication: 'IDeleteByIdReportApplication',
-  //   IBatchDeleteReportApplication: 'IBatchDeleteReportApplication',
-  //   IEditReportApplication: 'IEditReportApplication',
-  // },
   services: {
     IListResourceService: 'IListResourceService',
     IUploadResourceService: 'IUploadResourceService',
@@ -14,7 +6,8 @@ export const TYPES = {
     ICheckNameResourceService: 'ICheckNameResourceService',
     IDeleteResourceService: 'IDeleteResourceService',
     IDownloadResourceService: 'IDownloadResourceService',
-    IGetByProjectsResourceService: 'IGetByProjectsResourceService' 
+    IGetByProjectsResourceService: 'IGetByProjectsResourceService',
+    IUserHasResourceService: 'IUserHasResourceService'
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',

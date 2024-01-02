@@ -24,14 +24,8 @@ export class GetByProjectsResourceController {
     @Query('projectId', new ParseArrayPipe()) projectId = [],
     @LoggedUser() { id, username, role }: ReadUserDto,
   ) {
-    console.log("🚀 ~ file: get-by-projects.resource.controller.ts:27 ~ GetByProjectsResourceController ~ role:", role)
-    console.log("🚀 ~ file: download.resource.controller.ts:26 ~ DownloadResourceController ~ fileNames:", id)
 
     await this.getResources.execute(projectId, id, role)
-
-    // get resources where project id and user is in
-    // const zipStream = await this.downloadService.execute(fileNames);
-    // zipStream.pipe(res);
   }
 
 }
