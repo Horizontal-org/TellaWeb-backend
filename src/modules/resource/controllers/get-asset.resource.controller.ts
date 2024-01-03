@@ -31,7 +31,6 @@ export class GetAssetResourceController {
     @Headers() headers,
     @Response() res,
   ) {
-    console.log('HERE')
     const stream = await this.storageFileHandler.fetch({
       bucket: 'resources',
       fileName: fileName

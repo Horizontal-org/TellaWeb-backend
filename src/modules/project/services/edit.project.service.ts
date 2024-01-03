@@ -22,13 +22,11 @@ export class EditProjectService implements IEditProjectService {
   ) {}
 
   async execute(editProjectDto: EditProjectDto): Promise<ProjectEntity> {
-    console.log("🚀 ~ file: edit.project.service.ts:25 ~ EditProjectService ~ execute ~ editProjectDto:", editProjectDto)
     let reports = null
     let users = null
     let resources = null
     
     const project = await this.projectRepository.findOne(editProjectDto.id, { relations: ['users', 'resources'] });
-    // console.log("🚀 ~ file: edit.project.service.ts:30 ~ EditProjectService ~ execute ~ project:", project)
 
     if (editProjectDto.reports && editProjectDto.reports.length > 0) {
       reports = await this.reportRepository.findByIds(editProjectDto.reports)
@@ -46,7 +44,6 @@ export class EditProjectService implements IEditProjectService {
       resources = await this.resourceRepository.findByIds(newIds)
     }
     
-    console.log("🚀 ~ TOSAVERESOURCES", resources)
     const slug = (editProjectDto.slug || project.slug).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.name = editProjectDto.name || project.name
     project.slug = slug
@@ -60,7 +57,6 @@ export class EditProjectService implements IEditProjectService {
   }
 
   private toggleEntityIds = (dtoIds: string[], currentIds: string[]) => {
-    console.log("🚀 ~ file: edit.project.service.ts:61 ~ EditProjectService ~ currentIds:", currentIds)
     let toDelete = []
     let toAdd = []
     
@@ -72,12 +68,7 @@ export class EditProjectService implements IEditProjectService {
         toAdd.push(id)
       }        
     })  
-    
-    console.log("🚀 ~ file: edit.project.service.ts:65 ~ EditProjectService ~ toAdd:", toAdd)
-    console.log("🚀 ~ file: edit.project.service.ts:69 ~ EditProjectService ~ dtoIds.forEach ~ toDelete:", toDelete)
-    // remove to delete
     let remainingIds = currentIds.filter(uid => !toDelete.includes(uid))      
-    console.log("🚀 ~ file: edit.project.service.ts:77 ~ EditProjectService ~ remainingIds:", remainingIds)
     return [...remainingIds, ...toAdd]
   }
 }

@@ -25,7 +25,8 @@ export class GetByProjectsResourceController {
     @LoggedUser() { id, username, role }: ReadUserDto,
   ) {
 
-    await this.getResources.execute(projectId, id, role)
+    const projects = await this.getResources.execute(projectId, id, role)
+    return projects
   }
 
 }

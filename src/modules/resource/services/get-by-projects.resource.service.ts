@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection } from 'typeorm';
 
-import { CloseResourceDto, ReadResourceDto } from '../dto';
+import { ByProjectResourceDto, CloseResourceDto, ReadResourceDto } from '../dto';
 import { ICheckNameResourceService, ICloseResourceService, IGetByProjectsResourceService, TYPES } from '../interfaces';
 import { ProjectEntity } from 'modules/project/domain';
 import { plainToClass } from 'class-transformer';
@@ -15,7 +15,7 @@ export class GetByProjectsResourceService implements IGetByProjectsResourceServi
     private readonly projectRepository: Repository<ProjectEntity>,
   ) {}
 
-  async execute(ids: string[], userId: string, userRole: string): Promise<ReadResourceDto[]> {
+  async execute(ids: string[], userId: string, userRole: string): Promise<ByProjectResourceDto[]> {
   
     const query = this.projectRepository
       .createQueryBuilder('project')
@@ -29,6 +29,6 @@ export class GetByProjectsResourceService implements IGetByProjectsResourceServi
 
     const result = await query.getMany()
 
-    return result.map((report) => plainToClass(ReadResourceDto, report))
+    return result.map((project) => plainToClass(ByProjectResourceDto, project))
   }
 }
