@@ -26,16 +26,13 @@ export class GetByIdProjectService implements IGetByIdProjectService {
 
     let newUsers = clone(project.users)
     adminUsers.forEach((u) => {
-      const hasUser = !!(project.users.find(pu => pu.id == u.id))
-      
-      
+      const hasUser = !!(project.users.find(pu => pu.id == u.id))            
       if (!hasUser) {
         newUsers.push(u) 
       }
     })
     
     project.users = newUsers
-    console.log("🚀 ~ GetByIdProjectService ~ execute ~ newUsers:", project)
     return project
   }
 }
