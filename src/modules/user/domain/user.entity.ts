@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToOne,
+  BeforeRemove,
 } from 'typeorm';
 
 import { ReportEntity } from 'modules/report/domain/report.entity';
@@ -73,7 +74,9 @@ export class UserEntity {
   @JoinColumn({ name: "user_id" })
   recovery_keys: RecoveryKeyEntity[];
 
-  @ManyToMany(() => ProjectEntity, project => project.users)
+  @ManyToMany(() => ProjectEntity, project => project.users, {
+    onDelete: 'CASCADE'
+  })
   projects: ProjectEntity[];
 
   @BeforeInsert()

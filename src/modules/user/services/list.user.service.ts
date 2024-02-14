@@ -25,7 +25,6 @@ export class ListUserService implements IListUserService {
       .createQueryBuilder('user')
       .skip(skip)
       .take(take)
-      .where({ deletedAt: null })
 
     if (search && search.length > 0) {
       query.andWhere('user.username like :search', { search: `%${search}%` });
