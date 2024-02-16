@@ -14,8 +14,8 @@ export class BatchDeleteUsersService implements IBatchDeleteUsersService {
   async execute(toDelete: Array<string>): Promise<boolean> {
     await getConnection()
       .createQueryBuilder()
-      .update(UserEntity)
-      .set({ deletedAt: new Date() })
+      .delete()
+      .from(UserEntity)
       .where('id IN (:...toDelete)', { toDelete: toDelete }) //delete users by username
       .execute();
       
