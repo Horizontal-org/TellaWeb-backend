@@ -5,7 +5,7 @@ import { RolesUser } from 'modules/user/domain';
 
 import { IDeleteResourceService, TYPES } from '../interfaces';
 
-@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
+@AuthController('resource', [RolesUser.ADMIN], JwtTypes.WEB)
 export class DeleteResourceController {
   constructor(
     @Inject(TYPES.services.IDeleteResourceService)

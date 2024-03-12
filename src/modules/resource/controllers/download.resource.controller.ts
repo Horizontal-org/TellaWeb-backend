@@ -23,7 +23,6 @@ export class DownloadResourceController {
     @Query('fileNames', new ParseArrayPipe()) fileNames = [],    
     @Res() res: Response,
   ) {
-    console.log("🚀 ~ file: download.resource.controller.ts:26 ~ DownloadResourceController ~ fileNames:", fileNames)
     const zipStream = await this.downloadService.execute(fileNames);
     zipStream.pipe(res);
   }

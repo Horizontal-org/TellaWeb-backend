@@ -23,7 +23,7 @@ export class UserHasResourceService implements IUserHasResourceService {
       .innerJoin('project.resources', 'resources')
       .innerJoin('project.users', 'users')
       .where('users.id = :userId', { userId: userId })
-      .where('resources.fileName = :fileName', { fileName: fileName })
+      .andWhere('resources.fileName = :fileName', { fileName: fileName })
       .getCount()
 
     return !!(query)
