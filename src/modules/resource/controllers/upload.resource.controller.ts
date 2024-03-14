@@ -10,7 +10,7 @@ import { TYPES, IUploadResourceService } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.WEB)
+@AuthController('resource', [RolesUser.ADMIN], JwtTypes.WEB)
 export class UploadResourceController {
   constructor(
     @Inject(TYPES.services.IUploadResourceService)
@@ -23,7 +23,6 @@ export class UploadResourceController {
     @Req() stream: Request,
     @Param('fileName') fileName: string,
   ): Promise<ReadResourceDto> {
-    console.log("🚀 ~ file: upload.resource.controller.ts:26 ~ UploadResourceController ~ fileName:", fileName)
     
     const file = await this.uploadResourceService.execute({
       bucket: 'resources',

@@ -9,7 +9,7 @@ import { CloseResourceDto } from '../dto';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.WEB)
+@AuthController('resource', [RolesUser.ADMIN], JwtTypes.WEB)
 
 export class CloseResourceController {
   constructor(

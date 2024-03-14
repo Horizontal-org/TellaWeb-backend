@@ -11,7 +11,7 @@ import { RolesUser } from 'modules/user/domain';
 import { ReadResourceDto } from '../dto';
 import { IListResourceService, TYPES } from '../interfaces';
 
-@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
 @ApiExtraModels(PaginatedDto)
 export class ListResourceController {
   constructor(
