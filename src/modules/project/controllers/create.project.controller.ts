@@ -8,6 +8,8 @@ import { RolesUser } from 'modules/user/domain';
 
 import { CreateProjectDto, ReadProjectDto } from '../dto';
 import { ICreateProjectApplication, TYPES } from '../interfaces';
+import { ReadUserDto } from 'modules/user/dto';
+import { LoggedUser } from 'modules/auth/decorators';
 
 @AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
 export class CreateProjectController {
@@ -18,7 +20,15 @@ export class CreateProjectController {
 
   @ApiResponse({ type: ReadProjectDto })
   @Post()
-  async handler(@Body() createProjectDto: CreateProjectDto): Promise<ReadProjectDto> {
+  async handler(
+    @Body() createProjectDto: CreateProjectDto,
+    @LoggedUser() { id, username, role }: ReadUserDto,
+  ): Promise<ReadProjectDto> {
+    let projectDto = createProjectDto
+    if (role !== 'admin') {
+      projectDto.users = [id]
+    }
+    
     const project = await this.createProjectApplication.execute(createProjectDto);
 
     return project;
