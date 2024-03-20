@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { ReadReportDto } from 'modules/report/dto';
 import { ReadUserDto } from 'modules/user/dto';
+import { ReadResourceDto } from 'modules/resource/dto';
 
 @Exclude()
 export class ReadProjectDto {
@@ -24,6 +25,11 @@ export class ReadProjectDto {
 
   @ApiProperty()
   @Expose()
+  @IsString()
+  url: string;
+  
+  @ApiProperty()
+  @Expose()
   @Type(() => ReadReportDto)
   reports: ReadReportDto[];
 
@@ -31,6 +37,11 @@ export class ReadProjectDto {
   @Expose()
   @Type(() => ReadUserDto)
   users: ReadReportDto[];
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => ReadResourceDto)
+  resources: ReadResourceDto[];
 
   @ApiProperty()
   @Expose()

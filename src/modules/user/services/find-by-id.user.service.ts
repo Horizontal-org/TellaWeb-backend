@@ -12,7 +12,7 @@ export class FindByidUserService implements IFindByIdUserService {
   ) {}
 
   async execute(id: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { id: id, deletedAt: null } });
+    const user = await this.userRepository.findOne({ where: { id: id } });
     if (!user) throw new NotFoundUserException();
 
     return user;

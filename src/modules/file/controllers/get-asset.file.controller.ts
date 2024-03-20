@@ -10,8 +10,9 @@ import {
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { TYPES, IGetAssetFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.ALL)
 export class GetAssetFileController {
   constructor(
     @Inject(TYPES.applications.IGetAssetFileApplication)

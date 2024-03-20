@@ -34,6 +34,38 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
-
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"    
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - api-network
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    networks:
+      - api-network
+    expose:
+      - '6379'
+    ports:
+      - 6379:6379
+    volumes: 
+      - redis-data:/data
+      
 networks:
   api-network:
+
+volumes:
+  db-data:
+  redis-data:

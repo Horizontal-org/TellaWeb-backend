@@ -33,7 +33,6 @@ export class MakePublicUserApplication implements IMakePublicUserApplication {
       //do nothing
     }
 
-    console.log({ user });
     const publicUser = await (user.id
       ? this.update(user)
       : this.create(username));

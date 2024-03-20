@@ -30,6 +30,10 @@ export class ReadUserDto {
   @Expose()
   note?: string;
 
+  @ApiProperty({ type: Boolean })
+  @Expose()
+  otp_active?: boolean;
+
   @ApiProperty()
   @Expose()
   @IsString()

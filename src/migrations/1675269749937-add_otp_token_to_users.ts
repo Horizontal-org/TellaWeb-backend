@@ -1,22 +1,17 @@
-import {
-    MigrationInterface, 
-    QueryRunner, 
-    TableColumn
-} from "typeorm";
+import {MigrationInterface, QueryRunner, TableColumn} from "typeorm";
 
-export class addDeviceInfoToFile1660757051122 implements MigrationInterface {
+export class addOtpTokenToUsers1675269749937 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.addColumn(
-            "file_entity",
+            "user_entity",
             new TableColumn({
-                name: "fileInfo",
-                type: "text",
+                name: "otp_secret",
+                type: "varchar",
                 isNullable: true
             }),
         )
     }
-
     public async down(queryRunner: QueryRunner): Promise<void> {
     }
 

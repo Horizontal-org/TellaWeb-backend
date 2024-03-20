@@ -7,8 +7,9 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, IGetByNameAndBucketFileApplication } from '../interfaces';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file')
+@AuthController('file', [], JwtTypes.ALL)
 export class GetSizeFileController {
   constructor(
     @Inject(TYPES.applications.IGetByNameAndBucketFileApplication)

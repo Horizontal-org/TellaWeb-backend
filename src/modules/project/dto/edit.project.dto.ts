@@ -13,8 +13,18 @@ export class EditProjectDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsString()
+  slug: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsArray()
   users: Array<string>
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  resources: Array<string>
 
   @ApiProperty()
   @IsOptional()

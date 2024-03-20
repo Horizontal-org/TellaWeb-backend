@@ -8,8 +8,10 @@ import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { FileDto } from '../dto';
 import { TYPES, ICreateFileApplication } from '../interfaces';
+import { RolesUser } from 'modules/user/domain';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file')
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
 export class UploadFileReportController {
   constructor(
     @Inject(TYPES.applications.ICreateFileApplication)
@@ -24,6 +26,7 @@ export class UploadFileReportController {
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
   ): Promise<FileDto> {
+    
     const file = await this.createFileApplication.execute({
       bucket: reportId,
       fileName,

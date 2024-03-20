@@ -6,8 +6,9 @@ import { RolesUser } from 'modules/user/domain';
 import { TYPES, IDeleteByIdReportApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { boolean } from 'yargs';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR])
+@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
 export class DeleteByIdReportController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdReportApplication)

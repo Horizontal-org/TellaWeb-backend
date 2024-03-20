@@ -7,8 +7,9 @@ import { ReadUserDto } from '../dto';
 import { RolesUser } from 'modules/user/domain';
 import { IListUserApplication, TYPES } from '../interfaces';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('user', [RolesUser.ADMIN])
+@AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
 @ApiExtraModels(PaginatedDto)
 export class ListUserController {
   constructor(

@@ -60,6 +60,40 @@ export class StorageFileHandler implements IStorageFileHandler {
       );
   }
 
+  async getResources(fileNames: string[]): Promise<ReadStream[]> {
+    const bucketFullPath = path.join(this.basePath, 'resources', this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    return bucketFullFiles
+      .filter((different) => different.isFile())
+      .filter((different) => fileNames.includes(different.name))
+      .map((different) =>
+        createReadStream(path.join(bucketFullPath, different.name)),
+      );
+  }
+
+  async downloadFileFromBucket(
+    bucketId: string,
+    fileName: string,
+  ): Promise<ReadStream | null> {
+    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullFiles = readdirSync(bucketFullPath, {
+      withFileTypes: true,
+    });
+
+    const file = bucketFullFiles.find(
+      (file) => file.isFile() && file.name === fileName,
+    );
+    if (!file) {
+      return null; // File not found in the bucket
+    }
+
+    const filePath = path.join(bucketFullPath, file.name);
+    return createReadStream(filePath);
+  }
+
   async deleteBucket(bucketId: string): Promise<boolean> {
     const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
     try {
@@ -168,10 +202,18 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async getType(input: ReadFileDto): Promise<FileType> {
     const filePath = this.getPath(input, false);
-    const { mime } = await GetFileType.fromFile(filePath);
-    if (mime.includes('video')) return FileType.VIDEO;
-    if (mime.includes('audio')) return FileType.AUDIO;
-    if (mime.includes('image')) return FileType.IMAGE;
+
+    try {
+      // TEST ONLY REMOVE
+      const { mime } = await GetFileType.fromFile(filePath);
+      if (mime.includes('video')) return FileType.VIDEO;
+      if (mime.includes('audio')) return FileType.AUDIO;
+      if (mime.includes('image')) return FileType.IMAGE;
+      // TEST ONLY REMOVE
+    } catch (e) {
+      console.log('SEE ERROR', e);
+    }
+
     return FileType.OTHER;
   }
 

@@ -1,11 +1,16 @@
 import { Get, Header, Inject, Param, Res } from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetZippedBucketFileApplication } from '../interfaces';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER])
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.ALL,
+)
 export class DownloadBucketFileController {
   constructor(
     @Inject(TYPES.applications.IGetZippedBucketFileApplication)
@@ -22,6 +27,23 @@ export class DownloadBucketFileController {
     const zipStream = await this.getZippedBucketFileApplication.execute(
       reportId,
     );
+    zipStream.pipe(res);
+  }
+
+  @Get('/download/:bucketId/:fileId')
+  @Header('Content-Type', 'application/zip')
+  async downloadFile(
+    @Param('bucketId')
+    bucketId: string,
+    @Param('fileId')
+    fileId: string,
+    @Res() res: Response,
+  ) {
+    const zipStream =
+      await this.getZippedBucketFileApplication.downloadFileFromBucket(
+        bucketId,
+        fileId,
+      );
     zipStream.pipe(res);
   }
 }

@@ -1,7 +1,7 @@
 import { IsString, IsUUID } from 'class-validator';
 
 export class ReadFileDto {
-  @IsUUID(4)
+  @IsString()
   bucket: string;
 
   @IsString()

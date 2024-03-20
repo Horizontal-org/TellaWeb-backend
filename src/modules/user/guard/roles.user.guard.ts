@@ -8,14 +8,20 @@ export class RolesUserGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<RolesUser[]>('roles', context.getClass());
-    if (typeof roles === 'undefined' || roles.length === 0) return true;
-
-    const request = context.switchToHttp().getRequest();
-    const user: UserEntity = request.user;
-    if (!user) return false;
-
-    return matchRoles(roles, user.role);
+    try {
+      const roles = this.reflector.get<RolesUser[]>('roles', context.getClass());
+      const request = context.switchToHttp().getRequest();
+      const user: UserEntity = request.user;
+      if (typeof roles === 'undefined' || roles.length === 0) return true;
+      
+      if (!user) return false;
+  
+      return matchRoles(roles, user.role);
+    } catch (e) {
+      console.log("🚀 ~ file: roles.user.guard.ts:15 ~ RolesUserGuard ~ canActivate ~ e:", e)
+      
+    }
+    
   }
 }
 

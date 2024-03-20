@@ -7,8 +7,9 @@ import { LoggedUser } from 'modules/auth/decorators';
 import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 
 import { ReadUserDto } from '../dto';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('user')
+@AuthController('user', [], JwtTypes.ALL)
 export class GetProfileUserController {
   constructor() {}
 

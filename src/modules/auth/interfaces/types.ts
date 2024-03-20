@@ -3,6 +3,16 @@ export const TYPES = {
   services: {
     IGenerateTokenAuthService: 'IGenerateTokenAuthService',
     IValidateAuthService: 'IValidateAuthService',
+    IEnableOtpAuthService: 'IEnableOtpAuthService',
+    IVerifyOtpAuthService: 'IVerifyOtpAuthService',
+    IDisableOtpAuthService: 'IDisableOtpAuthService',
+    IActivateOtpAuthService: 'IActivateOtpAuthService',
+    ICreateRecoveryKeysService: 'ICreateRecoveryKeysService',
+    IValidateRecoveryKeysService: 'IValidateRecoveryKeysService',
+    IGetRecoveryKeysService: 'IGetRecoveryKeysService',
+    IFlagUserAuthService: 'IFlagUserAuthService'
   },
-  handlers: {},
+  handlers: {
+    IOtpAuthHandler: 'IOtpAuthHandler'
+  },
 };

@@ -1,8 +1,16 @@
-import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
 
-export const OrmConfig: SqliteConnectionOptions = {
-  type: 'sqlite',
-  database: './db/tellaDb.sql',
+dotenv.config();
+
+export const OrmConfig: TypeOrmModuleOptions = {
+  type: 'mysql',
+  // 'db' for prod 
+  host: process.env.MYSQL_HOST || 'db',
+  port: 3306,
+  username: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
   synchronize: false,
   migrationsRun: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

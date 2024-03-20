@@ -6,8 +6,10 @@ import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, ICloseFileApplication } from '../interfaces';
 import { CloseFileDto } from '../dto';
+import { RolesUser } from 'modules/user/domain';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file')
+@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
 export class CloseFileReportController {
   constructor(
     @Inject(TYPES.applications.ICloseFileApplication)
@@ -25,11 +27,19 @@ export class CloseFileReportController {
     closeFileDto.fileName = fileName
     closeFileDto.bucket = reportId
 
-    await this.closeFileApplication.execute(
-      closeFileDto,
-      reportId,
-    );
+    try {
+      await this.closeFileApplication.execute(
+        closeFileDto,
+        reportId,
+      )
+    } catch (err) {      
+      return {
+        success: false
+      }
+    }
 
-    return;
+    return {
+      success: true
+    }
   }
 }

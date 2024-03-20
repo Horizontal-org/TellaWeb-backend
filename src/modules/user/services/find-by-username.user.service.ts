@@ -15,7 +15,7 @@ export class FindByUsernameUserService implements IFindByUsernameUserService {
   ) {}
 
   async execute(username: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { username: username, deletedAt: null } });
+    const user = await this.userRepository.findOne({ where: { username: username } });
     const ability = this.abilityFactory.createForUser(user)
     
     if (ability.cannot(Actions.Read, user)) throw new UnauthorizedException()
