@@ -21,7 +21,7 @@ export class GlobalSettingEntity {
 
   @Expose()
   @Column()
-  value: string;
+  enabled: boolean;
 
   @Expose()
   @Column({ name: 'created_at' })

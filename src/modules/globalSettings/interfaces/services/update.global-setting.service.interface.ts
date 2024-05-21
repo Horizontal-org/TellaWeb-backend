@@ -1,4 +1,4 @@
 
 export interface IUpdateGlobalSettingService {
-  execute(name: string, value: string): Promise<boolean>;
+  execute(id: string, enabled: boolean): Promise<void>;
 }

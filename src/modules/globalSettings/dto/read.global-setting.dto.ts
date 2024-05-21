@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { IsArray, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 
@@ -19,8 +19,8 @@ export class ReadGlobalSettingDto {
 
   @ApiProperty()
   @Expose()
-  @IsString()
-  readonly value: string;
+  @IsBoolean()
+  readonly enabled: boolean;
 
   public toEntity() {
     const globalSetting = new GlobalSettingEntity();

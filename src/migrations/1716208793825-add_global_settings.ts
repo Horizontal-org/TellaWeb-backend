@@ -17,8 +17,9 @@ export class addGlobalSettings1716208793825 implements MigrationInterface {
                         type: "varchar",
                     },
                     {
-                        name: "value",
-                        type: "varchar",
+                        name: "enabled",
+                        type: "boolean",
+                        default: false
                     },
                     {
                         name: 'created_at',
@@ -33,7 +34,7 @@ export class addGlobalSettings1716208793825 implements MigrationInterface {
 
         // first metric
         await queryRunner.query(
-            `INSERT INTO global_settings (id, name, value, created_at) VALUES (UUID(), 'DIVVIUP_ANALYTICS', 'no', '${createdAt}');`
+            `INSERT INTO global_settings (id, name, enabled, created_at) VALUES (UUID(), 'DIVVIUP_ANALYTICS', 0, '${createdAt}');`
         )    
     }
 
