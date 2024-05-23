@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { globalSettingControllers } from './controllers';
 import {
+  getByNameGlobalSettingServiceProvider,
+  recordAnalyticsEventGlobalSettingServiceProvider,
   servicesGlobalSettingsProviders
 } from './global-setting.provider';
 import { GlobalSettingEntity } from './domain';
@@ -13,5 +15,8 @@ import { GlobalSettingEntity } from './domain';
   ],
   controllers: [...globalSettingControllers],
   providers: [...servicesGlobalSettingsProviders],
+  exports: [
+    recordAnalyticsEventGlobalSettingServiceProvider
+  ]
 })
 export class GlobalSettingModule {}
