@@ -9,7 +9,7 @@ import { RolesUser } from 'modules/user/domain';
 import { ReadGlobalSettingDto } from '../dto';
 import { IListGlobalSettingService, TYPES } from '../interfaces';
 
-@AuthController('global-setting', [RolesUser.ADMIN], JwtTypes.WEB)
+@AuthController('global-setting', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.WEB)
 export class ListGlobalSettingController {
   constructor(
     @Inject(TYPES.services.IListGlobalSettingService)

@@ -8,7 +8,7 @@ import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { IGetByNameGlobalSettingService, TYPES } from '../interfaces';
 import { ReadGlobalSettingDto } from '../dto';
 
-@AuthController('global-setting', [RolesUser.ADMIN], JwtTypes.WEB)
+@AuthController('global-setting', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.WEB)
 export class GetByNameGlobalSettingController {
   constructor(
     @Inject(TYPES.services.IGetByNameGlobalSettingService)
