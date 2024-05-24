@@ -16,6 +16,7 @@ import { BullModule } from '@nestjs/bull';
 import { QueueModule } from 'modules/queue/queue.module';
 import { GlobalJwtModule } from 'modules/jwt/jwt.module';
 import { ResourceModule } from 'modules/resource/resource.module';
+import { GlobalSettingModule } from 'modules/globalSettings/global-settings.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ResourceModule } from 'modules/resource/resource.module';
     UtilsModule,
     QueueModule,
     GlobalJwtModule,
+    GlobalSettingModule
   ],
 })
 export class AppModule {}

@@ -13,10 +13,12 @@ import {
   servicesFileProviders,
   storageFileHandlerProvider,
 } from './file.providers';
+import { GlobalSettingModule } from 'modules/globalSettings/global-settings.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileEntity]),
+    forwardRef(() => GlobalSettingModule),
     forwardRef(() => ReportModule),
   ],
   controllers: [...fileControllers],

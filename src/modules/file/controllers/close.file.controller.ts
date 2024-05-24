@@ -5,6 +5,7 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, ICloseFileApplication } from '../interfaces';
+import { TYPES as GLOBAL_SETTINGS_TYPES, IRecordAnalyticsEventGlobalSettingService } from '../../globalSettings/interfaces';
 import { CloseFileDto } from '../dto';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
@@ -14,6 +15,8 @@ export class CloseFileReportController {
   constructor(
     @Inject(TYPES.applications.ICloseFileApplication)
     private readonly closeFileApplication: ICloseFileApplication,
+    @Inject(GLOBAL_SETTINGS_TYPES.services.IRecordAnalyticsEventGlobalSettingService)
+    private readonly recordAnalyticsService: IRecordAnalyticsEventGlobalSettingService,
   ) {}
 
   @UseGuards(OnlyAuthor)
@@ -37,6 +40,13 @@ export class CloseFileReportController {
         success: false
       }
     }
+
+    await this.recordAnalyticsService.execute({
+      measurement: true,
+      timePrecision: 300,
+      type: 'count',
+      id: 'MyApPucrtpDkJWoNHh_DHiXDSEQ7cH5s9Bl3GDPJfXg'
+    })
 
     return {
       success: true
