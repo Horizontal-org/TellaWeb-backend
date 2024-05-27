@@ -34,7 +34,7 @@ export class addGlobalSettings1716208793825 implements MigrationInterface {
 
         // first metric
         await queryRunner.query(
-            `INSERT INTO global_settings (id, name, enabled, created_at) VALUES (UUID(), 'DIVVIUP_ANALYTICS', 0, '${createdAt}');`
+            `INSERT INTO global_settings (id, name, enabled, created_at) VALUES (UUID(), 'ANALYTICS', 0, '${createdAt}');`
         )    
     }
 

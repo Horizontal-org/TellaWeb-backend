@@ -15,7 +15,7 @@ export class RecordAnalyticsEventGlobalSettingService implements IRecordAnalytic
 
   async execute(dto: AnalyticsEventDto): Promise<void> {
     const gSetting = await this.globalSettingsRepo.findOne({
-      where: { name: 'DIVVIUP_ANALYTICS' }
+      where: { name: 'ANALYTICS' }
     });
    
     if (!gSetting || !gSetting.enabled) {
