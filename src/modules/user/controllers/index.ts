@@ -8,10 +8,12 @@ import { DeleteByIdUserController } from './delete-by-id.user.controller';
 import { BatchDeleteUsersController } from './batch-delete.user.controller';
 import { ConfirmPasswordUserController } from './confirm-password.user.controller';
 import { UnblockUserController } from './unblock.user.controller';
+import { EditSelfUserController } from './edit-self.user.controller';
 
 export const userControllers = [
   ListUserController,
   ChangePasswordUserController,
+  EditSelfUserController,
   CreateUserController,
   BatchDeleteUsersController,
   EditUserController,

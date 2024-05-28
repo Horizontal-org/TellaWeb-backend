@@ -9,8 +9,9 @@ import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { EditUserDto, ReadUserDto } from '../dto';
 import { IEditUserApplication, TYPES } from '../interfaces';
+import { RolesUser } from '../domain';
 
-@AuthController('user', [], JwtTypes.WEB)
+@AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
 export class EditUserController {
   constructor(
     @Inject(TYPES.applications.IEditUserApplication)
