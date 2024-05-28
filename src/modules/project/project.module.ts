@@ -8,6 +8,7 @@ import { projectControllers } from './controllers';
 import { ProjectEntity } from './domain';
 import { applicationsProjectProviders, guardsProjectProviders, servicesProjectProviders } from './project.providers';
 import { ResourceEntity } from 'modules/resource/domain';
+import { GlobalSettingModule } from 'modules/globalSettings/global-settings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ResourceEntity } from 'modules/resource/domain';
     TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([ResourceEntity]),
     forwardRef(() => ReportModule),
+    forwardRef(() => GlobalSettingModule),
   ],
   controllers: [...projectControllers],
   providers: [...applicationsProjectProviders, ...servicesProjectProviders],

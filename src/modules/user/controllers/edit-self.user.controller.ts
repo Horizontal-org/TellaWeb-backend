@@ -13,34 +13,26 @@ import {
   ICheckPasswordUserApplication,
   IEditUserApplication,
 } from '../interfaces';
+import { EditSelfUserDto } from '../dto/edit-self.user.dto';
 
-@AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
-export class ChangePasswordUserController {
-  constructor(
-    @Inject(TYPES.applications.ICheckPasswordUserApplication)
-    private readonly checkPasswordUserApplication: ICheckPasswordUserApplication,
+@AuthController('user', [RolesUser.VIEWER, RolesUser.EDITOR, RolesUser.ADMIN], JwtTypes.WEB)
+export class EditSelfUserController {
+  constructor(    
     @Inject(TYPES.applications.IEditUserApplication)
     private readonly editUserApplication: IEditUserApplication,
   ) {}
 
-  @ApiResponse({ type: Boolean })
-  @Post('change-password')
+  @ApiResponse({ type: ReadUserDto })
+  @Post('change-self')
   async handler(
     @LoggedUser() { id, username, role }: ReadUserDto,
-    @Body() changePasswordUserDto: ChangePasswordUserDto,
-  ): Promise<boolean> {
-    await this.checkPasswordUserApplication.execute({
-      username,
-      password: changePasswordUserDto.current,
-    });
-
-    await this.editUserApplication.execute({
+    @Body() editSelfUserDto: EditSelfUserDto,
+  ): Promise<ReadUserDto> {    
+    const user = await this.editUserApplication.execute({
       id,
-      password: await hashPassword(changePasswordUserDto.new),
-      // THIS WE DON'T NEED ANYMORE
-      isAdmin: role === RolesUser.ADMIN,
+      ...editSelfUserDto
     });
 
-    return true;
+    return user;
   }
 }
