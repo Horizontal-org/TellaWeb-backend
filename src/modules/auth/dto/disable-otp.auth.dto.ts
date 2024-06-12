@@ -9,4 +9,9 @@ export class DisableOtpAuthDto {
   @ApiProperty()
   @IsBoolean()
   is_otp: boolean;
+
+
+  @ApiProperty()
+  @IsString()
+  confirm_password: string;
 }

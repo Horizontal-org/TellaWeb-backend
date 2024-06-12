@@ -36,8 +36,6 @@ export class GetAssetResourceController {
     @Response() res,
   ) {
     
-    console.log("🚀 ~ GetAssetResourceController ~ role:", username, role)
-
     if (role !== 'admin') {
       const hasResource = await this.userHasResourceService.execute(id, fileName)
       if (!hasResource) {
