@@ -6,7 +6,7 @@ import { BatchDeleteReportController } from './batch-delete.report.controller';
 import { EditReportController } from './edit.report.controller';
 
 export const reportControllers = [
-  CreateReportController,
+  // CreateReportController,
   GetByIdReportController,
   ListReportController,
   DeleteByIdReportController,
