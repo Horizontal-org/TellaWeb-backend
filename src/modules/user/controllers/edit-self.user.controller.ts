@@ -17,7 +17,9 @@ import { EditSelfUserDto } from '../dto/edit-self.user.dto';
 
 @AuthController('user', [RolesUser.VIEWER, RolesUser.EDITOR, RolesUser.ADMIN], JwtTypes.WEB)
 export class EditSelfUserController {
-  constructor(    
+  constructor(
+    @Inject(TYPES.applications.ICheckPasswordUserApplication)
+    private readonly checkPasswordUserApplication: ICheckPasswordUserApplication,
     @Inject(TYPES.applications.IEditUserApplication)
     private readonly editUserApplication: IEditUserApplication,
   ) {}
@@ -27,10 +29,17 @@ export class EditSelfUserController {
   async handler(
     @LoggedUser() { id, username, role }: ReadUserDto,
     @Body() editSelfUserDto: EditSelfUserDto,
-  ): Promise<ReadUserDto> {    
+  ): Promise<ReadUserDto> {
+
+    await this.checkPasswordUserApplication.execute({
+      username,
+      password: editSelfUserDto.confirmPassword,
+    });
+
+
     const user = await this.editUserApplication.execute({
-      id,
-      ...editSelfUserDto
+      id: id,
+      username: editSelfUserDto.username
     });
 
     return user;
