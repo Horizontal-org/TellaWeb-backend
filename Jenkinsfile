@@ -6,8 +6,8 @@ pipeline {
         steps {
           script {
             echo "check docker image tag"
-            sh 'which jq'
-            
+            // sh 'which jq'
+
             def tag = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1" | /usr/bin/jq ".results | .[] | .name" -r', returnStdout: true)
 
             echo "TAG:"
