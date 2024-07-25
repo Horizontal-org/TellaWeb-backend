@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurperClassic
 
 pipeline {
     agent any
@@ -7,7 +8,6 @@ pipeline {
         steps {
           script {
 
-            import groovy.json.JsonSlurperClassic
 
             def tags = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1"', returnStdout: true)
 
