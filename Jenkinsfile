@@ -7,6 +7,8 @@ pipeline {
           script {
             echo "check docker image tag"
             // sh 'which jq'
+            def response = sh(script: 'which jq', returnStdout: true)
+            echo response 
 
             def tag = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1" | /usr/bin/jq ".results | .[] | .name" -r', returnStdout: true)
 
