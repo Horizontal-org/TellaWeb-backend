@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     
@@ -5,13 +6,15 @@ pipeline {
       stage ('check docker image tag') {
         steps {
           script {
-            echo "check docker image tag"
-            // sh 'which jq'
-            def response = sh(script: 'which jq', returnStdout: true)
-            echo response 
 
-            def tag = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1" | /usr/bin/jq ".results | .[] | .name" -r', returnStdout: true)
+            import groovy.json.JsonSlurperClassic
 
+            def tags = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1"', returnStdout: true)
+
+            def tags_parsed = new JsonSlurperClassic().parseText(json)
+            echo tags_parsed
+
+            tag = tags_parsed.results[0].name
             echo "TAG:"
             echo tag
 
