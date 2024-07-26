@@ -1,4 +1,3 @@
-import groovy.json.JsonSlurperClassic
 
 pipeline {
     agent any
@@ -12,12 +11,13 @@ pipeline {
             def tags = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1"', returnStdout: true)
             echo tags
             
-            def tags_parsed = new JsonSlurperClassic().parseText(tags)
-            echo tags_parsed
+            def jsonString = tags
+            def jsonObj = readJSON text: jsonString
+            echo jsonObj
 
-            tag = tags_parsed.results[0].name
+            tag = jsonObj.results[0].name
             echo "TAG:"
-            echo tag
+            echo assert 
 
 
             // deploy dev 
