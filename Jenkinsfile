@@ -6,18 +6,17 @@ pipeline {
       stage ('check docker image tag') {
         steps {
           script {
-
-
             def tags = sh(script: 'curl "https://hub.docker.com/v2/namespaces/horizontalorg/repositories/tellaweb-api/tags?page_size=1&page=1"', returnStdout: true)
             echo tags
             
             def jsonString = tags
+            echo jsonString
             def jsonObj = readJSON text: jsonString
             echo jsonObj
 
             tag = jsonObj.results[0].name
             echo "TAG:"
-
+            echo tag
 
             // deploy dev 
             if (tag ==~ /^beta-([0-9.]+)$/) {
