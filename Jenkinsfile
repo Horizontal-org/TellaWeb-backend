@@ -10,26 +10,23 @@ pipeline {
             echo tags
             
             def jsonString = tags
-            echo jsonString
-            def jsonObj = readJSON text: jsonString
-            // echo jsonObj                    
-            def testVar = sh(script: "echo ${jsonObj.results[0].name}", returnStdout: true)
-            echo testVar 
-
+            def jsonObj = readJSON text: jsonString            
 
             tag = jsonObj.results[0].name
             echo "TAG:"
             echo tag
+
+            // deploy prod
+            if (tag ==~   /^[0-9.]+$/	) {
+              echo "deploy prod"
+            }
 
             // deploy dev 
             if (tag ==~ /^beta-([0-9.]+)$/) {
               echo "deploy dev"
             }          
 
-            // deploy prod
-            if (tag ==~   /^[0-9.]+$/	) {
-              echo "deploy prod"
-            }
+           
           }
         }
       }
