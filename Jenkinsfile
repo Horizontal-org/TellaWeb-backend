@@ -12,7 +12,7 @@ pipeline {
             def jsonString = tags
             echo jsonString
             def jsonObj = readJSON text: jsonString
-            echo jsonObj                    
+            // echo jsonObj                    
             def testVar = sh(script: "echo ${jsonObj.results[0].name}", returnStdout: true)
             echo testVar 
 
