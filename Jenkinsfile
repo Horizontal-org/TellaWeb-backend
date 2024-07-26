@@ -17,7 +17,6 @@ pipeline {
 
             tag = jsonObj.results[0].name
             echo "TAG:"
-            echo assert 
 
 
             // deploy dev 
