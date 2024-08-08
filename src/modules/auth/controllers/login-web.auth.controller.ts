@@ -9,6 +9,9 @@ import {
   IGenerateTokenAuthService,
 } from '../interfaces';
 import { ICheckSuspiciousUserApplication, TYPES as USER_TYPES } from '../../user/interfaces'
+import { InjectRepository } from '@nestjs/typeorm';
+import { GlobalSettingEntity } from 'modules/globalSettings/domain';
+import { Repository } from 'typeorm';
 
 @Controller('login')
 export class LoginWebAuthController {
@@ -19,7 +22,8 @@ export class LoginWebAuthController {
     private generateTokenAuthService: IGenerateTokenAuthService,
     @Inject(TYPES.services.IValidateAuthService)
     private validateAuthService: IValidateAuthService,
-    
+    @InjectRepository(GlobalSettingEntity)
+    private readonly globalSettingsRepo: Repository<GlobalSettingEntity>,
   ) {}
 
   @Post('web')
@@ -28,16 +32,27 @@ export class LoginWebAuthController {
     @Body() loginAuthDto: LoginAuthDto, 
     @Res() response: Response,
   ) {
-    const ip = requestIp.getClientIp(req)
+    
     const { username, password } = loginAuthDto;
     const user = await this.validateAuthService.execute({ username, password });
-    const flagged = await this.checkSuspiciousApplication.execute(ip, user.id)
 
-    if (flagged) {
-      response.send({
-        flagged: true
-      })
-      return 
+    
+    // get emails enabled flag
+    const gSetting = await this.globalSettingsRepo.findOne({
+      where: { name: 'EMAILS' }
+    });
+    
+
+    if (gSetting && gSetting.enabled) {
+      const ip = requestIp.getClientIp(req)
+      const flagged = await this.checkSuspiciousApplication.execute(ip, user.id)
+  
+      if (flagged) {
+        response.send({
+          flagged: true
+        })
+        return 
+      }
     }
     
     if (user.otp_active) {
