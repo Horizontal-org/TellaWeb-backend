@@ -12,6 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
 import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
 import { UtilsModule } from 'modules/utils/utils.module';
+import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 
 @Module({
   imports: [    
@@ -19,6 +20,7 @@ import { UtilsModule } from 'modules/utils/utils.module';
     UtilsModule,
     TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([RecoveryKeyEntity]),
+    TypeOrmModule.forFeature([GlobalSettingEntity]), 
   ],
   controllers: [...authControllers],
   providers: [
