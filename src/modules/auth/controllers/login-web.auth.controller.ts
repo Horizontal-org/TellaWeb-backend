@@ -39,7 +39,7 @@ export class LoginWebAuthController {
     
     // get emails enabled flag
     const gSetting = await this.globalSettingsRepo.findOne({
-      where: { name: 'EMAILS' }
+      where: { name: 'SUSPICIOUS LOGIN DETECTION' }
     });
     
 
