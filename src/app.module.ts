@@ -17,6 +17,7 @@ import { QueueModule } from 'modules/queue/queue.module';
 import { GlobalJwtModule } from 'modules/jwt/jwt.module';
 import { ResourceModule } from 'modules/resource/resource.module';
 import { GlobalSettingModule } from 'modules/globalSettings/global-settings.module';
+import { BackupModule } from 'modules/backup/backup.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GlobalSettingModule } from 'modules/globalSettings/global-settings.modu
     ProjectModule,
     ResourceModule,
     UtilsModule,
+    BackupModule,
     QueueModule,
     GlobalJwtModule,
     GlobalSettingModule
