@@ -23,12 +23,13 @@ export class MailUtilService {
   }
 
   public async send(params) {
+    console.log("🚀 ~ MailUtilService ~ send ~ params:", params)
     try {
       await this.transporter.sendMail({
         to: params.to,
         from: process.env.SMTP_GLOBAL_FROM, // sender address
         subject: params.subject, // Subject line
-        template: 'blocked-account',
+        template: params.template,
         context: { ...params.data },
       });
     } catch (e) {
