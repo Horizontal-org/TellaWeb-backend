@@ -59,6 +59,7 @@
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "mysql2": "^3.1.0",
+    "mysqldump": "^3.2.0",
     "nanoid": "^3.1.25",
     "nestjs-console": "7.0.1",
     "node-ipinfo": "^3.4.0",
