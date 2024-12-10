@@ -9,6 +9,7 @@ import { BatchDeleteUsersController } from './batch-delete.user.controller';
 import { ConfirmPasswordUserController } from './confirm-password.user.controller';
 import { UnblockUserController } from './unblock.user.controller';
 import { EditSelfUserController } from './edit-self.user.controller';
+import { GetByIdController } from './get-by-id.user.controller';
 
 export const userControllers = [
   ListUserController,
@@ -22,5 +23,5 @@ export const userControllers = [
   ConfirmPasswordUserController,
   UnblockUserController,
   // this needs to be last always
-  GetByUsernameController,
+  GetByIdController,
 ];
