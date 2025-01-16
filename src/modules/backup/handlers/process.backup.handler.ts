@@ -3,54 +3,155 @@ import { Injectable } from '@nestjs/common';
 import {
   existsSync,
   mkdirSync,
-  renameSync,
-  statSync,
-  createReadStream,
-  ReadStream,
   readdirSync,
-  unlinkSync,
-  rmSync,
   createWriteStream,
+  copyFileSync,
+  rmSync
 } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
 import mysqldump from 'mysqldump'
+import * as archiver from 'archiver'
 
 import { IProcessBackupHandler } from '../interfaces/handlers/process.backup.handler.interface';
-import { ReadUserDto } from 'modules/user/dto';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { ProjectEntity } from 'modules/project/domain';
 import { ReportEntity } from 'modules/report/domain';
 import { UserEntity } from 'modules/user/domain';
 import { ResourceEntity } from 'modules/resource/domain';
+import { FileEntity } from 'modules/file/domain';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BackupEntity } from '../domain';
 
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
+
+  constructor(
+    @InjectRepository(BackupEntity)
+    private readonly backupRepo: Repository<BackupEntity>,
+  ) {}
+
   private basePath = join(process.cwd(), 'backups');
+  private dataPath = join(process.cwd(), 'data')
   private backupDir = ''
 
-  async process(user: ReadUserDto): Promise<void> {
-    const datetime = new Date()
-    this.backupDir = path.join(this.basePath, `${datetime.toISOString().slice(0,10)}-backup`);    
-    console.log('we are going to process here')        
-    await this.createBackupFolder()
+  async process(backup: BackupEntity): Promise<void> {
+    try {
+      const datetime = new Date()
+      this.backupDir = path.join(this.basePath, `${datetime.toISOString().slice(0,19)}-backup`);    
+      await this.createBackupFolder()
+  
+      // csvs 
+      await this.parseUsersCsv()
+      await this.parseProjectsCsv() 
+      await this.parseReportsCsv()
+      await this.parseResourcesCsv()
+      // sql dump
+      await this.createDatabaseDump()
+      // files
+      await this.parseFiles()
+      // compress folder
+      await this.compress()
+      //delete folder and keep zip
+      await this.clean()
 
-    // csvs 
-    await this.parseUsersCsv()
-    await this.parseProjectsCsv() 
-    await this.parseReportsCsv()
-    await this.parseResourcesCsv()
-    // sql dump
-    // await this.createDatabaseDump()
+      backup.status = 'finished'
+      backup.folderName = this.backupDir
+      await this.backupRepo.save(backup)
+      console.log('finished')
+    } catch (e) {
+      backup.status = 'error'
+      await this.backupRepo.save(backup)
+      console.log('error in execution => ', e)
+    }    
   }
 
+  private async compress() {
+    console.log('STARTING COMPRESSION')
+    // create a file to stream archive data to.
+    const output = createWriteStream(this.backupDir + '.zip');    
+    const archive = archiver('zip', { zlib: { level: 9 }});
+  
+    await new Promise<void>((resolve, reject) => {
+      archive
+        .directory(this.backupDir + '/', false)
+        .on('error', err => reject(err))
+        .pipe(output)
+      ;
+  
+      output.on('close', () => {
+        console.log(archive.pointer() + " total bytes")
+        console.log('COMPRESSION FINISHED')
+        resolve()
+      });
+      archive.finalize();
+    });
+    
+  }
+
+  private async clean()  {
+    // remove uncompressed folder
+    rmSync(this.backupDir, { recursive: true })
+  }
 
   private async createBackupFolder() {
-    console.log("🚀 ~ ProcessBackupHandler ~ createBackupFolder ~ reportDir:", this.backupDir)
     if (existsSync(this.backupDir)) return;
     mkdirSync(this.backupDir, { mode: 0o755, recursive: true })    
   }
 
+  private async parseFiles() {
+    const fileCount = await getConnection()
+      .createQueryBuilder()
+      .from(FileEntity, 'file_entity')
+      .leftJoin("report_entity", "report", "file_entity.reportId = report.id")
+      .where('report.projectId IS NOT NULL')
+      .getCount()
+    
+    const reports = await getConnection()
+      .createQueryBuilder()
+      .from(ReportEntity, 'report_entity')
+      .leftJoin("project_entity", "project", "report_entity.projectId = project.id")
+      .where('report_entity.projectId IS NOT NULL')
+      .select('report_entity.id, project.name as project_name, report_entity.title as report_title')
+      .orderBy('project.name')
+      .getRawMany()
+
+    this.iterateReports(reports, fileCount)
+  }
+
+  private async iterateReports(reports, fileCount) {
+    let filesCopied = 0
+
+    reports.forEach(async(r) => {
+      const reportDir = path.join(this.backupDir, `${r.project_name}`, `${r.report_title}`);    
+
+      //check if folder exists and if not create it
+      if (!existsSync(reportDir)) {
+        mkdirSync(reportDir, { mode: 0o755, recursive: true })    
+      }
+      
+      // get report folder
+      const folderDir = path.join(this.dataPath, r.id, 'full')
+
+      // checks that report has files
+      if (existsSync(folderDir)) {
+        // count files
+        const folderFiles = readdirSync(path.join(this.dataPath, r.id, 'full'))
+        
+        folderFiles.forEach((f, i) => {
+          const filePath = path.join(folderDir, f)
+          const destPath = path.join(reportDir, f)
+          copyFileSync(filePath, destPath)
+
+          filesCopied += 1
+          console.log('FILES COPIED => ', `${filesCopied} out of ${fileCount}`)
+        })
+      }
+      
+    })
+  }
+
+  //NON DATA PROCESSES
   private async createDatabaseDump() {
     const res = await mysqldump({
       connection: {
@@ -126,7 +227,6 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     )
   }
   
-
   private async createCsv(elements, elementKeys, elementHeaders, filename) {
     let writeStream = createWriteStream(this.backupDir + filename)
     writeStream.write(elementHeaders.join(',')+ '\n', () => {})
@@ -137,7 +237,6 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         writeStream.write(newLine.join(',')+ '\n', () => {})
     })
   
-    console.log('WRITESTREAM')
     writeStream.end()
     writeStream.on('finish', () => {
         console.log('finish write stream, moving along')
@@ -145,7 +244,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         console.log(err)
     })
   }
-  
+
 }
 
 

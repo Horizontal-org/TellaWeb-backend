@@ -2,9 +2,12 @@ import { TYPES } from './interfaces';
 
 import { CheckInProgressBackupService} from './services/check-in-progress.backup.service';
 import { StartBackupService } from './services/start.backup.service';
+import { LatestBackupService } from './services/latest.backup.service'
 
 import { StartBackupApplication } from './applications/start.backup.application';
 import { ProcessBackupHandler } from './handlers/process.backup.handler';
+import { DeleteBackupService } from './services/delete.backup.service';
+import { DownloadBackupService } from './services/download.backup.service';
 
 
 export const checkInProgressServiceProvider = {
@@ -16,6 +19,21 @@ export const checkInProgressServiceProvider = {
 export const startBackupServiceProvider = {
   provide: TYPES.services.IStartBackupService,
   useClass: StartBackupService
+}
+
+export const latestBackupServiceProvider = {
+  provide: TYPES.services.ILatestBackupService,
+  useClass: LatestBackupService
+}
+
+export const deleteBackupServiceProvider = {
+  provide: TYPES.services.IDeleteBackupService,
+  useClass: DeleteBackupService
+}
+
+export const downloadBackupServiceProvider = {
+  provide: TYPES.services.IDownloadBackupService,
+  useClass: DownloadBackupService
 }
 
 export const startBackupApplicationProvider = {
@@ -34,7 +52,10 @@ export const applicationsBackupProviders = [
 
 export const servicesBackupProviders = [ 
     startBackupServiceProvider,
-    checkInProgressServiceProvider
+    checkInProgressServiceProvider,
+    latestBackupServiceProvider,
+    deleteBackupServiceProvider,
+    downloadBackupServiceProvider
 ];
 
 export const handlersBackupProviders = [

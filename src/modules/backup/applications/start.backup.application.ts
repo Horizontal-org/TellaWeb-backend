@@ -22,9 +22,9 @@ export class StartBackupApplication implements IStartBackupApplication {
     const backupsInProgress = await this.checkInProgressService.execute()
 
     // COMMENT FOR QUICK TESTING
-    // if (backupsInProgress) {
-    //     throw new BackupAlreadyInProgressException()
-    // }
+    if (backupsInProgress) {
+        throw new BackupAlreadyInProgressException()
+    }
 
     await this.startBackupService.execute(user)
   }

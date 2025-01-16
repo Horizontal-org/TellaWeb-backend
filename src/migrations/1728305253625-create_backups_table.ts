@@ -21,6 +21,11 @@ export class createBackupsTable1728305253625 implements MigrationInterface {
                         type: "varchar",                        
                     },
                     {
+                        name: "folder_name",
+                        type: "varchar",
+                        isNullable: true
+                    },
+                    {
                         name: 'created_at',
                         type: 'timestamp'
                     },

@@ -5,7 +5,7 @@ import { BackupEntity } from '../domain';
 import { IStartBackupService } from '../interfaces';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { ReadUserDto } from 'modules/user/dto';
+import { rmSync } from 'fs';
 
 @Injectable()
 export class StartBackupService implements IStartBackupService {
@@ -17,13 +17,28 @@ export class StartBackupService implements IStartBackupService {
   ) {}
 
   async execute(user): Promise<void> {
-    console.log("🚀 ~ StartBackupService ~ execute ~ userId:", user.id)
+    // delete previous backups
+    const toDelete = await this.backupRepo
+      .createQueryBuilder('backups')      
+      .where({ status: 'finished' })
+      .getMany()
+
+    await toDelete.forEach(async(d) => {      
+      try {
+        rmSync(d.folderName + '.zip')
+      } catch (e) {
+        console.log("ERROR TRYING TO DELETE => ", e)
+      }
+
+      d.status = 'deleted'
+      await this.backupRepo.save(d)
+    })
 
     const backup = new BackupEntity();
     backup.user = user.id
     backup.status = 'processing'
     await this.backupRepo.save(backup)
     
-    this.backQueue.add('start', user)    
+    this.backQueue.add('start', backup)
   }
 }

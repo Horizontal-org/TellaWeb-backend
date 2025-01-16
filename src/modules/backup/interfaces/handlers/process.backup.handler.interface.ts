@@ -1,9 +1,5 @@
-import { ReadStream } from 'fs';
-import { FileType } from 'modules/file/domain';
-import { StreamFileDto } from 'modules/file/dto/stream.file.dto';
-import { ReadUserDto } from 'modules/user/dto';
-// import { InfoFileDto, ReadFileDto, WriteStreamFileDto } from '../../dto';
+import { BackupEntity } from 'modules/backup/domain';
 
 export interface IProcessBackupHandler {
-  process(user: ReadUserDto): Promise<void>;
+  process(user: BackupEntity): Promise<void>;
 }

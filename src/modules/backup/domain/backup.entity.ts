@@ -3,16 +3,11 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
-import { ReportEntity } from 'modules/report/domain/report.entity';
 import { Exclude, Expose } from 'class-transformer';
-import { ProjectEntity } from 'modules/project/domain';
 import { UserEntity } from 'modules/user/domain';
 
 @Exclude()
@@ -26,17 +21,15 @@ export class BackupEntity {
   @JoinColumn({ name: "user_id" })
   user: UserEntity;
 
-
   @Expose()
-  @Column({ name: 'created_at' })
-  createdAt!: Date;
-
+  @Column({ name: 'folder_name' })
+  folderName: string;
+  
   @Expose()
   @Column()
   status: string;
-
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.createdAt = new Date();
-  }
+  
+  @Expose()
+  @Column({ name: 'created_at' })
+  createdAt!: Date;
 }

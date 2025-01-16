@@ -1,7 +1,10 @@
 export const TYPES = {
   services: {
     ICheckInProgressBackupService: 'ICheckInProgressBackupService',
-    IStartBackupService: 'IStartBackupService',    
+    IStartBackupService: 'IStartBackupService',
+    ILatestBackupService: 'ILatestBackupService',
+    IDeleteBackupService: 'IDeleteBackupService',
+    IDownloadBackupService: 'IDownloadBackupService'
   },
   applications: {
     IStartBackupApplication: 'IStartBackupApplication',    
