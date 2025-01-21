@@ -22,6 +22,9 @@ import { ResourceEntity } from 'modules/resource/domain';
 import { FileEntity } from 'modules/file/domain';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BackupEntity } from '../domain';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { ProcessBackupDto } from '../dto/process.backup.dto';
 
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
@@ -29,13 +32,15 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   constructor(
     @InjectRepository(BackupEntity)
     private readonly backupRepo: Repository<BackupEntity>,
+    @InjectQueue('emails')
+    private emailQueue: Queue
   ) {}
 
   private basePath = join(process.cwd(), 'backups');
   private dataPath = join(process.cwd(), 'data')
   private backupDir = ''
 
-  async process(backup: BackupEntity): Promise<void> {
+  async process(processData: ProcessBackupDto): Promise<void> {
     try {
       const datetime = new Date()
       this.backupDir = path.join(this.basePath, `${datetime.toISOString().slice(0,19)}-backup`);    
@@ -55,13 +60,25 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
       //delete folder and keep zip
       await this.clean()
 
-      backup.status = 'finished'
-      backup.folderName = this.backupDir
-      await this.backupRepo.save(backup)
+      processData.backup.status = 'finished'
+      processData.backup.folderName = this.backupDir
+      await this.backupRepo.save(processData.backup)
       console.log('finished')
+
+      // send email that backup is ready
+      if (processData.emailEnabled) {
+        this.emailQueue.add('send', {
+          subject: 'Backup ready',
+          to: processData.receiver,
+          template: 'backup-processed',
+          data: {        
+            url: process.env.ADMIN_DOMAIN
+          }
+        })
+      }
     } catch (e) {
-      backup.status = 'error'
-      await this.backupRepo.save(backup)
+      processData.backup.status = 'error'
+      await this.backupRepo.save(processData.backup)
       console.log('error in execution => ', e)
     }    
   }

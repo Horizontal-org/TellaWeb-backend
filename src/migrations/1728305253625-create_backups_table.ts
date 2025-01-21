@@ -27,7 +27,7 @@ export class createBackupsTable1728305253625 implements MigrationInterface {
                     },
                     {
                         name: 'created_at',
-                        type: 'timestamp'
+                        type: 'timestamp',
                     },
                 ],
             }),
@@ -42,6 +42,11 @@ export class createBackupsTable1728305253625 implements MigrationInterface {
                 referencedTableName: "user_entity",
                 onDelete: "CASCADE",
             }),
+        )
+
+        // fix for typeorm bug
+        await queryRunner.query(
+            'ALTER TABLE backups MODIFY COLUMN created_at timestamp DEFAULT current_timestamp() NOT NULL;'
         )
     }
 

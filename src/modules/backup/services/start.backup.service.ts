@@ -6,12 +6,15 @@ import { IStartBackupService } from '../interfaces';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { rmSync } from 'fs';
+import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 
 @Injectable()
 export class StartBackupService implements IStartBackupService {
   constructor(
     @InjectRepository(BackupEntity)
     private readonly backupRepo: Repository<BackupEntity>,
+    @InjectRepository(GlobalSettingEntity)
+    private readonly globalSettingRepo: Repository<GlobalSettingEntity>,
     @InjectQueue('backups')
     private backQueue: Queue
   ) {}
@@ -39,6 +42,16 @@ export class StartBackupService implements IStartBackupService {
     backup.status = 'processing'
     await this.backupRepo.save(backup)
     
-    this.backQueue.add('start', backup)
+    // TODO get emails enabled flag
+    const gSetting = await this.globalSettingRepo.findOne({
+      where: { name: 'SUSPICIOUS LOGIN DETECTION' }
+    });
+    console.log("🚀 ~ StartBackupService ~ execute ~ gSetting:", gSetting)
+
+    this.backQueue.add('start', {
+      backup: backup,
+      receiver: user.username,
+      emailEnabled: gSetting.enabled
+    })
   }
 }
