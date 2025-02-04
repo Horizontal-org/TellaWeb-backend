@@ -20,6 +20,7 @@ import { textChangeRangeIsUnchanged } from 'typescript';
 import { RecoveryKeyEntity } from './recovery-key.entity';
 import { UserVerificationCodeEntity } from './user-verification-code.entity';
 import { UserWhitelistEntity } from './user-whitelist.entity';
+import { BackupEntity } from 'modules/backup/domain/backup.entity';
 
 @Exclude()
 @Entity()
@@ -73,6 +74,10 @@ export class UserEntity {
   @OneToMany(() => RecoveryKeyEntity, (rec_key: RecoveryKeyEntity) => rec_key.user)
   @JoinColumn({ name: "user_id" })
   recovery_keys: RecoveryKeyEntity[];
+
+  @OneToMany(() => BackupEntity, (backup: BackupEntity) => backup.user)
+  @JoinColumn({ name: "user_id" })
+  backups: BackupEntity[];
 
   @ManyToMany(() => ProjectEntity, project => project.users, {
     onDelete: 'CASCADE'

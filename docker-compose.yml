@@ -52,6 +52,7 @@ services:
       - api-network
   redis:
     image: 'bitnami/redis:latest'
+    mem_limit: 1GB
     environment:
       REDIS_PASSWORD: "${REDIS_PASSWORD}"
     networks:
