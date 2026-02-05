@@ -26,7 +26,6 @@ export class CloseFileReportController {
   @UseGuards(OnlyAuthor)
   @Post(':reportId/:fileName')
   @Header('Deprecation', 'true')
-  @Header('Sunset', 'Sat, 01 Aug 2026 00:00:00 GMT')
   async handler(
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
