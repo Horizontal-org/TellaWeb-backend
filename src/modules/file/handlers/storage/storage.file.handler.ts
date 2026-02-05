@@ -210,14 +210,22 @@ export class StorageFileHandler implements IStorageFileHandler {
     const filePath = this.getPath(input, false);
 
     try {
-      // TEST ONLY REMOVE
-      const { mime } = await GetFileType.fromFile(filePath);
-      if (mime.includes('video')) return FileType.VIDEO;
-      if (mime.includes('audio')) return FileType.AUDIO;
-      if (mime.includes('image')) return FileType.IMAGE;
-      // TEST ONLY REMOVE
+      const result = await GetFileType.fromFile(filePath);
+      if (result) {
+        const { mime } = result;
+        if (mime.includes('video')) return FileType.VIDEO;
+        if (mime.includes('audio')) return FileType.AUDIO;
+        if (mime.includes('image')) return FileType.IMAGE;
+      }
     } catch (e) {
       console.log('SEE ERROR', e);
+    }
+
+    // Fallback: check file extension for HEIC/HEIF
+    console.log('FALLBACK: Checking file extension for HEIC/HEIF', input.fileName);
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    if (ext === 'heic' || ext === 'heif') {
+      return FileType.IMAGE;
     }
 
     return FileType.OTHER;
