@@ -181,11 +181,17 @@ export class StorageFileHandler implements IStorageFileHandler {
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
   ): Promise<boolean> {
+    console.log(`[HANDLER] StorageFileHandler.append() called for ${fileInputStreamDto.fileName}`);
+    
     const file = await this.get(fileInputStreamDto);
+    console.log(`[HANDLER] File status - exists: ${file.exist}, closed: ${file.closed}, size: ${file.size}`);
+    
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
+    console.log(`[HANDLER] Calling streamToFile()...`);
     const saved = await this.streamToFile(fileInputStreamDto);
+    console.log(`[HANDLER] streamToFile() completed, saved: ${saved}`);
     return saved;
   }
 

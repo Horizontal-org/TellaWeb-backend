@@ -1,4 +1,4 @@
-import { Body, Inject, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Header, Inject, Param, Post, UseGuards } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
@@ -10,6 +10,10 @@ import { CloseFileDto } from '../dto';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
+/**
+ * @deprecated Use PUT /file/:reportId/:fileName with X-File-Info header instead.
+ * Files are now automatically closed after upload completes.
+ */
 @AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
 export class CloseFileReportController {
   constructor(
@@ -21,6 +25,8 @@ export class CloseFileReportController {
 
   @UseGuards(OnlyAuthor)
   @Post(':reportId/:fileName')
+  @Header('Deprecation', 'true')
+  @Header('Sunset', 'Sat, 01 Aug 2026 00:00:00 GMT')
   async handler(
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,

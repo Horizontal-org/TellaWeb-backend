@@ -32,6 +32,7 @@ export class UtilsCommander {
   async migrate(){
     const cm = getConnectionManager()
     const connection = cm.get()
+    console.log("🚀 ~ UtilsCommander ~ migrate ~ connection:", connection)
 
     try {
       await connection.query('PRAGMA foreign_keys=OFF');
