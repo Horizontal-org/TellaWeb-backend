@@ -26,7 +26,7 @@ export class UnblockUserService implements IUnblockUserService {
       throw new NotFoundUserException();
     }
 
-    let verification = await this.userVerification.findOne({ 
+    const verification = await this.userVerification.findOne({ 
       where: { code } ,
       relations: ['user'],
     });

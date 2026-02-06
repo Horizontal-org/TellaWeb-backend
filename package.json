@@ -71,6 +71,7 @@
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pdf-parse": "^2.4.5",
     "prompt": "^1.1.0",
     "pug": "^3.0.2",
     "reflect-metadata": "^0.1.13",
@@ -88,6 +89,7 @@
   "devDependencies": {
     "@nestjs/schematics": "^8.0.8",
     "@nestjs/testing": "^8.4.3",
+    "@types/archiver": "^7.0.0",
     "@types/bcrypt": "^3.0.0",
     "@types/bull": "^4.10.0",
     "@types/express": "^4.17.11",

@@ -245,11 +245,11 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
   
   private async createCsv(elements, elementKeys, elementHeaders, filename) {
-    let writeStream = createWriteStream(this.backupDir + filename)
+    const writeStream = createWriteStream(this.backupDir + filename)
     writeStream.write(elementHeaders.join(',')+ '\n', () => {})
 
     elements.forEach((element) => {     
-        let newLine = []
+        const newLine = []
         elementKeys.forEach(e => newLine.push(element[e]))
         writeStream.write(newLine.join(',')+ '\n', () => {})
     })
