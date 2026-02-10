@@ -1,15 +1,7 @@
-import { ForbiddenError } from '@casl/ability';
-import { Body, Controller, Get, Inject, Post, Res } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-
-import { AuthController } from 'common/decorators/auth-controller.decorator';
-import { LoggedUser } from 'modules/auth/decorators';
-import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
-import { ReadUserDto } from 'modules/user/dto';
-import { IEnableOtpAuthService, IGenerateTokenAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
-
-import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
+import { IGenerateTokenAuthService, TYPES } from '../interfaces';
+import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 import {
   IGetByIdUserApplication,
@@ -27,6 +19,8 @@ export class LoginOtpAuthController {
     private generateTokenAuthService: IGenerateTokenAuthService,
     @Inject(TYPES.services.IVerifyOtpAuthService)
     private verifyOtpService: IVerifyOtpAuthService,
+    @Inject(TYPES.services.IRefreshTokenAuthService)
+    private refreshTokenService: IRefreshTokenAuthService,
   ) {}
 
   @Post('/otp/login')
@@ -36,17 +30,20 @@ export class LoginOtpAuthController {
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '1d'
+      expiresIn: '15m'
     });
+    
+    const refresh_token = await this.refreshTokenService.generate(user.id);
 
     response
       .cookie('access_token', authToken.access_token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        expires: new Date(Date.now() + 1000 * 60 * 15),
         domain: process.env.COOKIE_DOMAIN,
       })
       .send({
         ...authToken,
+        refresh_token,
         user,
       });
         

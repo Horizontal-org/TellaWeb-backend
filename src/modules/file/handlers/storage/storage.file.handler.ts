@@ -180,13 +180,33 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
-  ): Promise<boolean> {
+  ): Promise<number> {
+    console.log(`[HANDLER] StorageFileHandler.append() called for ${fileInputStreamDto.fileName}`);
+    
     const file = await this.get(fileInputStreamDto);
+    console.log(`[HANDLER] File status - exists: ${file.exist}, closed: ${file.closed}, size: ${file.size}`);
+    
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
-    const saved = await this.streamToFile(fileInputStreamDto);
-    return saved;
+    if (
+      file.exist &&
+      fileInputStreamDto.contentLength !== undefined &&
+      file.size === fileInputStreamDto.contentLength
+    ) {
+      console.log(`[HANDLER] Partial file already has ${file.size} bytes matching Content-Length, skipping stream`);
+      return file.size;
+    }
+
+    console.log(`[HANDLER] Calling streamToFile()...`);
+    const bytesWritten = await this.streamToFile(fileInputStreamDto);
+    console.log(`[HANDLER] streamToFile() completed, bytesWritten: ${bytesWritten}`);
+
+    if (fileInputStreamDto.contentLength !== undefined && bytesWritten !== fileInputStreamDto.contentLength) {
+      console.warn(`[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`);
+    }
+
+    return bytesWritten;
   }
 
   public async close(input: CloseFileDto): Promise<boolean> {
@@ -202,18 +222,42 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async getType(input: ReadFileDto): Promise<FileType> {
     const filePath = this.getPath(input, false);
+    console.log(`[CLOSE] getType() called for file: ${filePath}`);
 
     try {
-      // TEST ONLY REMOVE
-      const { mime } = await GetFileType.fromFile(filePath);
-      if (mime.includes('video')) return FileType.VIDEO;
-      if (mime.includes('audio')) return FileType.AUDIO;
-      if (mime.includes('image')) return FileType.IMAGE;
-      // TEST ONLY REMOVE
+      const result = await GetFileType.fromFile(filePath);
+      console.log(`[CLOSE] file-type detection result:`, result);
+      if (result) {
+        const { mime } = result;
+        console.log(`[CLOSE] Detected MIME type: ${mime}`);
+        if (mime.includes('video')) {
+          console.log(`[CLOSE] Classified as VIDEO`);
+          return FileType.VIDEO;
+        }
+        if (mime.includes('audio')) {
+          console.log(`[CLOSE] Classified as AUDIO`);
+          return FileType.AUDIO;
+        }
+        if (mime.includes('image')) {
+          console.log(`[CLOSE] Classified as IMAGE`);
+          return FileType.IMAGE;
+        }
+      } else {
+        console.log(`[CLOSE] file-type returned null/undefined`);
+      }
     } catch (e) {
-      console.log('SEE ERROR', e);
+      console.log(`[CLOSE] file-type detection error:`, e);
     }
 
+    // Fallback: check file extension for HEIC/HEIF
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    console.log(`[CLOSE] Fallback: checking file extension: ${ext}`);
+    if (ext === 'heic' || ext === 'heif') {
+      console.log(`[CLOSE] Extension match - classified as IMAGE`);
+      return FileType.IMAGE;
+    }
+
+    console.log(`[CLOSE] No match - classified as OTHER`);
     return FileType.OTHER;
   }
 

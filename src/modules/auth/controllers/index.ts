@@ -8,6 +8,8 @@ import { ValidateRecoveryKeysController } from './validate-recovery-keys.auth.co
 import { GetRecoveryKeysAuthController } from './get-recovery-keys.auth.controller';
 import { LoginRecoveryKeysAuthController } from './login-recovery-keys.auth.controller';
 import { LoginWebAuthController } from './login-web.auth.controller';
+import { RefreshTokenAuthController } from './refresh-token.auth.controller';
+import { LogoutAuthController } from './logout.auth.controller';
 
 export const authControllers = [
   LoginWebAuthController,
@@ -19,5 +21,7 @@ export const authControllers = [
   LoginOtpAuthController,
   ValidateRecoveryKeysController,
   GetRecoveryKeysAuthController,
-  LoginRecoveryKeysAuthController
+  LoginRecoveryKeysAuthController,
+  RefreshTokenAuthController,
+  LogoutAuthController
 ];

@@ -30,4 +30,6 @@ export class FileDto {
   @IsJSON()
   fileInfo?: unknown;
 
+  bytesWritten?: number;
+
 }

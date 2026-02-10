@@ -24,7 +24,7 @@ export class CreateProjectController {
     @Body() createProjectDto: CreateProjectDto,
     @LoggedUser() { id, username, role }: ReadUserDto,
   ): Promise<ReadProjectDto> {
-    let projectDto = createProjectDto
+    const projectDto = createProjectDto
     if (role !== 'admin') {
       projectDto.users = [id]
     }

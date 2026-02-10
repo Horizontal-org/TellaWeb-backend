@@ -27,7 +27,7 @@ export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
       .where({ user: userEntity.id })
       .execute();
 
-    let keys = []
+    const keys = []
     for (let i = 0; i < 15; i++) {
       const n = randomInt(10000000, 100000000)
       keys.push(n + '')

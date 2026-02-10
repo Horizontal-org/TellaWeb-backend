@@ -8,6 +8,7 @@ import { LoggedUser } from 'modules/auth/decorators';
 import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 import { ReadUserDto } from 'modules/user/dto';
 import { IEnableOtpAuthService, IGenerateTokenAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
+import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
 
 import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
@@ -31,7 +32,9 @@ export class LoginRecoveryKeysAuthController {
     @Inject(TYPES.services.IValidateRecoveryKeysService)
     private validateRecoveryKeysService: IValidateRecoveryKeysService,
     @Inject(TYPES_USER.applications.ICheckPasswordUserApplication)
-    private checkPasswordApplication: ICheckPasswordUserApplication,    
+    private checkPasswordApplication: ICheckPasswordUserApplication,
+    @Inject(TYPES.services.IRefreshTokenAuthService)
+    private refreshTokenService: IRefreshTokenAuthService,
   ) {}
 
   @Post('/otp/recovery-key')
@@ -53,17 +56,19 @@ export class LoginRecoveryKeysAuthController {
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '1d'
+      expiresIn: '15m'
     });
+    const refresh_token = await this.refreshTokenService.generate(user.id);
     
     response
       .cookie('access_token', authToken.access_token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        expires: new Date(Date.now() + 1000 * 60 * 15),
         domain: process.env.COOKIE_DOMAIN,
       })
       .send({
         ...authToken,
+        refresh_token,
         user,
       });
         

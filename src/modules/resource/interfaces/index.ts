@@ -5,5 +5,6 @@ export { ICheckNameResourceService } from './services/check-name.resource.servic
 export { IDeleteResourceService } from './services/delete.resource.service.interface'
 export { IDownloadResourceService } from './services/download.resource.service.interface'
 export { IGetByProjectsResourceService } from './services/get-by-projects.resource.service.interface'
+export { IPdfAnalyzerService } from './services/pdf-analyzer.service.interface'
 
 export { TYPES } from './types';

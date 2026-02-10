@@ -13,6 +13,7 @@ import { UserEntity } from 'modules/user/domain';
 import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
 import { UtilsModule } from 'modules/utils/utils.module';
 import { GlobalSettingEntity } from 'modules/globalSettings/domain';
+import { RefreshTokenEntity } from './domain/refresh-token.entity';
 
 @Module({
   imports: [    
@@ -20,7 +21,8 @@ import { GlobalSettingEntity } from 'modules/globalSettings/domain';
     UtilsModule,
     TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([RecoveryKeyEntity]),
-    TypeOrmModule.forFeature([GlobalSettingEntity]), 
+    TypeOrmModule.forFeature([GlobalSettingEntity]),
+    TypeOrmModule.forFeature([RefreshTokenEntity]),
   ],
   controllers: [...authControllers],
   providers: [

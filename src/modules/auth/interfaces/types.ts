@@ -10,7 +10,8 @@ export const TYPES = {
     ICreateRecoveryKeysService: 'ICreateRecoveryKeysService',
     IValidateRecoveryKeysService: 'IValidateRecoveryKeysService',
     IGetRecoveryKeysService: 'IGetRecoveryKeysService',
-    IFlagUserAuthService: 'IFlagUserAuthService'
+    IFlagUserAuthService: 'IFlagUserAuthService',
+    IRefreshTokenAuthService: 'IRefreshTokenAuthService'
   },
   handlers: {
     IOtpAuthHandler: 'IOtpAuthHandler'

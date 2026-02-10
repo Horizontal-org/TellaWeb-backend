@@ -8,6 +8,7 @@ import {
   IValidateAuthService,
   IGenerateTokenAuthService,
 } from '../interfaces';
+import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
 import { ICheckSuspiciousUserApplication, TYPES as USER_TYPES } from '../../user/interfaces'
 import { InjectRepository } from '@nestjs/typeorm';
 import { GlobalSettingEntity } from 'modules/globalSettings/domain';
@@ -24,6 +25,8 @@ export class LoginWebAuthController {
     private validateAuthService: IValidateAuthService,
     @InjectRepository(GlobalSettingEntity)
     private readonly globalSettingsRepo: Repository<GlobalSettingEntity>,
+    @Inject(TYPES.services.IRefreshTokenAuthService)
+    private refreshTokenService: IRefreshTokenAuthService,
   ) {}
 
   @Post('web')
@@ -66,16 +69,20 @@ export class LoginWebAuthController {
       const authToken = await this.generateTokenAuthService.execute({
         user: user,
         type: 'web',
-        expiresIn: '1d'
+        expiresIn: '15m'
       });
+
+      const refresh_token = await this.refreshTokenService.generate(user.id);
+      
       response
         .cookie('access_token', authToken.access_token, {
           httpOnly: true,
-          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+          expires: new Date(Date.now() + 1000 * 60 * 15),
           domain: process.env.COOKIE_DOMAIN,
         })
         .send({
           ...authToken,
+          refresh_token,
           user,
         });
     }
