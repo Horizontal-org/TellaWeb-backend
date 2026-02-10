@@ -3,7 +3,7 @@ import { Stream } from 'stream';
 import fs from 'fs'
 
 export const createWritePromise = (filePath: string, stream: Stream) =>
-  new Promise<boolean>((res, rej) => {
+  new Promise<number>((res, rej) => {
     const startTime = Date.now();
     let written = 0;
     let chunkCount = 0;
@@ -26,7 +26,7 @@ export const createWritePromise = (filePath: string, stream: Stream) =>
       .on('finish', () => {
         const duration = Date.now() - startTime;
         console.log(`[STREAM] Write finished in ${duration}ms - ${written} bytes written in ${chunkCount} chunks`);
-        res(true);
+        res(written);
       })
       .on('error', (error: Error) => {
         console.log(`[STREAM] ERROR:`, error);

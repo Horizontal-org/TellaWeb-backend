@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   Headers,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   Put,
@@ -44,11 +46,6 @@ export class UploadFileReportController {
     description: 'JSON-encoded file metadata',
     required: false,
   })
-  // @ApiHeader({
-  //   name: 'X-Auto-Close',
-  //   description: 'Whether to auto-close the file after upload (default: true). Set to false for chunked uploads.',
-  //   required: false,
-  // })
   @UseGuards(OnlyAuthor)
   @Put(':reportId/:fileName')
   async handler(
@@ -56,14 +53,20 @@ export class UploadFileReportController {
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
     @Headers('x-file-info') fileInfoHeader?: string,
-    // @Headers('x-auto-close') autoCloseHeader?: string,
+    @Headers('content-length') contentLengthHeader?: string,
   ): Promise<FileDto | { success: boolean; error?: string }> {
-    // const autoClose = autoCloseHeader !== 'false';
     const startTime = Date.now();
     console.log(`[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`);
-    console.log(`[UPLOAD] Content-Length header: ${stream.headers['content-length']}`);
+    console.log(`[UPLOAD] Content-Length header: ${contentLengthHeader}`);
     console.log(`[UPLOAD] Content-Type header: ${stream.headers['content-type']}`);
-    // console.log(`[UPLOAD] Auto-close: ${autoClose}`);
+
+    if (!contentLengthHeader) {
+      throw new HttpException('Content-Length header is required', HttpStatus.LENGTH_REQUIRED);
+    }
+    const contentLength = parseInt(contentLengthHeader, 10);
+    if (isNaN(contentLength) || contentLength < 0) {
+      throw new BadRequestException('Content-Length must be a valid positive integer');
+    }
 
     let fileInfo: unknown = undefined;
     if (fileInfoHeader) {
@@ -80,15 +83,19 @@ export class UploadFileReportController {
       bucket: reportId,
       fileName,
       stream,
+      contentLength,
     });
 
     const uploadDuration = Date.now() - startTime;
     console.log(`[UPLOAD] Stream completed in ${uploadDuration}ms, file created:`, file);
 
-    // if (!autoClose) {
-    //   console.log(`[UPLOAD] Auto-close disabled, skipping close`);
-    //   return file;
-    // }
+    if (file.bytesWritten !== contentLength) {
+      console.warn(`[UPLOAD] Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes, keeping file partial for resume`);
+      return {
+        success: false,
+        error: `Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes`,
+      };
+    }
 
     console.log(`[UPLOAD] Now closing file...`);
     try {
@@ -106,17 +113,6 @@ export class UploadFileReportController {
         error: err instanceof Error ? err.message : 'Failed to close file',
       };
     }
-
-    // try {
-    //   await this.recordAnalyticsService.execute({
-    //     measurement: true,
-    //     timePrecision: 300,
-    //     type: 'count',
-    //     id: 'MyApPucrtpDkJWoNHh_DHiXDSEQ7cH5s9Bl3GDPJfXg',
-    //   });
-    // } catch {
-    //   // Analytics failure should not cause upload to fail
-    // }
 
     return file;
   }

@@ -180,7 +180,7 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
-  ): Promise<boolean> {
+  ): Promise<number> {
     console.log(`[HANDLER] StorageFileHandler.append() called for ${fileInputStreamDto.fileName}`);
     
     const file = await this.get(fileInputStreamDto);
@@ -189,10 +189,24 @@ export class StorageFileHandler implements IStorageFileHandler {
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
+    if (
+      file.exist &&
+      fileInputStreamDto.contentLength !== undefined &&
+      file.size === fileInputStreamDto.contentLength
+    ) {
+      console.log(`[HANDLER] Partial file already has ${file.size} bytes matching Content-Length, skipping stream`);
+      return file.size;
+    }
+
     console.log(`[HANDLER] Calling streamToFile()...`);
-    const saved = await this.streamToFile(fileInputStreamDto);
-    console.log(`[HANDLER] streamToFile() completed, saved: ${saved}`);
-    return saved;
+    const bytesWritten = await this.streamToFile(fileInputStreamDto);
+    console.log(`[HANDLER] streamToFile() completed, bytesWritten: ${bytesWritten}`);
+
+    if (fileInputStreamDto.contentLength !== undefined && bytesWritten !== fileInputStreamDto.contentLength) {
+      console.warn(`[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`);
+    }
+
+    return bytesWritten;
   }
 
   public async close(input: CloseFileDto): Promise<boolean> {

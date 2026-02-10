@@ -21,8 +21,8 @@ export class StoreFileService implements IStoreFileService {
     console.log(`[STORE] StoreFileService.execute() called for ${input.fileName}`);
     
     console.log(`[STORE] Calling fileHandler.append()...`);
-    await this.fileHandler.append(input);
-    console.log(`[STORE] fileHandler.append() completed`);
+    const bytesWritten = await this.fileHandler.append(input);
+    console.log(`[STORE] fileHandler.append() completed, bytesWritten: ${bytesWritten}`);
 
     console.log(`[STORE] Calling getOrCreateFileService.execute()...`);
     const file = await this.getOrCreateFileService.execute(input);
@@ -33,6 +33,7 @@ export class StoreFileService implements IStoreFileService {
       bucket: file.bucket,
       fileName: file.fileName,
       type: file.type,
+      bytesWritten,
     };
   }
 }
