@@ -37,7 +37,6 @@
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-express": "^8.4.3",
-    "@nestjs/schedule": "^6.1.1",
     "@nestjs/swagger": "^5.2.1",
     "@nestjs/typeorm": "8.0.3",
     "@types/passport": "^1.0.7",
