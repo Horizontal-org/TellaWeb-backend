@@ -159,6 +159,7 @@ export class StorageFileHandler implements IStorageFileHandler {
   ): Promise<InfoFileDto> {
     const fileExist = await this.fileExist(input, isPartial);
     console.log("🚀 ~ StorageFileHandler ~ get ~ fileExist:", fileExist)
+    console.log("🚀 ~ StorageFileHandler ~ get ~ isPartial:", isPartial)
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
       console.log("🚀 ~ StorageFileHandler ~ get ~ size:", size)
@@ -281,11 +282,13 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
+    console.log("🚀 ~ StorageFileHandler ~ fileExist ~ filePath:", filePath)
     return existsSync(filePath);
   }
 
   private async fileSize(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
+    console.log("🚀 ~ StorageFileHandler ~ fileSize ~ filePath:", filePath)
     return statSync(filePath).size;
   }
 
