@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Header,
   Headers,
   HttpException,
   HttpStatus,
@@ -47,28 +48,28 @@ export class UploadFileReportController {
     required: false,
   })
   @UseGuards(OnlyAuthor)
-  @Put(':reportId/:fileName')
-  async handler(
+  @Put('/v2/:reportId/:fileName')
+  async uploadV2(
     @Req() stream: Request,
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
     @Headers('x-file-info') fileInfoHeader?: string,
     @Headers('content-length') contentLengthHeader?: string,
   ): Promise<FileDto | { success: boolean; error?: string }> {
+    
     const startTime = Date.now();
+
     console.log(`[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`);
     console.log(`[UPLOAD] Content-Length header: ${contentLengthHeader}`);
     console.log(`[UPLOAD] Content-Type header: ${stream.headers['content-type']}`);
 
-    if (!contentLengthHeader) {
+    if (!contentLengthHeader || contentLengthHeader.trim() === '' || isNaN(parseInt(contentLengthHeader))) {
       throw new HttpException('Content-Length header is required', HttpStatus.LENGTH_REQUIRED);
     }
+    
     const contentLength = parseInt(contentLengthHeader, 10);
-    if (isNaN(contentLength) || contentLength < 0) {
-      throw new BadRequestException('Content-Length must be a valid positive integer');
-    }
 
-    let fileInfo: unknown = undefined;
+    let fileInfo = null;
     if (fileInfoHeader) {
       try {
         fileInfo = JSON.parse(fileInfoHeader);
@@ -113,6 +114,27 @@ export class UploadFileReportController {
         error: err instanceof Error ? err.message : 'Failed to close file',
       };
     }
+
+    return file;
+  }
+
+
+
+  @ApiCreatedResponse({ type: FileDto })
+  @UseGuards(OnlyAuthor)
+  @Header('Deprecation', 'true')
+  @Put(':reportId/:fileName')
+  async uploadV1(
+    @Req() stream: Request,
+    @Param('reportId') reportId: string,
+    @Param('fileName') fileName: string,
+  ): Promise<FileDto> {
+    console.log('V1 upload endpoint is deprecated, please use /v2/:reportId/:fileName instead');
+    const file = await this.createFileApplication.execute({
+      bucket: reportId,
+      fileName,
+      stream,
+    });
 
     return file;
   }

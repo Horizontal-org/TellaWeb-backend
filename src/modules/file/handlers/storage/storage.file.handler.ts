@@ -158,8 +158,10 @@ export class StorageFileHandler implements IStorageFileHandler {
     isPartial = false,
   ): Promise<InfoFileDto> {
     const fileExist = await this.fileExist(input, isPartial);
+    console.log("🚀 ~ StorageFileHandler ~ get ~ fileExist:", fileExist)
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
+      console.log("🚀 ~ StorageFileHandler ~ get ~ size:", size)
       return {
         exist: true,
         size: size,
@@ -191,16 +193,14 @@ export class StorageFileHandler implements IStorageFileHandler {
 
     if (
       file.exist &&
-      fileInputStreamDto.contentLength !== undefined &&
+      !!(fileInputStreamDto.contentLength) &&
       file.size === fileInputStreamDto.contentLength
     ) {
       console.log(`[HANDLER] Partial file already has ${file.size} bytes matching Content-Length, skipping stream`);
       return file.size;
     }
 
-    console.log(`[HANDLER] Calling streamToFile()...`);
     const bytesWritten = await this.streamToFile(fileInputStreamDto);
-    console.log(`[HANDLER] streamToFile() completed, bytesWritten: ${bytesWritten}`);
 
     if (fileInputStreamDto.contentLength !== undefined && bytesWritten !== fileInputStreamDto.contentLength) {
       console.warn(`[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`);
