@@ -13,6 +13,7 @@ import {
 import * as path from 'path';
 import * as GetFileType from 'file-type';
 
+import { BadRequestException } from '@nestjs/common';
 import {
   AlreadyClosedFileException,
   CantBeClosedFileException,
@@ -157,12 +158,10 @@ export class StorageFileHandler implements IStorageFileHandler {
     input: ReadFileDto,
     isPartial = false,
   ): Promise<InfoFileDto> {
-    const fileExist = await this.fileExist(input, isPartial);
-    console.log("🚀 ~ StorageFileHandler ~ get ~ fileExist:", fileExist)
-    console.log("🚀 ~ StorageFileHandler ~ get ~ isPartial:", isPartial)
+    const fileExist = await this.fileExist(input, isPartial);    
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
-      console.log("🚀 ~ StorageFileHandler ~ get ~ size:", size)
+      console.log("StorageFileHandler ~ get ~ size:", size)
       return {
         exist: true,
         size: size,
@@ -192,13 +191,17 @@ export class StorageFileHandler implements IStorageFileHandler {
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
-    if (
-      file.exist &&
-      !!(fileInputStreamDto.contentLength) &&
-      file.size === fileInputStreamDto.contentLength
-    ) {
-      console.log(`[HANDLER] Partial file already has ${file.size} bytes matching Content-Length, skipping stream`);
+    if (file.exist && !!(fileInputStreamDto.totalSize) && file.size >= fileInputStreamDto.totalSize) {
+      console.log(`[HANDLER] Partial file already has ${file.size} bytes meeting or exceeding totalSize ${fileInputStreamDto.totalSize}, skipping stream`);
       return file.size;
+    }
+
+    if (fileInputStreamDto.rangeStart !== undefined) {
+      if (fileInputStreamDto.rangeStart > file.size) {
+        throw new BadRequestException(
+          `Content-Range start (${fileInputStreamDto.rangeStart}) is beyond current file size (${file.size})`,
+        );
+      }
     }
 
     const bytesWritten = await this.streamToFile(fileInputStreamDto);
@@ -295,6 +298,6 @@ export class StorageFileHandler implements IStorageFileHandler {
   private async streamToFile(input: WriteStreamFileDto) {
     this.createBucket(input.bucket);
     const filePath = this.getPath(input, true);
-    return await createWritePromise(filePath, input.stream);
+    return await createWritePromise(filePath, input.stream, input.rangeStart);
   }
 }

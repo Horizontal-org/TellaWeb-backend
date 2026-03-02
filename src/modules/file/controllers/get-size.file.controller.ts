@@ -38,7 +38,11 @@ export class GetSizeFileController {
       bucket: reportId,
       fileName: fileName,
     });
-    res.setHeader('size', fileInfo.size || 0);
+    const size = fileInfo.size || 0;
+    res.setHeader('size', size);
+    if (size > 0) {
+      res.setHeader('Range', `bytes=0-${size - 1}`);
+    }
     res.send();
   }
 }
