@@ -28,6 +28,7 @@ import {
 } from '../../dto';
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
+import { convertHeicFileToJpg } from '../utils/convertHeicToJpg.utils';
 import { FileType } from '../../domain';
 import { StreamFileDto } from 'modules/file/dto/stream.file.dto';
 import { join } from 'path';
@@ -221,6 +222,20 @@ export class StorageFileHandler implements IStorageFileHandler {
       return true;
     } catch (e) {
       throw new CantBeClosedFileException(input.fileName);
+    }
+  }
+
+  public async convertHeicToJpg(input: ReadFileDto): Promise<string | null> {
+    const filePath = this.getPath(input, false);
+    try {
+      const result = await convertHeicFileToJpg(filePath);
+      if (!result) return null;
+      const newFileName = input.fileName.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
+      console.log(`[CONVERT] Converted HEIC to JPG: ${input.fileName} -> ${newFileName}`);
+      return newFileName;
+    } catch (err) {
+      console.error(`[CONVERT] Failed to convert HEIC to JPG for ${input.fileName}:`, err);
+      return null;
     }
   }
 

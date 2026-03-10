@@ -34,6 +34,13 @@ export class CloseFileService implements ICloseFileService {
     console.log(`[CLOSE] Moving file from partial to full folder...`);
     await this.fileHandler.close(closeFileDto);
     console.log(`[CLOSE] File moved successfully`);
+
+    const convertedFileName = await this.fileHandler.convertHeicToJpg(closeFileDto);
+    if (convertedFileName) {
+      console.log(`[CLOSE] HEIC converted to JPG: ${closeFileDto.fileName} -> ${convertedFileName}`);
+      closeFileDto = { ...closeFileDto, fileName: convertedFileName };
+      file.fileName = convertedFileName;
+    }
     
     console.log(`[CLOSE] Detecting file type...`);
     file.type = await this.fileHandler.getType(closeFileDto);
