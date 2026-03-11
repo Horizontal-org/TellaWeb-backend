@@ -29,9 +29,10 @@ import {
   InfoFileDto,
   CloseFileDto,
 } from '../../dto';
+import convert = require('heic-convert');
+
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
-import { convertHeicFileToJpg } from '../utils/convertHeicToJpg.utils';
 import { FileType } from '../../domain';
 import { StreamFileDto } from 'modules/file/dto/stream.file.dto';
 import { join } from 'path';
@@ -156,6 +157,22 @@ export class StorageFileHandler implements IStorageFileHandler {
     if (!this.fileExist(input, false))
       throw new NotFoundFileException(input.fileName);
 
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const previewFileName = isHeic
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
+      : input.fileName;
+      
+    const previewPath = path.join(this.basePath, input.bucket, this.previewFolder, previewFileName);
+
+    if (existsSync(previewPath)) {
+      return createReadStream(previewPath);
+    }
+
     return createReadStream(this.getPath(input, false));
   }
 
@@ -166,7 +183,6 @@ export class StorageFileHandler implements IStorageFileHandler {
     const fileExist = await this.fileExist(input, isPartial);    
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
-      console.log("StorageFileHandler ~ get ~ size:", size)
       return {
         exist: true,
         size: size,
@@ -188,10 +204,8 @@ export class StorageFileHandler implements IStorageFileHandler {
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
   ): Promise<number> {
-    console.log(`[HANDLER] StorageFileHandler.append() called for ${fileInputStreamDto.fileName}`);
     
     const file = await this.get(fileInputStreamDto);
-    console.log(`[HANDLER] File status - exists: ${file.exist}, closed: ${file.closed}, size: ${file.size}`);
     
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
@@ -226,20 +240,6 @@ export class StorageFileHandler implements IStorageFileHandler {
       return true;
     } catch (e) {
       throw new CantBeClosedFileException(input.fileName);
-    }
-  }
-
-  public async convertHeicToJpg(input: ReadFileDto): Promise<string | null> {
-    const filePath = this.getPath(input, false);
-    try {
-      const result = await convertHeicFileToJpg(filePath);
-      if (!result) return null;
-      const newFileName = input.fileName.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
-      console.log(`[CONVERT] Converted HEIC to JPG: ${input.fileName} -> ${newFileName}`);
-      return newFileName;
-    } catch (err) {
-      console.error(`[CONVERT] Failed to convert HEIC to JPG for ${input.fileName}:`, err);
-      return null;
     }
   }
 
@@ -280,28 +280,31 @@ export class StorageFileHandler implements IStorageFileHandler {
       return FileType.IMAGE;
     }
 
-    console.log(`[CLOSE] No match - classified as OTHER`);
     return FileType.OTHER;
   }
 
   public async generatePreview(input: ReadFileDto): Promise<void> {
     const fullPath = this.getPath(input, false);
     const ext = input.fileName.toLowerCase().split('.').pop();
-    const isHeic = ext === 'heic' || ext === 'heif';
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
     const previewFileName = isHeic
-      ? input.fileName.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg')
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
       : input.fileName;
 
     const previewDir = path.join(this.basePath, input.bucket, this.previewFolder);
     if (!existsSync(previewDir)) {
       mkdirSync(previewDir, { mode: 0o755, recursive: true });
     }
+
     const previewPath = path.join(previewDir, previewFileName);
 
     let inputBuffer: Buffer;
     if (isHeic) {
       const heicBuffer = readFileSync(fullPath);
-      const convert = require('heic-convert');
       inputBuffer = Buffer.from(await convert({ buffer: heicBuffer, format: 'JPEG', quality: 0.92 }));
     } else {
       inputBuffer = readFileSync(fullPath);
@@ -337,13 +340,11 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
-    console.log("🚀 ~ StorageFileHandler ~ fileExist ~ filePath:", filePath)
     return existsSync(filePath);
   }
 
   private async fileSize(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
-    console.log("🚀 ~ StorageFileHandler ~ fileSize ~ filePath:", filePath)
     return statSync(filePath).size;
   }
 
