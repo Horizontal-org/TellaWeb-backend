@@ -80,10 +80,8 @@ export class UploadFileReportController {
       throw new HttpException('Content-Range header is required', HttpStatus.LENGTH_REQUIRED);
     }
     
-
     const contentLength = parseInt(contentLengthHeader, 10);
     
-
     const parsed = this.parseContentRange(contentRangeHeader);
     if (!parsed) {
       throw new BadRequestException('Invalid Content-Range header format. Expected: bytes <start>-<end>/<total>');
@@ -98,17 +96,7 @@ export class UploadFileReportController {
       throw new BadRequestException(
         `Content-Length (${contentLength}) does not match Content-Range chunk size (${expectedChunkSize})`,
       );
-    }
-
-    let fileInfo = null;
-    if (fileInfoHeader) {
-      try {
-        fileInfo = JSON.parse(fileInfoHeader);
-        console.log(`[UPLOAD] X-File-Info parsed:`, fileInfo);
-      } catch {
-        throw new BadRequestException('Invalid JSON in X-File-Info header');
-      }
-    }
+    }    
 
     console.log(`[UPLOAD] Calling createFileApplication.execute()...`);
     const file = await this.createFileApplication.execute({
@@ -147,6 +135,16 @@ export class UploadFileReportController {
       };
     }
 
+    let fileInfo = null;
+    if (fileInfoHeader) {
+      try {
+        fileInfo = JSON.parse(fileInfoHeader);
+        console.log(`[UPLOAD] X-File-Info parsed:`, fileInfo);
+      } catch {
+        throw new BadRequestException('Invalid JSON in X-File-Info header');
+      }
+    }
+    
     console.log(`[UPLOAD] Now closing file...`);
     try {
       await this.closeFileApplication.execute(

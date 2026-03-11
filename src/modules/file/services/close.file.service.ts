@@ -26,14 +26,13 @@ export class CloseFileService implements ICloseFileService {
       },
     });
     if (!file) {
-      console.log(`[CLOSE] File not found in database: ${closeFileDto.fileName}`);
       throw new NotFoundFileException(closeFileDto.fileName);
     }
     console.log(`[CLOSE] Found file in database: id=${file.id}`);
-    
     console.log(`[CLOSE] Moving file from partial to full folder...`);
     await this.fileHandler.close(closeFileDto);
     console.log(`[CLOSE] File moved successfully`);
+
 
     const convertedFileName = await this.fileHandler.convertHeicToJpg(closeFileDto);
     if (convertedFileName) {
@@ -50,9 +49,12 @@ export class CloseFileService implements ICloseFileService {
     file.fileInfo = closeFileDto.fileInfo;
     console.log(`[CLOSE] Attached to report: ${reportId}, fileInfo: ${JSON.stringify(closeFileDto.fileInfo)}`);
     
-    await this.fileRepository.save(file);
-    console.log(`[CLOSE] File entity saved successfully: id=${file.id}, type=${file.type}`);
 
+    await this.fileRepository.save(file);
+    //UNTIL HERE, FILE IS CLOSED AND SAVED IN FULL FOLDER
+    
+    console.log(`[CLOSE] File entity saved successfully: id=${file.id}, type=${file.type}`);
+    
     return;
   }
 }
