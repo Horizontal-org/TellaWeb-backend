@@ -19,4 +19,5 @@ export interface IStorageFileHandler {
   close(input: ReadFileDto): Promise<boolean>;
   getType(input: ReadFileDto): Promise<FileType>;
   convertHeicToJpg(input: ReadFileDto): Promise<string | null>;
+  generatePreview(input: ReadFileDto): Promise<void>;
 }

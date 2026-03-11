@@ -68,10 +68,7 @@ export class UploadFileReportController {
     const startTime = Date.now();
 
     console.log(`[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`);
-    console.log(`[UPLOAD] Content-Length header: ${contentLengthHeader}`);
-    console.log(`[UPLOAD] Content-Range header: ${contentRangeHeader}`);
-    console.log(`[UPLOAD] Content-Type header: ${stream.headers['content-type']}`);
-
+ 
     if (!contentLengthHeader || contentLengthHeader.trim() === '' || isNaN(parseInt(contentLengthHeader))) {
       throw new HttpException('Content-Length header is required', HttpStatus.LENGTH_REQUIRED);
     }
@@ -98,7 +95,6 @@ export class UploadFileReportController {
       );
     }    
 
-    console.log(`[UPLOAD] Calling createFileApplication.execute()...`);
     const file = await this.createFileApplication.execute({
       bucket: reportId,
       fileName,
@@ -113,7 +109,6 @@ export class UploadFileReportController {
     console.log(`[UPLOAD] Stream completed in ${uploadDuration}ms, file created:`, file);
 
     if (file.bytesWritten !== contentLength) {
-      console.warn(`[UPLOAD] Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes, keeping file partial for resume`);
       return {
         success: true,
         error: `Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes`,
@@ -139,13 +134,11 @@ export class UploadFileReportController {
     if (fileInfoHeader) {
       try {
         fileInfo = JSON.parse(fileInfoHeader);
-        console.log(`[UPLOAD] X-File-Info parsed:`, fileInfo);
       } catch {
         throw new BadRequestException('Invalid JSON in X-File-Info header');
       }
     }
-    
-    console.log(`[UPLOAD] Now closing file...`);
+
     try {
       await this.closeFileApplication.execute(
         {
