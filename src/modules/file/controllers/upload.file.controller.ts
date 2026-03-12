@@ -68,10 +68,7 @@ export class UploadFileReportController {
     const startTime = Date.now();
 
     console.log(`[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`);
-    console.log(`[UPLOAD] Content-Length header: ${contentLengthHeader}`);
-    console.log(`[UPLOAD] Content-Range header: ${contentRangeHeader}`);
-    console.log(`[UPLOAD] Content-Type header: ${stream.headers['content-type']}`);
-
+ 
     if (!contentLengthHeader || contentLengthHeader.trim() === '' || isNaN(parseInt(contentLengthHeader))) {
       throw new HttpException('Content-Length header is required', HttpStatus.LENGTH_REQUIRED);
     }
@@ -80,10 +77,8 @@ export class UploadFileReportController {
       throw new HttpException('Content-Range header is required', HttpStatus.LENGTH_REQUIRED);
     }
     
-
     const contentLength = parseInt(contentLengthHeader, 10);
     
-
     const parsed = this.parseContentRange(contentRangeHeader);
     if (!parsed) {
       throw new BadRequestException('Invalid Content-Range header format. Expected: bytes <start>-<end>/<total>');
@@ -98,19 +93,8 @@ export class UploadFileReportController {
       throw new BadRequestException(
         `Content-Length (${contentLength}) does not match Content-Range chunk size (${expectedChunkSize})`,
       );
-    }
+    }    
 
-    let fileInfo = null;
-    if (fileInfoHeader) {
-      try {
-        fileInfo = JSON.parse(fileInfoHeader);
-        console.log(`[UPLOAD] X-File-Info parsed:`, fileInfo);
-      } catch {
-        throw new BadRequestException('Invalid JSON in X-File-Info header');
-      }
-    }
-
-    console.log(`[UPLOAD] Calling createFileApplication.execute()...`);
     const file = await this.createFileApplication.execute({
       bucket: reportId,
       fileName,
@@ -125,7 +109,6 @@ export class UploadFileReportController {
     console.log(`[UPLOAD] Stream completed in ${uploadDuration}ms, file created:`, file);
 
     if (file.bytesWritten !== contentLength) {
-      console.warn(`[UPLOAD] Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes, keeping file partial for resume`);
       return {
         success: true,
         error: `Incomplete upload: received ${file.bytesWritten} of ${contentLength} bytes`,
@@ -147,7 +130,15 @@ export class UploadFileReportController {
       };
     }
 
-    console.log(`[UPLOAD] Now closing file...`);
+    let fileInfo = null;
+    if (fileInfoHeader) {
+      try {
+        fileInfo = JSON.parse(fileInfoHeader);
+      } catch {
+        throw new BadRequestException('Invalid JSON in X-File-Info header');
+      }
+    }
+
     try {
       await this.closeFileApplication.execute(
         {

@@ -18,4 +18,5 @@ export interface IStorageFileHandler {
   stream(input: ReadFileDto, range: string): Promise<StreamFileDto>;
   close(input: ReadFileDto): Promise<boolean>;
   getType(input: ReadFileDto): Promise<FileType>;
+  generatePreview(input: ReadFileDto): Promise<void>;
 }

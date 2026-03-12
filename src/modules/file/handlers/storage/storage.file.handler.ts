@@ -9,9 +9,12 @@ import {
   readdirSync,
   unlinkSync,
   rmSync,
+  readFileSync,
+  writeFileSync,
 } from 'fs';
 import * as path from 'path';
 import * as GetFileType from 'file-type';
+import * as sharp from 'sharp';
 
 import { BadRequestException } from '@nestjs/common';
 import {
@@ -26,6 +29,8 @@ import {
   InfoFileDto,
   CloseFileDto,
 } from '../../dto';
+import convert = require('heic-convert');
+
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
 import { FileType } from '../../domain';
@@ -37,6 +42,7 @@ export class StorageFileHandler implements IStorageFileHandler {
   private basePath = join(process.cwd(), 'data');
   private partialFolder = 'partial';
   private fullFolder = 'full';
+  private previewFolder = 'preview';
 
   async delete(readFileDto: ReadFileDto): Promise<boolean> {
     const filePath = this.getPath(readFileDto, false);
@@ -151,6 +157,22 @@ export class StorageFileHandler implements IStorageFileHandler {
     if (!this.fileExist(input, false))
       throw new NotFoundFileException(input.fileName);
 
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const previewFileName = isHeic
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
+      : input.fileName;
+      
+    const previewPath = path.join(this.basePath, input.bucket, this.previewFolder, previewFileName);
+
+    if (existsSync(previewPath)) {
+      return createReadStream(previewPath);
+    }
+
     return createReadStream(this.getPath(input, false));
   }
 
@@ -161,7 +183,6 @@ export class StorageFileHandler implements IStorageFileHandler {
     const fileExist = await this.fileExist(input, isPartial);    
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
-      console.log("StorageFileHandler ~ get ~ size:", size)
       return {
         exist: true,
         size: size,
@@ -183,10 +204,8 @@ export class StorageFileHandler implements IStorageFileHandler {
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
   ): Promise<number> {
-    console.log(`[HANDLER] StorageFileHandler.append() called for ${fileInputStreamDto.fileName}`);
     
     const file = await this.get(fileInputStreamDto);
-    console.log(`[HANDLER] File status - exists: ${file.exist}, closed: ${file.closed}, size: ${file.size}`);
     
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
@@ -261,8 +280,42 @@ export class StorageFileHandler implements IStorageFileHandler {
       return FileType.IMAGE;
     }
 
-    console.log(`[CLOSE] No match - classified as OTHER`);
     return FileType.OTHER;
+  }
+
+  public async generatePreview(input: ReadFileDto): Promise<void> {
+    const fullPath = this.getPath(input, false);
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const previewFileName = isHeic
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
+      : input.fileName;
+
+    const previewDir = path.join(this.basePath, input.bucket, this.previewFolder);
+    if (!existsSync(previewDir)) {
+      mkdirSync(previewDir, { mode: 0o755, recursive: true });
+    }
+
+    const previewPath = path.join(previewDir, previewFileName);
+
+    let inputBuffer: Buffer;
+    if (isHeic) {
+      const heicBuffer = readFileSync(fullPath);
+      inputBuffer = Buffer.from(await convert({ buffer: heicBuffer, format: 'JPEG', quality: 0.92 }));
+    } else {
+      inputBuffer = readFileSync(fullPath);
+    }
+
+    await sharp(inputBuffer)
+      .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 70 })
+      .toFile(previewPath);
+
+    console.log(`[PREVIEW] Generated preview: ${previewPath}`);
   }
 
   private getPath(input: ReadFileDto, isPartial: boolean) {
@@ -278,20 +331,20 @@ export class StorageFileHandler implements IStorageFileHandler {
     const reportDir = path.join(this.basePath, bucket);
     const fullDir = path.join(reportDir, this.fullFolder);
     const partialDir = path.join(reportDir, this.partialFolder);
+    const previewDir = path.join(reportDir, this.previewFolder);
     if (existsSync(reportDir)) return;
     mkdirSync(fullDir, { mode: 0o755, recursive: true });
     mkdirSync(partialDir, { mode: 0o755, recursive: true });
+    mkdirSync(previewDir, { mode: 0o755, recursive: true });
   }
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
-    console.log("🚀 ~ StorageFileHandler ~ fileExist ~ filePath:", filePath)
     return existsSync(filePath);
   }
 
   private async fileSize(input: ReadFileDto, isPartial: boolean) {
     const filePath = this.getPath(input, isPartial);
-    console.log("🚀 ~ StorageFileHandler ~ fileSize ~ filePath:", filePath)
     return statSync(filePath).size;
   }
 
