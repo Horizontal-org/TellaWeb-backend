@@ -16,7 +16,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./src/ormconfig.ts",
     "typeorm:migrate": "npm run typeorm migration:create -- -n",
     "typeorm:run": "npm run typeorm migration:run",
-    "console": "node dist/console.js",
+    "console": "node dist/src/console.js",
     "console:dev": "ts-node -r tsconfig-paths/register src/console.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
