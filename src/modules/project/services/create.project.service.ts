@@ -35,7 +35,7 @@ export class CreateProjectService implements ICreateProjectService {
 
     const project = new ProjectEntity();
 
-    const slug = (createProjectDto.name).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+    const slug = (createProjectDto.name).toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.name = createProjectDto.name
     project.slug = slug
     project.reports = reports
