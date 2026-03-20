@@ -44,7 +44,7 @@ export class EditProjectService implements IEditProjectService {
       resources = await this.resourceRepository.findByIds(newIds)
     }
     
-    const slug = (editProjectDto.slug || project.slug).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+    const slug = (editProjectDto.slug || project.slug).toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.name = editProjectDto.name || project.name
     project.slug = slug
     project.reports = reports || project.reports

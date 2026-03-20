@@ -13,6 +13,8 @@ import { ICheckSuspiciousUserApplication, TYPES as USER_TYPES } from '../../user
 import { InjectRepository } from '@nestjs/typeorm';
 import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 import { Repository } from 'typeorm';
+import { RolesUser } from 'modules/user/domain';
+import { InvalidCredentailsUserException } from 'modules/user/exceptions';
 
 @Controller('login')
 export class LoginWebAuthController {
@@ -39,6 +41,9 @@ export class LoginWebAuthController {
     const { username, password } = loginAuthDto;
     const user = await this.validateAuthService.execute({ username, password });
 
+    if (user.role === RolesUser.REPORTER) {
+      throw new InvalidCredentailsUserException();
+    }
     
     // get emails enabled flag
     const gSetting = await this.globalSettingsRepo.findOne({
