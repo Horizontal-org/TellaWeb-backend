@@ -16,7 +16,7 @@ export class GetByIdProjectService implements IGetByIdProjectService {
   ) {}
 
   async execute(projectId: string): Promise<ProjectEntity> {
-    let project = await this.projectRepository.findOne(projectId, { relations: [
+    const project = await this.projectRepository.findOne(projectId, { relations: [
       'users', 
       'resources', 
       'resources.projects'
@@ -24,7 +24,7 @@ export class GetByIdProjectService implements IGetByIdProjectService {
     
     const adminUsers = await this.userRepository.find({ role: RolesUser.ADMIN })
 
-    let newUsers = clone(project.users)
+    const newUsers = clone(project.users)
     adminUsers.forEach((u) => {
       const hasUser = !!(project.users.find(pu => pu.id == u.id))            
       if (!hasUser) {

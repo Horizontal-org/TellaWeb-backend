@@ -33,18 +33,18 @@ export class EditProjectService implements IEditProjectService {
     }
 
     if (editProjectDto.users && editProjectDto.users.length > 0) {
-      let currentUserIds = project.users.map(pu => pu.id)
+      const currentUserIds = project.users.map(pu => pu.id)
       const newIds = this.toggleEntityIds(editProjectDto.users, currentUserIds)         
       users = await this.userRepository.findByIds(newIds)
     }
 
     if (editProjectDto.resources && editProjectDto.resources.length > 0) {
-      let currentResourceIds = project.resources.map(pu => pu.id)
+      const currentResourceIds = project.resources.map(pu => pu.id)
       const newIds = this.toggleEntityIds(editProjectDto.resources, currentResourceIds)         
       resources = await this.resourceRepository.findByIds(newIds)
     }
     
-    const slug = (editProjectDto.slug || project.slug).toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+    const slug = (editProjectDto.slug || project.slug).toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
     project.name = editProjectDto.name || project.name
     project.slug = slug
     project.reports = reports || project.reports
@@ -57,8 +57,8 @@ export class EditProjectService implements IEditProjectService {
   }
 
   private toggleEntityIds = (dtoIds: string[], currentIds: string[]) => {
-    let toDelete = []
-    let toAdd = []
+    const toDelete = []
+    const toAdd = []
     
     
     dtoIds.forEach((id) => {
@@ -68,7 +68,7 @@ export class EditProjectService implements IEditProjectService {
         toAdd.push(id)
       }        
     })  
-    let remainingIds = currentIds.filter(uid => !toDelete.includes(uid))      
+    const remainingIds = currentIds.filter(uid => !toDelete.includes(uid))      
     return [...remainingIds, ...toAdd]
   }
 }

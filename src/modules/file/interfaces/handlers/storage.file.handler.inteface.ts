@@ -12,10 +12,11 @@ export interface IStorageFileHandler {
     fileName: string,
   ): Promise<ReadStream>;
   deleteBucket(bucketId: string): Promise<boolean>;
-  append(input: WriteStreamFileDto): Promise<boolean>;
+  append(input: WriteStreamFileDto): Promise<number>;
   delete(input: ReadFileDto): Promise<boolean>;
   fetch(input: ReadFileDto): Promise<ReadStream>;
   stream(input: ReadFileDto, range: string): Promise<StreamFileDto>;
   close(input: ReadFileDto): Promise<boolean>;
   getType(input: ReadFileDto): Promise<FileType>;
+  generatePreview(input: ReadFileDto): Promise<void>;
 }

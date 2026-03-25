@@ -33,11 +33,16 @@ export class GetSizeFileController {
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
   ): Promise<void> {
+    console.log('[CONTROLLER] GetSizeFileController.handler() called with reportId:', reportId, 'fileName:', fileName);
     const fileInfo = await this.getByNameAndBucketFileApplication.execute({
       bucket: reportId,
       fileName: fileName,
     });
-    res.setHeader('size', fileInfo.size || 0);
+    const size = fileInfo.size || 0;
+    res.setHeader('size', size);
+    if (size > 0) {
+      res.setHeader('Range', `bytes=0-${size - 1}`);
+    }
     res.send();
   }
 }

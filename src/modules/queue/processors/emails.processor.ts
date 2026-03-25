@@ -1,6 +1,5 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Inject } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bull';
 import { IMailUtilService, TYPES as TYPES_UTIL } from 'modules/utils/interfaces';
 

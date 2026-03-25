@@ -21,6 +21,7 @@ export class GetThumbnailByIdFileController {
     @Param('size') size: number,
     @Res() res: Response,
   ) {
+    console.log(`[GET THUMBNAIL] GetThumbnailByIdFileController.handler() called for fileId=${fileId}, size=${size}`);
     const thumbnailReadable = await this.getThumbnailByIdFileApplication.execute(
       fileId,
       { width: size | 200 },

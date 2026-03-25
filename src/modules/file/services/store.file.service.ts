@@ -18,8 +18,7 @@ export class StoreFileService implements IStoreFileService {
   ) {}
 
   async execute(input: WriteStreamFileDto): Promise<FileDto> {
-    await this.fileHandler.append(input);
-
+    const bytesWritten = await this.fileHandler.append(input);
     const file = await this.getOrCreateFileService.execute(input);
 
     return {
@@ -27,6 +26,7 @@ export class StoreFileService implements IStoreFileService {
       bucket: file.bucket,
       fileName: file.fileName,
       type: file.type,
+      bytesWritten,
     };
   }
 }

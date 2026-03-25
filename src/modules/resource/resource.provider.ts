@@ -8,6 +8,7 @@ import { DeleteResourceService } from './services/delete.resource.service';
 import { DownloadResourceService } from './services/download.resource.service';
 import { GetByProjectsResourceService } from './services/get-by-projects.resource.service'
 import { UserHasResourceService } from './services/user-has.resource.service';
+import { PdfAnalyzerService } from './services/pdf-analyzer.service';
 
 export const listResourceServiceProvider = {
   provide: TYPES.services.IListResourceService,
@@ -50,6 +51,11 @@ export const userHasResourceServiceProvider = {
   useClass: UserHasResourceService
 }
 
+export const pdfAnalyzerServiceProvider = {
+  provide: TYPES.services.IPdfAnalyzerService,
+  useClass: PdfAnalyzerService
+}
+
 export const applicationsResourceProviders = [
 ];
 
@@ -61,7 +67,8 @@ export const servicesResourceProviders = [
   deleteResourceServiceProvider,
   downloadResourceServiceProvider,
   getByProjectsResourceServiceProvider,
-  userHasResourceServiceProvider
+  userHasResourceServiceProvider,
+  pdfAnalyzerServiceProvider
 ];
 
 // export const guardsProjectProviders = [

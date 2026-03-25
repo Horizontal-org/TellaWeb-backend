@@ -13,6 +13,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [process.env.WEB_ORIGIN, process.env.APP_ORIGIN],
     credentials: true,
+    exposedHeaders: ['Range', 'Content-Range', 'size'],
   });
 
   const swaggerConfig = new DocumentBuilder()

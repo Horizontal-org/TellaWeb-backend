@@ -9,10 +9,14 @@ import {
   readdirSync,
   unlinkSync,
   rmSync,
+  readFileSync,
+  writeFileSync,
 } from 'fs';
 import * as path from 'path';
 import * as GetFileType from 'file-type';
+import * as sharp from 'sharp';
 
+import { BadRequestException } from '@nestjs/common';
 import {
   AlreadyClosedFileException,
   CantBeClosedFileException,
@@ -25,6 +29,8 @@ import {
   InfoFileDto,
   CloseFileDto,
 } from '../../dto';
+import convert = require('heic-convert');
+
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
 import { FileType } from '../../domain';
@@ -36,6 +42,7 @@ export class StorageFileHandler implements IStorageFileHandler {
   private basePath = join(process.cwd(), 'data');
   private partialFolder = 'partial';
   private fullFolder = 'full';
+  private previewFolder = 'preview';
 
   async delete(readFileDto: ReadFileDto): Promise<boolean> {
     const filePath = this.getPath(readFileDto, false);
@@ -150,6 +157,22 @@ export class StorageFileHandler implements IStorageFileHandler {
     if (!this.fileExist(input, false))
       throw new NotFoundFileException(input.fileName);
 
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const previewFileName = isHeic
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
+      : input.fileName;
+      
+    const previewPath = path.join(this.basePath, input.bucket, this.previewFolder, previewFileName);
+
+    if (existsSync(previewPath)) {
+      return createReadStream(previewPath);
+    }
+
     return createReadStream(this.getPath(input, false));
   }
 
@@ -157,7 +180,7 @@ export class StorageFileHandler implements IStorageFileHandler {
     input: ReadFileDto,
     isPartial = false,
   ): Promise<InfoFileDto> {
-    const fileExist = await this.fileExist(input, isPartial);
+    const fileExist = await this.fileExist(input, isPartial);    
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
       return {
@@ -180,13 +203,33 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async append(
     fileInputStreamDto: WriteStreamFileDto,
-  ): Promise<boolean> {
+  ): Promise<number> {
+    
     const file = await this.get(fileInputStreamDto);
+    
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
-    const saved = await this.streamToFile(fileInputStreamDto);
-    return saved;
+    if (file.exist && !!(fileInputStreamDto.totalSize) && file.size >= fileInputStreamDto.totalSize) {
+      console.log(`[HANDLER] Partial file already has ${file.size} bytes meeting or exceeding totalSize ${fileInputStreamDto.totalSize}, skipping stream`);
+      return file.size;
+    }
+
+    if (fileInputStreamDto.rangeStart !== undefined) {
+      if (fileInputStreamDto.rangeStart > file.size) {
+        throw new BadRequestException(
+          `Content-Range start (${fileInputStreamDto.rangeStart}) is beyond current file size (${file.size})`,
+        );
+      }
+    }
+
+    const bytesWritten = await this.streamToFile(fileInputStreamDto);
+
+    if (fileInputStreamDto.contentLength !== undefined && bytesWritten !== fileInputStreamDto.contentLength) {
+      console.warn(`[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`);
+    }
+
+    return bytesWritten;
   }
 
   public async close(input: CloseFileDto): Promise<boolean> {
@@ -202,19 +245,77 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   public async getType(input: ReadFileDto): Promise<FileType> {
     const filePath = this.getPath(input, false);
+    console.log(`[CLOSE] getType() called for file: ${filePath}`);
 
     try {
-      // TEST ONLY REMOVE
-      const { mime } = await GetFileType.fromFile(filePath);
-      if (mime.includes('video')) return FileType.VIDEO;
-      if (mime.includes('audio')) return FileType.AUDIO;
-      if (mime.includes('image')) return FileType.IMAGE;
-      // TEST ONLY REMOVE
+      const result = await GetFileType.fromFile(filePath);
+      console.log(`[CLOSE] file-type detection result:`, result);
+      if (result) {
+        const { mime } = result;
+        console.log(`[CLOSE] Detected MIME type: ${mime}`);
+        if (mime.includes('video')) {
+          console.log(`[CLOSE] Classified as VIDEO`);
+          return FileType.VIDEO;
+        }
+        if (mime.includes('audio')) {
+          console.log(`[CLOSE] Classified as AUDIO`);
+          return FileType.AUDIO;
+        }
+        if (mime.includes('image')) {
+          console.log(`[CLOSE] Classified as IMAGE`);
+          return FileType.IMAGE;
+        }
+      } else {
+        console.log(`[CLOSE] file-type returned null/undefined`);
+      }
     } catch (e) {
-      console.log('SEE ERROR', e);
+      console.log(`[CLOSE] file-type detection error:`, e);
+    }
+
+    // Fallback: check file extension for HEIC/HEIF
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    console.log(`[CLOSE] Fallback: checking file extension: ${ext}`);
+    if (ext === 'heic' || ext === 'heif') {
+      console.log(`[CLOSE] Extension match - classified as IMAGE`);
+      return FileType.IMAGE;
     }
 
     return FileType.OTHER;
+  }
+
+  public async generatePreview(input: ReadFileDto): Promise<void> {
+    const fullPath = this.getPath(input, false);
+    const ext = input.fileName.toLowerCase().split('.').pop();
+    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const previewFileName = isHeic
+      ? input.fileName
+        .replace(/\.heic$/i, '.jpg')
+        .replace(/\.heif$/i, '.jpg')
+        .replace(/\.HEIC$/i, '.jpg')
+        .replace(/\.HEIF$/i, '.jpg')
+      : input.fileName;
+
+    const previewDir = path.join(this.basePath, input.bucket, this.previewFolder);
+    if (!existsSync(previewDir)) {
+      mkdirSync(previewDir, { mode: 0o755, recursive: true });
+    }
+
+    const previewPath = path.join(previewDir, previewFileName);
+
+    let inputBuffer: Buffer;
+    if (isHeic) {
+      const heicBuffer = readFileSync(fullPath);
+      inputBuffer = Buffer.from(await convert({ buffer: heicBuffer, format: 'JPEG', quality: 0.92 }));
+    } else {
+      inputBuffer = readFileSync(fullPath);
+    }
+
+    await sharp(inputBuffer)
+      .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 70 })
+      .toFile(previewPath);
+
+    console.log(`[PREVIEW] Generated preview: ${previewPath}`);
   }
 
   private getPath(input: ReadFileDto, isPartial: boolean) {
@@ -230,9 +331,11 @@ export class StorageFileHandler implements IStorageFileHandler {
     const reportDir = path.join(this.basePath, bucket);
     const fullDir = path.join(reportDir, this.fullFolder);
     const partialDir = path.join(reportDir, this.partialFolder);
+    const previewDir = path.join(reportDir, this.previewFolder);
     if (existsSync(reportDir)) return;
     mkdirSync(fullDir, { mode: 0o755, recursive: true });
     mkdirSync(partialDir, { mode: 0o755, recursive: true });
+    mkdirSync(previewDir, { mode: 0o755, recursive: true });
   }
 
   private async fileExist(input: ReadFileDto, isPartial: boolean) {
@@ -248,6 +351,6 @@ export class StorageFileHandler implements IStorageFileHandler {
   private async streamToFile(input: WriteStreamFileDto) {
     this.createBucket(input.bucket);
     const filePath = this.getPath(input, true);
-    return await createWritePromise(filePath, input.stream);
+    return await createWritePromise(filePath, input.stream, input.rangeStart);
   }
 }

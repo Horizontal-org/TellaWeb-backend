@@ -7,7 +7,8 @@ export const TYPES = {
     IDeleteResourceService: 'IDeleteResourceService',
     IDownloadResourceService: 'IDownloadResourceService',
     IGetByProjectsResourceService: 'IGetByProjectsResourceService',
-    IUserHasResourceService: 'IUserHasResourceService'
+    IUserHasResourceService: 'IUserHasResourceService',
+    IPdfAnalyzerService: 'IPdfAnalyzerService',
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',

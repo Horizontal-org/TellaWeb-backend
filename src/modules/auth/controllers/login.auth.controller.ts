@@ -1,8 +1,10 @@
-import { MailerService } from '@nestjs-modules/mailer';
-import { Body, ConsoleLogger, Controller, Inject, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { LoginAuthDto } from '../domain/';
-import * as requestIp from 'request-ip';
+// import * as requestIp from 'request-ip';
+
+import { version } from '../../../../package.json';
+
 import {
   TYPES,
   IValidateAuthService,
@@ -45,6 +47,7 @@ export class LoginAuthController {
       .send({
         ...authToken,
         user,
+        version,
       });    
   }
 }
