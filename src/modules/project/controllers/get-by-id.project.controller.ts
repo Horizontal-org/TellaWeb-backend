@@ -18,6 +18,12 @@ export class GetByIdProjectController {
   @ApiOkResponse({ type: ReadProjectDto })
   @Get(':projectId')
   async handler(@Param('projectId') projectId: string) {
-    return this.getByIdProjectApplication.execute(projectId);
+    const project = await this.getByIdProjectApplication.execute(projectId);
+
+    if (process.env.MASK_PUBLIC_DOMAIN && process.env.MASK_PUBLIC_DOMAIN.length > 0) {
+      project.url = project.url.replace(process.env.PUBLIC_DOMAIN, process.env.MASK_PUBLIC_DOMAIN)
+    }
+
+    return project
   }
 }
