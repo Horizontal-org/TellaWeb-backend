@@ -1,13 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  createWriteStream,
-  copyFileSync,
-  rmSync
-} from 'fs';
+import { createWriteStream, promises as fsp } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
 import mysqldump from 'mysqldump'
@@ -77,17 +70,34 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         })
       }
     } catch (e) {
-      processData.backup.status = 'error'
-      await this.backupRepo.save(processData.backup)
       console.log('error in execution => ', e)
-    }    
+      await this.removePartialBackup();
+      try {
+        processData.backup.status = 'error'
+        await this.backupRepo.save(processData.backup)
+      } catch (saveError) {
+        console.log('could not mark backup as error => ', saveError);
+      }
+    }
+  }
+
+  // a failed backup leaves a half copied folder and/or a partial zip behind;
+  // when the failure was a full disk, keeping them means the next one fails too
+  private async removePartialBackup() {
+    if (!this.backupDir) return;
+    await Promise.all([
+      fsp.rm(this.backupDir, { recursive: true, force: true }),
+      fsp.rm(this.backupDir + '.zip', { force: true }),
+    ]).catch((e) => console.log('could not remove partial backup => ', e));
   }
 
   private async compress() {
     console.log('STARTING COMPRESSION')
     // create a file to stream archive data to.
     const output = createWriteStream(this.backupDir + '.zip');    
-    const archive = archiver('zip', { zlib: { level: 9 }});
+    // most of the content is media that is already compressed, so a high
+    // level only burns CPU on the shared libuv threadpool for almost no gain
+    const archive = archiver('zip', { zlib: { level: 1 }});
   
     await new Promise<void>((resolve, reject) => {
       archive
@@ -101,6 +111,12 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         console.log('COMPRESSION FINISHED')
         resolve()
       });
+      // without this listener a write error (e.g. ENOSPC) is an unhandled
+      // 'error' event that kills the whole process and skips the catch
+      output.on('error', (err) => {
+        archive.abort();
+        reject(err);
+      });
       archive.finalize();
     });
     
@@ -108,12 +124,11 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
 
   private async clean()  {
     // remove uncompressed folder
-    rmSync(this.backupDir, { recursive: true })
+    await fsp.rm(this.backupDir, { recursive: true });
   }
 
   private async createBackupFolder() {
-    if (existsSync(this.backupDir)) return;
-    mkdirSync(this.backupDir, { mode: 0o755, recursive: true })    
+    await fsp.mkdir(this.backupDir, { mode: 0o755, recursive: true });
   }
 
   private async parseFiles() {
@@ -133,44 +148,44 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
       .orderBy('project.name')
       .getRawMany()
 
-    this.iterateReports(reports, fileCount)
+    await this.iterateReports(reports, fileCount);
   }
 
+  // Copies run one at a time with fs.promises so the event loop stays free
+  // between files; sync copies here used to block every HTTP request.
   private async iterateReports(reports, fileCount) {
-    let filesCopied = 0
+    let filesCopied = 0;
 
-    reports.forEach(async(r) => {
-      const reportDir = path.join(this.backupDir, `${r.project_name}`, `${r.report_title}`);    
+    for (const r of reports) {
+      const reportDir = path.join(this.backupDir, `${r.project_name}`, `${r.report_title}`);
+      await fsp.mkdir(reportDir, { mode: 0o755, recursive: true });
 
-      //check if folder exists and if not create it
-      if (!existsSync(reportDir)) {
-        mkdirSync(reportDir, { mode: 0o755, recursive: true })    
-      }
-      
       // get report folder
-      const folderDir = path.join(this.dataPath, r.id, 'full')
+      const folderDir = path.join(this.dataPath, r.id, 'full');
 
-      // checks that report has files
-      if (existsSync(folderDir)) {
-        // count files
-        const folderFiles = readdirSync(path.join(this.dataPath, r.id, 'full'))
-        
-        folderFiles.forEach((f, i) => {
-          const filePath = path.join(folderDir, f)
-          const destPath = path.join(reportDir, f)
-          copyFileSync(filePath, destPath)
-
-          filesCopied += 1
-          console.log('FILES COPIED => ', `${filesCopied} out of ${fileCount}`)
-        })
+      let folderFiles: string[];
+      try {
+        folderFiles = await fsp.readdir(folderDir);
+      } catch (e) {
+        // report has no files
+        if (e.code === 'ENOENT') continue;
+        throw e;
       }
-      
-    })
+
+      for (const f of folderFiles) {
+        await fsp.copyFile(path.join(folderDir, f), path.join(reportDir, f));
+        filesCopied += 1;
+      }
+    }
+
+    console.log('FILES COPIED => ', `${filesCopied} out of ${fileCount}`);
   }
 
   //NON DATA PROCESSES
   private async createDatabaseDump() {
-    const res = await mysqldump({
+    // don't log the result: it holds the whole dump, and writing it to stdout
+    // is synchronous inside docker
+    await mysqldump({
       connection: {
         host: process.env.MYSQL_HOST,
         user: 'root',
@@ -178,8 +193,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         database: process.env.MYSQL_DATABASE,
       },
       dumpToFile: this.backupDir + '/database_dump.sql',
-    })
-    console.log(res)
+    });
   }
 
 
@@ -254,12 +268,11 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
         writeStream.write(newLine.join(',')+ '\n', () => {})
     })
   
-    writeStream.end()
-    writeStream.on('finish', () => {
-        console.log('finish write stream, moving along')
-    }).on('error', (err) => {
-        console.log(err)
-    })
+    // wait for the file to be flushed so the zip never picks up a partial csv
+    await new Promise<void>((resolve, reject) => {
+      writeStream.on('finish', resolve).on('error', reject);
+      writeStream.end();
+    });
   }
 
 }
