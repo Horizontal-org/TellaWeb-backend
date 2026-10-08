@@ -23,5 +23,5 @@ export const authControllers = [
   GetRecoveryKeysAuthController,
   LoginRecoveryKeysAuthController,
   RefreshTokenAuthController,
-  LogoutAuthController
+  LogoutAuthController,
 ];

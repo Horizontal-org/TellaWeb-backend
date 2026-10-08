@@ -17,25 +17,26 @@ export class EditUserService implements IEditUserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly abilityFactory: AbilityFactory,
-
   ) {}
 
   async execute(editUserDto: EditUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOne(editUserDto.id);
     const ability = this.abilityFactory.createForUser(user);
 
-    // IS THIS WRONG ? 
+    // IS THIS WRONG ?
     if (ability.cannot(Actions.Update, user)) throw new UnauthorizedException();
-    
+
     if (!user) throw new NotFoundUserException();
 
     if (editUserDto.username) {
       const taken = await this.userRepository
         .createQueryBuilder('user')
         .where('user.id <> :id', { id: editUserDto.id })
-        .andWhere('user.username = :username', { username: editUserDto.username })
+        .andWhere('user.username = :username', {
+          username: editUserDto.username,
+        })
         .getCount();
-      
+
       if (taken) {
         throw new AlreadyExistUserException(editUserDto.username);
       }

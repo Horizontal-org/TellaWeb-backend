@@ -15,10 +15,9 @@ export default async function globalSetup() {
   });
   await connection.query(`DROP DATABASE IF EXISTS \`${E2E_DATABASE}\``);
   await connection.query(`CREATE DATABASE \`${E2E_DATABASE}\``);
-  await connection.query(
-    `GRANT ALL ON \`${E2E_DATABASE}\`.* TO ?@'%'`,
-    [e2eEnv.MYSQL_USER],
-  );
+  await connection.query(`GRANT ALL ON \`${E2E_DATABASE}\`.* TO ?@'%'`, [
+    e2eEnv.MYSQL_USER,
+  ]);
   await connection.end();
 
   execFileSync('npm', ['run', '--silent', 'typeorm:run'], {

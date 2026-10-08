@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 
 import { CloseResourceDto } from '../dto';
 import { ResourceEntity } from '../domain';
-import { ICheckNameResourceService, ICloseResourceService, TYPES } from '../interfaces';
+import {
+  ICheckNameResourceService,
+  ICloseResourceService,
+  TYPES,
+} from '../interfaces';
 import { IStorageFileHandler } from 'modules/file/interfaces';
 import { NotFoundFileException } from 'modules/file/exceptions';
 import { IUserHasResourceService } from '../interfaces/services/user-has.resource.service.interface';
@@ -14,7 +18,7 @@ import { ProjectEntity } from 'modules/project/domain';
 export class UserHasResourceService implements IUserHasResourceService {
   constructor(
     @InjectRepository(ProjectEntity)
-    private readonly projectRepository: Repository<ProjectEntity>,    
+    private readonly projectRepository: Repository<ProjectEntity>,
   ) {}
 
   async execute(userId: string, fileName: string): Promise<boolean> {
@@ -24,8 +28,8 @@ export class UserHasResourceService implements IUserHasResourceService {
       .innerJoin('project.users', 'users')
       .where('users.id = :userId', { userId: userId })
       .andWhere('resources.fileName = :fileName', { fileName: fileName })
-      .getCount()
+      .getCount();
 
-    return !!(query)
+    return !!query;
   }
 }

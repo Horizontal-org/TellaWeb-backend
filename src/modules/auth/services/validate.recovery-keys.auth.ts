@@ -15,14 +15,17 @@ export class ValidateRecoveryKeysService implements IValidateRecoveryKeysService
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RecoveryKeyEntity)
-    private readonly recoveryRepository: Repository<RecoveryKeyEntity>
+    private readonly recoveryRepository: Repository<RecoveryKeyEntity>,
   ) {}
 
   async execute(userId, code): Promise<void> {
-    const success = await this.recoveryRepository.findOne({ code: code ,user: userId })
-    
+    const success = await this.recoveryRepository.findOne({
+      code: code,
+      user: userId,
+    });
+
     if (!success) {
-      throw new UnauthorizedException()      
+      throw new UnauthorizedException();
     }
   }
 }

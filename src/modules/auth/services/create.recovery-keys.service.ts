@@ -14,12 +14,12 @@ export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RecoveryKeyEntity)
-    private readonly recoveryRepository: Repository<RecoveryKeyEntity>
+    private readonly recoveryRepository: Repository<RecoveryKeyEntity>,
   ) {}
 
   async execute(userId): Promise<string[]> {
-    const userEntity = await this.userRepository.findOne(userId)
-    
+    const userEntity = await this.userRepository.findOne(userId);
+
     await getConnection()
       .createQueryBuilder()
       .delete()
@@ -27,18 +27,18 @@ export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
       .where({ user: userEntity.id })
       .execute();
 
-    const keys = []
+    const keys = [];
     for (let i = 0; i < 15; i++) {
-      const n = randomInt(10000000, 100000000)
-      keys.push(n + '')
+      const n = randomInt(10000000, 100000000);
+      keys.push(n + '');
 
       const recoveryKey = new RecoveryKeyEntity();
-      recoveryKey.code = n + ''
-      recoveryKey.user = userEntity
+      recoveryKey.code = n + '';
+      recoveryKey.user = userEntity;
 
-      await this.recoveryRepository.save(recoveryKey)      
+      await this.recoveryRepository.save(recoveryKey);
     }
 
-    return keys
+    return keys;
   }
 }

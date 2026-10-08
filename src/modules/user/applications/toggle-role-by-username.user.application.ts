@@ -11,8 +11,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class ToggleRoleByUsernameUserApplication
-  implements IToggleRoleByUsernameUserApplication {
+export class ToggleRoleByUsernameUserApplication implements IToggleRoleByUsernameUserApplication {
   constructor(
     @Inject(TYPES.services.IFindByUsernameUserService)
     private readonly findByUsernameUserService: IFindByUsernameUserService,

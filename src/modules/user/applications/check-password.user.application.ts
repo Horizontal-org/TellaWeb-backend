@@ -12,8 +12,7 @@ import {
   TYPES,
 } from '../interfaces';
 
-export class CheckPasswordUserApplication
-  implements ICheckPasswordUserApplication {
+export class CheckPasswordUserApplication implements ICheckPasswordUserApplication {
   constructor(
     @Inject(TYPES.services.IFindByUsernameUserService)
     private readonly findByUsernameUserService: IFindByUsernameUserService,

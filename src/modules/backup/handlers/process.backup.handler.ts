@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { createWriteStream, promises as fsp } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
-import mysqldump from 'mysqldump'
-import * as archiver from 'archiver'
+import mysqldump from 'mysqldump';
+import * as archiver from 'archiver';
 
 import { IProcessBackupHandler } from '../interfaces/handlers/process.backup.handler.interface';
 import { getConnection, Repository } from 'typeorm';
@@ -21,42 +21,44 @@ import { ProcessBackupDto } from '../dto/process.backup.dto';
 
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
-
   constructor(
     @InjectRepository(BackupEntity)
     private readonly backupRepo: Repository<BackupEntity>,
     @InjectQueue('emails')
-    private emailQueue: Queue
+    private emailQueue: Queue,
   ) {}
 
   private basePath = join(process.cwd(), 'backups');
-  private dataPath = join(process.cwd(), 'data')
-  private backupDir = ''
+  private dataPath = join(process.cwd(), 'data');
+  private backupDir = '';
 
   async process(processData: ProcessBackupDto): Promise<void> {
     try {
-      const datetime = new Date()
-      this.backupDir = path.join(this.basePath, `${datetime.toISOString().slice(0,19)}-backup`);    
-      await this.createBackupFolder()
-  
-      // csvs 
-      await this.parseUsersCsv()
-      await this.parseProjectsCsv() 
-      await this.parseReportsCsv()
-      await this.parseResourcesCsv()
-      // sql dump
-      await this.createDatabaseDump()
-      // files
-      await this.parseFiles()
-      // compress folder
-      await this.compress()
-      //delete folder and keep zip
-      await this.clean()
+      const datetime = new Date();
+      this.backupDir = path.join(
+        this.basePath,
+        `${datetime.toISOString().slice(0, 19)}-backup`,
+      );
+      await this.createBackupFolder();
 
-      processData.backup.status = 'finished'
-      processData.backup.folderName = this.backupDir
-      await this.backupRepo.save(processData.backup)
-      console.log('finished')
+      // csvs
+      await this.parseUsersCsv();
+      await this.parseProjectsCsv();
+      await this.parseReportsCsv();
+      await this.parseResourcesCsv();
+      // sql dump
+      await this.createDatabaseDump();
+      // files
+      await this.parseFiles();
+      // compress folder
+      await this.compress();
+      //delete folder and keep zip
+      await this.clean();
+
+      processData.backup.status = 'finished';
+      processData.backup.folderName = this.backupDir;
+      await this.backupRepo.save(processData.backup);
+      console.log('finished');
 
       // send email that backup is ready
       if (processData.emailEnabled) {
@@ -64,17 +66,17 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
           subject: 'Backup ready',
           to: processData.receiver,
           template: 'backup-processed',
-          data: {        
-            url: process.env.ADMIN_DOMAIN
-          }
-        })
+          data: {
+            url: process.env.ADMIN_DOMAIN,
+          },
+        });
       }
     } catch (e) {
-      console.log('error in execution => ', e)
+      console.log('error in execution => ', e);
       await this.removePartialBackup();
       try {
-        processData.backup.status = 'error'
-        await this.backupRepo.save(processData.backup)
+        processData.backup.status = 'error';
+        await this.backupRepo.save(processData.backup);
       } catch (saveError) {
         console.log('could not mark backup as error => ', saveError);
       }
@@ -92,24 +94,23 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async compress() {
-    console.log('STARTING COMPRESSION')
+    console.log('STARTING COMPRESSION');
     // create a file to stream archive data to.
-    const output = createWriteStream(this.backupDir + '.zip');    
+    const output = createWriteStream(this.backupDir + '.zip');
     // most of the content is media that is already compressed, so a high
     // level only burns CPU on the shared libuv threadpool for almost no gain
-    const archive = archiver('zip', { zlib: { level: 1 }});
-  
+    const archive = archiver('zip', { zlib: { level: 1 } });
+
     await new Promise<void>((resolve, reject) => {
       archive
         .directory(this.backupDir + '/', false)
-        .on('error', err => reject(err))
-        .pipe(output)
-      ;
-  
+        .on('error', (err) => reject(err))
+        .pipe(output);
+
       output.on('close', () => {
-        console.log(archive.pointer() + " total bytes")
-        console.log('COMPRESSION FINISHED')
-        resolve()
+        console.log(archive.pointer() + ' total bytes');
+        console.log('COMPRESSION FINISHED');
+        resolve();
       });
       // without this listener a write error (e.g. ENOSPC) is an unhandled
       // 'error' event that kills the whole process and skips the catch
@@ -119,10 +120,9 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
       });
       archive.finalize();
     });
-    
   }
 
-  private async clean()  {
+  private async clean() {
     // remove uncompressed folder
     await fsp.rm(this.backupDir, { recursive: true });
   }
@@ -135,18 +135,24 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     const fileCount = await getConnection()
       .createQueryBuilder()
       .from(FileEntity, 'file_entity')
-      .leftJoin("report_entity", "report", "file_entity.reportId = report.id")
+      .leftJoin('report_entity', 'report', 'file_entity.reportId = report.id')
       .where('report.projectId IS NOT NULL')
-      .getCount()
-    
+      .getCount();
+
     const reports = await getConnection()
       .createQueryBuilder()
       .from(ReportEntity, 'report_entity')
-      .leftJoin("project_entity", "project", "report_entity.projectId = project.id")
+      .leftJoin(
+        'project_entity',
+        'project',
+        'report_entity.projectId = project.id',
+      )
       .where('report_entity.projectId IS NOT NULL')
-      .select('report_entity.id, project.name as project_name, report_entity.title as report_title')
+      .select(
+        'report_entity.id, project.name as project_name, report_entity.title as report_title',
+      )
       .orderBy('project.name')
-      .getRawMany()
+      .getRawMany();
 
     await this.iterateReports(reports, fileCount);
   }
@@ -157,7 +163,11 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     let filesCopied = 0;
 
     for (const r of reports) {
-      const reportDir = path.join(this.backupDir, `${r.project_name}`, `${r.report_title}`);
+      const reportDir = path.join(
+        this.backupDir,
+        `${r.project_name}`,
+        `${r.report_title}`,
+      );
       await fsp.mkdir(reportDir, { mode: 0o755, recursive: true });
 
       // get report folder
@@ -197,86 +207,101 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     });
   }
 
-
   private async parseProjectsCsv() {
     const rawProjects = await getConnection()
       .createQueryBuilder()
       .from(ProjectEntity, 'project_entity')
-      .leftJoin("report_entity", "report", "report.projectId = project_entity.id")
-      .select("COUNT(report.id) as report_count, project_entity.*")
+      .leftJoin(
+        'report_entity',
+        'report',
+        'report.projectId = project_entity.id',
+      )
+      .select('COUNT(report.id) as report_count, project_entity.*')
       .groupBy('project_entity.id')
-      .getRawMany()
+      .getRawMany();
 
     await this.createCsv(
       rawProjects,
       ['id', 'name', 'report_count', 'created_at'],
       ['ID', 'NAME', 'REPORTS', 'CREATION DATE'],
-      '/projects.csv'
-    )
+      '/projects.csv',
+    );
   }
 
   private async parseResourcesCsv() {
     const rawResources = await getConnection()
       .createQueryBuilder()
       .from(ResourceEntity, 'resource_entity')
-      .getRawMany()
+      .getRawMany();
 
     await this.createCsv(
       rawResources,
       ['id', 'title', 'type', 'created_at'],
       ['ID', 'TITLE', 'TYPE', 'CREATION DATE'],
-      '/resources.csv'
-    )
+      '/resources.csv',
+    );
   }
 
   private async parseReportsCsv() {
     const rawReports = await getConnection()
       .createQueryBuilder()
       .from(ReportEntity, 'report_entity')
-      .innerJoin("user_entity", "user", "report_entity.authorId = user.id")
-      .select("user.username as authorName, report_entity.*")
-      .getRawMany()
-    
+      .innerJoin('user_entity', 'user', 'report_entity.authorId = user.id')
+      .select('user.username as authorName, report_entity.*')
+      .getRawMany();
+
     await this.createCsv(
       rawReports,
-      ['id', 'title', 'description', 'projectId', 'authorId', 'authorName', 'created_at'],
-      ['ID', 'TITLE', 'DESCRIPTION', 'PROJECT ID', 'AUTHOR ID', 'AUTHOR NAME', 'CREATION DATE'],
-      '/reports.csv'
-    )
+      [
+        'id',
+        'title',
+        'description',
+        'projectId',
+        'authorId',
+        'authorName',
+        'created_at',
+      ],
+      [
+        'ID',
+        'TITLE',
+        'DESCRIPTION',
+        'PROJECT ID',
+        'AUTHOR ID',
+        'AUTHOR NAME',
+        'CREATION DATE',
+      ],
+      '/reports.csv',
+    );
   }
 
   private async parseUsersCsv() {
     const rawUsers = await getConnection()
       .createQueryBuilder()
       .from(UserEntity, 'user_entity')
-      .getRawMany()
+      .getRawMany();
 
     await this.createCsv(
       rawUsers,
       ['id', 'username', 'role', 'note', 'created_at'],
       ['ID', 'NAME', 'ROLE', 'NOTE', 'CREATION DATE'],
-      '/users.csv'
-    )
+      '/users.csv',
+    );
   }
-  
-  private async createCsv(elements, elementKeys, elementHeaders, filename) {
-    const writeStream = createWriteStream(this.backupDir + filename)
-    writeStream.write(elementHeaders.join(',')+ '\n', () => {})
 
-    elements.forEach((element) => {     
-        const newLine = []
-        elementKeys.forEach(e => newLine.push(element[e]))
-        writeStream.write(newLine.join(',')+ '\n', () => {})
-    })
-  
+  private async createCsv(elements, elementKeys, elementHeaders, filename) {
+    const writeStream = createWriteStream(this.backupDir + filename);
+    writeStream.write(elementHeaders.join(',') + '\n', () => {});
+
+    elements.forEach((element) => {
+      const newLine = [];
+      elementKeys.forEach((e) => newLine.push(element[e]));
+      writeStream.write(newLine.join(',') + '\n', () => {});
+    });
+
     // wait for the file to be flushed so the zip never picks up a partial csv
     await new Promise<void>((resolve, reject) => {
       writeStream.on('finish', resolve).on('error', reject);
       writeStream.end();
     });
   }
-
 }
-
-
-

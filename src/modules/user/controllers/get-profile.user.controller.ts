@@ -16,6 +16,6 @@ export class GetProfileUserController {
   @ApiResponse({ type: ReadUserDto })
   @Get('')
   async handler(@LoggedUser() user: ReadUserDto): Promise<ReadUserDto> {
-    return user;    
+    return user;
   }
 }

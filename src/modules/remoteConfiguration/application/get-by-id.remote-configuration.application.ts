@@ -17,7 +17,8 @@ export class GetByIdRemoteConfigurationApplication implements IGetByIdRemoteConf
   ) {}
 
   async execute(id: string): Promise<ReadRemoteConfigurationDto> {
-    const remoteConfig = await this.getByIdRemoteConfigurationService.execute(id);
+    const remoteConfig =
+      await this.getByIdRemoteConfigurationService.execute(id);
     if (!remoteConfig) throw new NotFoundRemoteConfigurationException(id);
 
     return plainToClass(ReadRemoteConfigurationDto, remoteConfig);

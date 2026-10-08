@@ -112,7 +112,9 @@ describe('users', () => {
 
     const page = await t
       .http()
-      .get('/user/list?limit=2&offset=0&search=e2e.test&sort=user.username&order=asc')
+      .get(
+        '/user/list?limit=2&offset=0&search=e2e.test&sort=user.username&order=asc',
+      )
       .set(bearer(admin))
       .expect(200);
     expect(page.body.results).toHaveLength(2);
@@ -120,7 +122,9 @@ describe('users', () => {
 
     const excluded = await t
       .http()
-      .get(`/user/list?limit=100&offset=0&exclude=${t.users.viewer.id},${t.users.editor.id}`)
+      .get(
+        `/user/list?limit=100&offset=0&exclude=${t.users.viewer.id},${t.users.editor.id}`,
+      )
       .set(bearer(admin))
       .expect(200);
     const ids = excluded.body.results.map((u) => u.id);
@@ -135,7 +139,10 @@ describe('users', () => {
       .get(`/user/${t.users.viewer.id}`)
       .set(bearer(admin))
       .expect(200);
-    expect(res.body).toMatchObject({ id: t.users.viewer.id, username: USERS.viewer });
+    expect(res.body).toMatchObject({
+      id: t.users.viewer.id,
+      username: USERS.viewer,
+    });
   });
 
   it('profile returns the logged-in user', async () => {
@@ -228,7 +235,11 @@ describe('users', () => {
       .send({ toDelete: [two.id, three.id] })
       .expect(201);
 
-    for (const username of ['delete-one@e2e.test', 'delete-two@e2e.test', 'delete-three@e2e.test']) {
+    for (const username of [
+      'delete-one@e2e.test',
+      'delete-two@e2e.test',
+      'delete-three@e2e.test',
+    ]) {
       await t
         .http()
         .post('/login/web')
@@ -238,6 +249,10 @@ describe('users', () => {
   });
 
   it('only admins delete users', async () => {
-    await t.http().delete(`/user/${t.users.viewer.id}`).set(bearer(editor)).expect(403);
+    await t
+      .http()
+      .delete(`/user/${t.users.viewer.id}`)
+      .set(bearer(editor))
+      .expect(403);
   });
 });

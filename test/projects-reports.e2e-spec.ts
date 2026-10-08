@@ -139,7 +139,9 @@ describe('projects and reports', () => {
 
       expect(res.body.total).toBeGreaterThanOrEqual(2);
       const ids = res.body.results.map((p) => p.id);
-      expect(ids).toEqual(expect.arrayContaining([project.id, otherProject.id]));
+      expect(ids).toEqual(
+        expect.arrayContaining([project.id, otherProject.id]),
+      );
     });
 
     it('lists only their own projects for other roles', async () => {
@@ -194,7 +196,11 @@ describe('projects and reports', () => {
         .http()
         .put(`/project/${otherProject.id}`)
         .set(bearer(admin))
-        .send({ name: 'E2E Other Project', slug: 'E2E Other Renamed', users: [t.users.editor.id] })
+        .send({
+          name: 'E2E Other Project',
+          slug: 'E2E Other Renamed',
+          users: [t.users.editor.id],
+        })
         .expect(200);
 
       expect(res.body.slug).toBe('e2e-other-renamed');
@@ -229,7 +235,11 @@ describe('projects and reports', () => {
         .http()
         .post(`/project/${project.id}`)
         .set(bearer(reporterMobile))
-        .send({ title: 'E2E report', description: 'from e2e', deviceInfo: '{"os":"android"}' })
+        .send({
+          title: 'E2E report',
+          description: 'from e2e',
+          deviceInfo: '{"os":"android"}',
+        })
         .expect(201);
 
       report = res.body;
@@ -330,7 +340,10 @@ describe('projects and reports', () => {
         .set(bearer(editor))
         .send({ title: 'E2E report edited', description: 'edited' })
         .expect(201);
-      expect(res.body).toMatchObject({ title: 'E2E report edited', description: 'edited' });
+      expect(res.body).toMatchObject({
+        title: 'E2E report edited',
+        description: 'edited',
+      });
     });
 
     it('viewers cannot edit or delete reports', async () => {
@@ -340,7 +353,11 @@ describe('projects and reports', () => {
         .set(bearer(viewer))
         .send({ title: 'nope' })
         .expect(403);
-      await t.http().delete(`/report/${report.id}`).set(bearer(viewer)).expect(403);
+      await t
+        .http()
+        .delete(`/report/${report.id}`)
+        .set(bearer(viewer))
+        .expect(403);
     });
 
     it('batch delete removes several reports', async () => {
@@ -385,7 +402,11 @@ describe('projects and reports', () => {
           .expect(201)
       ).body;
 
-      await t.http().delete(`/project/${temp.id}`).set(bearer(admin)).expect(200);
+      await t
+        .http()
+        .delete(`/project/${temp.id}`)
+        .set(bearer(admin))
+        .expect(200);
       await t.http().get(`/p/${temp.slug}`).set(bearer(admin)).expect(404);
 
       const res = await t
@@ -395,7 +416,11 @@ describe('projects and reports', () => {
         .expect(200);
       expect(res.body.title).toBe('E2E orphan report');
 
-      await t.http().delete(`/report/${tempReport.id}`).set(bearer(admin)).expect(200);
+      await t
+        .http()
+        .delete(`/report/${tempReport.id}`)
+        .set(bearer(admin))
+        .expect(200);
     });
   });
 });

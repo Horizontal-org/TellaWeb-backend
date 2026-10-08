@@ -24,7 +24,12 @@ export function wav(dataBytes = 4000): Buffer {
 
 export function png(width = 1200, height = 900): Promise<Buffer> {
   return sharp({
-    create: { width, height, channels: 3, background: { r: 200, g: 40, b: 90 } },
+    create: {
+      width,
+      height,
+      channels: 3,
+      background: { r: 200, g: 40, b: 90 },
+    },
   })
     .png()
     .toBuffer();

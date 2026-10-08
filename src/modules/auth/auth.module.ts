@@ -16,7 +16,7 @@ import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 import { RefreshTokenEntity } from './domain/refresh-token.entity';
 
 @Module({
-  imports: [    
+  imports: [
     UserModule,
     UtilsModule,
     TypeOrmModule.forFeature([UserEntity]),

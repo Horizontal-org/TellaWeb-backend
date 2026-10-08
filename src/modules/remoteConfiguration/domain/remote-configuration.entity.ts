@@ -28,9 +28,9 @@ export class RemoteConfigurationEntity {
     type: 'simple-json',
   })
   camouflage: {
-    visible: boolean, 
-    change_name: boolean, 
-    calculator: boolean
+    visible: boolean;
+    change_name: boolean;
+    calculator: boolean;
   };
 
   @Expose()
@@ -38,8 +38,8 @@ export class RemoteConfigurationEntity {
     type: 'simple-json',
   })
   crashReports: {
-    visible: boolean, 
-    enabled: boolean
+    visible: boolean;
+    enabled: boolean;
   };
 
   @Expose()

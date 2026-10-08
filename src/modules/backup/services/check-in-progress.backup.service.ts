@@ -30,11 +30,13 @@ export class CheckInProgressBackupService implements ICheckInProgressBackupServi
     const backupsInProgress = await this.backupRepo
       .createQueryBuilder('backups')
       .where({ status: 'processing' })
-      .getCount()
-    
-      console.log("🚀 ~ CheckInProgressBackupService ~ execute ~ backupsInProgress:", backupsInProgress)
-      
+      .getCount();
 
-    return !!backupsInProgress
+    console.log(
+      '🚀 ~ CheckInProgressBackupService ~ execute ~ backupsInProgress:',
+      backupsInProgress,
+    );
+
+    return !!backupsInProgress;
   }
 }

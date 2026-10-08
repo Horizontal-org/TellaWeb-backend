@@ -12,15 +12,15 @@ export class ActivateOtpAuthService implements IActivateOtpAuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RecoveryKeyEntity)
-    private readonly recoveryRepository: Repository<RecoveryKeyEntity>
+    private readonly recoveryRepository: Repository<RecoveryKeyEntity>,
   ) {}
 
   async execute(userId): Promise<void> {
-    const userEntity = await this.userRepository.findOne(userId)
+    const userEntity = await this.userRepository.findOne(userId);
 
-    userEntity.otp_active = true
-    await this.userRepository.save(userEntity)
+    userEntity.otp_active = true;
+    await this.userRepository.save(userEntity);
 
-    return
+    return;
   }
 }

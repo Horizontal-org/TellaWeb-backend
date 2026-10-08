@@ -1,10 +1,18 @@
-import { Get, Header, Inject, Param, ParseArrayPipe, Query, Res } from '@nestjs/common';
+import {
+  Get,
+  Header,
+  Inject,
+  Param,
+  ParseArrayPipe,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
-import { IDownloadResourceService, TYPES} from '../interfaces';
+import { IDownloadResourceService, TYPES } from '../interfaces';
 
 @AuthController(
   'resource',
@@ -20,11 +28,10 @@ export class DownloadResourceController {
   @Get('download')
   @Header('Content-Type', 'application/zip')
   async handler(
-    @Query('fileNames', new ParseArrayPipe()) fileNames = [],    
+    @Query('fileNames', new ParseArrayPipe()) fileNames = [],
     @Res() res: Response,
   ) {
     const zipStream = await this.downloadService.execute(fileNames);
     zipStream.pipe(res);
   }
-
 }

@@ -8,8 +8,7 @@ import { RemoteConfigurationEntity } from '../domain';
 import { CreateRemoteConfigurationDto } from '../dto';
 
 @Injectable()
-export class CreateRemoteConfigurationService
-  implements ICreateRemoteConfigurationService {
+export class CreateRemoteConfigurationService implements ICreateRemoteConfigurationService {
   constructor(
     @InjectRepository(RemoteConfigurationEntity)
     private readonly remoteConfigurationRepository: Repository<RemoteConfigurationEntity>,

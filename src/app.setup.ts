@@ -23,5 +23,7 @@ export function configureApp(app: INestApplication): INestApplication {
     }),
   );
 
-  return app.useGlobalInterceptors(new TransformInterceptor()).use(cookieParser());
+  return app
+    .useGlobalInterceptors(new TransformInterceptor())
+    .use(cookieParser());
 }

@@ -1,10 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 
-import {
-  ReadProjectDto,
-  CreateProjectDto,
-} from '../dto';
+import { ReadProjectDto, CreateProjectDto } from '../dto';
 import {
   TYPES,
   ICreateProjectApplication,
@@ -17,20 +14,14 @@ import {
 } from '../../user/interfaces';
 
 @Injectable()
-export class CreateProjectApplication
-  implements ICreateProjectApplication {
+export class CreateProjectApplication implements ICreateProjectApplication {
   constructor(
     @Inject(TYPES.services.ICreateProjectService)
     private readonly createProjectService: ICreateProjectService,
   ) {}
 
-  async execute(
-    createProjectDto: CreateProjectDto,
-  ): Promise<ReadProjectDto> {
-
-    const project = await this.createProjectService.execute(
-      createProjectDto,
-    );
+  async execute(createProjectDto: CreateProjectDto): Promise<ReadProjectDto> {
+    const project = await this.createProjectService.execute(createProjectDto);
     return plainToClass(ReadProjectDto, project);
   }
 }

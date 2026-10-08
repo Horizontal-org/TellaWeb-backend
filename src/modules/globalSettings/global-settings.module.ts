@@ -5,18 +5,14 @@ import { globalSettingControllers } from './controllers';
 import {
   getByNameGlobalSettingServiceProvider,
   recordAnalyticsEventGlobalSettingServiceProvider,
-  servicesGlobalSettingsProviders
+  servicesGlobalSettingsProviders,
 } from './global-setting.provider';
 import { GlobalSettingEntity } from './domain';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([GlobalSettingEntity]), 
-  ],
+  imports: [TypeOrmModule.forFeature([GlobalSettingEntity])],
   controllers: [...globalSettingControllers],
   providers: [...servicesGlobalSettingsProviders],
-  exports: [
-    recordAnalyticsEventGlobalSettingServiceProvider
-  ]
+  exports: [recordAnalyticsEventGlobalSettingServiceProvider],
 })
 export class GlobalSettingModule {}

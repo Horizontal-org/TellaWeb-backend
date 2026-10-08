@@ -16,49 +16,49 @@ export class StartBackupService implements IStartBackupService {
     @InjectRepository(GlobalSettingEntity)
     private readonly globalSettingRepo: Repository<GlobalSettingEntity>,
     @InjectQueue('backups')
-    private backQueue: Queue
+    private backQueue: Queue,
   ) {}
 
   async execute(user): Promise<void> {
     // delete previous backups
     const toDelete = await this.backupRepo
-      .createQueryBuilder('backups')      
+      .createQueryBuilder('backups')
       .where({ status: 'finished' })
-      .getMany()
+      .getMany();
 
     for (const d of toDelete) {
       try {
         await fsp.rm(d.folderName + '.zip');
       } catch (e) {
-        console.log("ERROR TRYING TO DELETE => ", e)
+        console.log('ERROR TRYING TO DELETE => ', e);
       }
 
-      d.status = 'deleted'
-      await this.backupRepo.save(d)
+      d.status = 'deleted';
+      await this.backupRepo.save(d);
     }
 
     const backup = new BackupEntity();
-    backup.user = user.id
-    backup.status = 'processing'
-    await this.backupRepo.save(backup)
+    backup.user = user.id;
+    backup.status = 'processing';
+    await this.backupRepo.save(backup);
 
     // if the job never gets queued nothing will ever finish this backup,
     // so it can't be left as 'processing'
     try {
       // TODO get emails enabled flag
       const gSetting = await this.globalSettingRepo.findOne({
-        where: { name: 'SUSPICIOUS LOGIN DETECTION' }
+        where: { name: 'SUSPICIOUS LOGIN DETECTION' },
       });
 
       await this.backQueue.add('start', {
         backup: backup,
         receiver: user.username,
-        emailEnabled: gSetting?.enabled ?? false
-      })
+        emailEnabled: gSetting?.enabled ?? false,
+      });
     } catch (e) {
-      backup.status = 'error'
-      await this.backupRepo.save(backup)
-      throw e
+      backup.status = 'error';
+      await this.backupRepo.save(backup);
+      throw e;
     }
   }
 }

@@ -27,7 +27,7 @@ export class ByProjectResourceDto {
   @Expose()
   @IsString()
   url: string;
-  
+
   @ApiProperty()
   @Expose()
   @Type(() => ReadResourceDto)

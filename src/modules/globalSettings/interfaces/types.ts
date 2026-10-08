@@ -3,6 +3,7 @@ export const TYPES = {
     IListGlobalSettingService: 'IListGlobalSettingService',
     IUpdateGlobalSettingService: 'IUpdateGlobalSettingService',
     IGetByNameGlobalSettingService: 'IGetByNameGlobalSettingService',
-    IRecordAnalyticsEventGlobalSettingService: 'IRecordAnalyticsEventGlobalSettingService'
-  },  
+    IRecordAnalyticsEventGlobalSettingService:
+      'IRecordAnalyticsEventGlobalSettingService',
+  },
 };

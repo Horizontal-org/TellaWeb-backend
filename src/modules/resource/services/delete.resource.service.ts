@@ -15,9 +15,12 @@ export class DeleteResourceService implements IDeleteResourceService {
   ) {}
 
   async execute(fileId: string): Promise<boolean> {
-    const file = await this.resourceRepository.findOne({ id: fileId })   
+    const file = await this.resourceRepository.findOne({ id: fileId });
 
-    await this.storageFileHandler.delete({ bucket: 'resources', fileName: file.fileName });
+    await this.storageFileHandler.delete({
+      bucket: 'resources',
+      fileName: file.fileName,
+    });
     const deleted = await this.resourceRepository.delete({ id: fileId });
 
     return deleted.affected === 1;

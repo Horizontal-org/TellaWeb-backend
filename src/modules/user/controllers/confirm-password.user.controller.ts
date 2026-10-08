@@ -20,11 +20,14 @@ export class ConfirmPasswordUserController {
   constructor(
     @Inject(TYPES.applications.ICheckPasswordUserApplication)
     private readonly checkPasswordUserApplication: ICheckPasswordUserApplication,
-      ) {}
+  ) {}
 
   @ApiResponse({ type: Boolean })
   @Post('/confirm/password')
-  async handler(@Body() confirmPasswordUserDto: ConfirmPasswordUserDto, @LoggedUser() loggedUser: ReadUserDto): Promise<boolean> {
+  async handler(
+    @Body() confirmPasswordUserDto: ConfirmPasswordUserDto,
+    @LoggedUser() loggedUser: ReadUserDto,
+  ): Promise<boolean> {
     await this.checkPasswordUserApplication.execute({
       username: loggedUser.username,
       password: confirmPasswordUserDto.current,

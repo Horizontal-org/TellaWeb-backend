@@ -38,7 +38,10 @@ describe('files', () => {
       .put(`/file/v2/${reportId}/${fileName}`)
       .set(bearer(session))
       .set('Content-Type', 'application/octet-stream')
-      .set('Content-Range', `bytes ${start}-${start + body.length - 1}/${total}`)
+      .set(
+        'Content-Range',
+        `bytes ${start}-${start + body.length - 1}/${total}`,
+      )
       .set(headers)
       .send(body);
 
@@ -55,7 +58,10 @@ describe('files', () => {
         .http()
         .post('/project')
         .set(bearer(admin))
-        .send({ name: 'E2E files project', users: [t.users.reporter.id, t.users.editor.id] })
+        .send({
+          name: 'E2E files project',
+          users: [t.users.reporter.id, t.users.editor.id],
+        })
         .expect(201)
     ).body;
     reportId = (
@@ -74,7 +80,13 @@ describe('files', () => {
 
   describe('resumable upload (v2)', () => {
     it('a first chunk answers 206 with the received range', async () => {
-      const res = await uploadChunk(reporter, 'audio.wav', audio.subarray(0, 1000), 0, audio.length).expect(206);
+      const res = await uploadChunk(
+        reporter,
+        'audio.wav',
+        audio.subarray(0, 1000),
+        0,
+        audio.length,
+      ).expect(206);
 
       expect(res.body).toEqual({ success: true, error: null, complete: false });
       expect(res.headers.range).toBe('bytes=0-999');
@@ -92,13 +104,26 @@ describe('files', () => {
     });
 
     it('a chunk that starts past the received bytes is rejected', async () => {
-      await uploadChunk(reporter, 'audio.wav', audio.subarray(2000, 2100), 2000, audio.length).expect(400);
+      await uploadChunk(
+        reporter,
+        'audio.wav',
+        audio.subarray(2000, 2100),
+        2000,
+        audio.length,
+      ).expect(400);
     });
 
     it('the last chunk completes and closes the file', async () => {
-      const res = await uploadChunk(reporter, 'audio.wav', audio.subarray(1000), 1000, audio.length, {
-        'X-File-Info': JSON.stringify({ duration: 0.25 }),
-      }).expect(200);
+      const res = await uploadChunk(
+        reporter,
+        'audio.wav',
+        audio.subarray(1000),
+        1000,
+        audio.length,
+        {
+          'X-File-Info': JSON.stringify({ duration: 0.25 }),
+        },
+      ).expect(200);
 
       audioFile = res.body;
       expect(audioFile).toMatchObject({
@@ -109,9 +134,18 @@ describe('files', () => {
     });
 
     it('a whole file in one request', async () => {
-      const res = await uploadChunk(reporter, 'image.png', image, 0, image.length).expect(200);
+      const res = await uploadChunk(
+        reporter,
+        'image.png',
+        image,
+        0,
+        image.length,
+      ).expect(200);
       imageFile = res.body;
-      expect(imageFile).toMatchObject({ fileName: 'image.png', bucket: reportId });
+      expect(imageFile).toMatchObject({
+        fileName: 'image.png',
+        bucket: reportId,
+      });
     });
 
     it('the report lists both files with their detected types', async () => {
@@ -123,8 +157,15 @@ describe('files', () => {
 
       const files = {};
       res.body.files.forEach((f) => (files[f.fileName] = f));
-      expect(files['audio.wav']).toMatchObject({ id: audioFile.id, type: 'AUDIO', fileInfo: { duration: 0.25 } });
-      expect(files['image.png']).toMatchObject({ id: imageFile.id, type: 'IMAGE' });
+      expect(files['audio.wav']).toMatchObject({
+        id: audioFile.id,
+        type: 'AUDIO',
+        fileInfo: { duration: 0.25 },
+      });
+      expect(files['image.png']).toMatchObject({
+        id: imageFile.id,
+        type: 'IMAGE',
+      });
     });
 
     it('requires Content-Range', async () => {
@@ -157,11 +198,19 @@ describe('files', () => {
     });
 
     it('rejects bad JSON in X-File-Info', async () => {
-      await uploadChunk(reporter, 'badinfo.wav', audio, 0, audio.length, { 'X-File-Info': '{nope' }).expect(400);
+      await uploadChunk(reporter, 'badinfo.wav', audio, 0, audio.length, {
+        'X-File-Info': '{nope',
+      }).expect(400);
     });
 
     it('only the author of the report can upload to it', async () => {
-      await uploadChunk(adminMobile, 'intruder.wav', audio, 0, audio.length).expect(403);
+      await uploadChunk(
+        adminMobile,
+        'intruder.wav',
+        audio,
+        0,
+        audio.length,
+      ).expect(403);
     });
   });
 
@@ -198,7 +247,9 @@ describe('files', () => {
         .parse(binaryParser)
         .expect(206);
 
-      expect(res.headers['content-range']).toBe(`bytes 100-199/${audio.length}`);
+      expect(res.headers['content-range']).toBe(
+        `bytes 100-199/${audio.length}`,
+      );
       expect(res.headers['content-length']).toBe('100');
       expect(res.headers['accept-ranges']).toBe('bytes');
       expect(res.headers['content-type']).toMatch(/^audio\//);
@@ -215,24 +266,29 @@ describe('files', () => {
         .parse(binaryParser)
         .expect(206);
 
-      expect(res.headers['content-range']).toBe(`bytes 0-${audio.length - 1}/${audio.length}`);
+      expect(res.headers['content-range']).toBe(
+        `bytes 0-${audio.length - 1}/${audio.length}`,
+      );
       expect(Buffer.compare(res.body, audio)).toBe(0);
     });
 
     // Known bug: without a Range header the end of the range is the file size
     // instead of size - 1, so Content-Length is one byte too long and the
     // response never completes.
-    it.failing('streams the whole audio file without a Range header', async () => {
-      const res = await t
-        .http()
-        .get(`/file/asset/${reportId}/${audioFile.id}`)
-        .set(bearer(editor))
-        .buffer(true)
-        .parse(binaryParser)
-        .expect(206);
+    it.failing(
+      'streams the whole audio file without a Range header',
+      async () => {
+        const res = await t
+          .http()
+          .get(`/file/asset/${reportId}/${audioFile.id}`)
+          .set(bearer(editor))
+          .buffer(true)
+          .parse(binaryParser)
+          .expect(206);
 
-      expect(Buffer.compare(res.body, audio)).toBe(0);
-    });
+        expect(Buffer.compare(res.body, audio)).toBe(0);
+      },
+    );
 
     it('returns the JPEG preview (max 800px) for an image', async () => {
       const res = await t
@@ -282,7 +338,9 @@ describe('files', () => {
       expect(res.headers['content-type']).toBe('application/zip');
       const zip = await JSZip.loadAsync(res.body);
       const names = Object.keys(zip.files);
-      expect(names).toEqual(expect.arrayContaining(['audio.wav', 'image.png', 'legacy.wav']));
+      expect(names).toEqual(
+        expect.arrayContaining(['audio.wav', 'image.png', 'legacy.wav']),
+      );
       const content = await zip.file('audio.wav').async('nodebuffer');
       expect(Buffer.compare(content, audio)).toBe(0);
     });

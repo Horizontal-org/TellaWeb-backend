@@ -1,46 +1,53 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, mixin } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "modules/user/domain";
-import { Observable } from "rxjs";
-import { getConnection, Repository } from "typeorm";
-import { ProjectEntity } from "../domain";
-
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  mixin,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'modules/user/domain';
+import { Observable } from 'rxjs';
+import { getConnection, Repository } from 'typeorm';
+import { ProjectEntity } from '../domain';
 
 export const ProjectAccessGuard = (projectKeyType) => {
-
   @Injectable()
   class ProjectAccessMixin implements CanActivate {
-    constructor(
-    ) {}
+    constructor() {}
 
-    async canActivate(context: ExecutionContext) {      
+    async canActivate(context: ExecutionContext) {
       if (!projectKeyType) {
-        return true
+        return true;
       }
       const request = context.switchToHttp().getRequest();
       const user: UserEntity = request.user;
-      
+
       if (user.role === 'admin') {
-        return true
+        return true;
       }
 
       const query = getConnection()
         .createQueryBuilder()
         .from(ProjectEntity, 'project')
-        .leftJoinAndSelect('project.users', 'users')        
-        .where('users.id = :userId', { userId: user.id })
-        
+        .leftJoinAndSelect('project.users', 'users')
+        .where('users.id = :userId', { userId: user.id });
+
       if (projectKeyType === 'slug') {
-        query.andWhere('project.slug = :projectSlug', { projectSlug: request.params.projectSlug})
+        query.andWhere('project.slug = :projectSlug', {
+          projectSlug: request.params.projectSlug,
+        });
       } else if (projectKeyType === 'id') {
-        query.andWhere('project.id = :projectId', { projectId: request.params.projectId})
+        query.andWhere('project.id = :projectId', {
+          projectId: request.params.projectId,
+        });
       } else {
-        return false 
+        return false;
       }
-      
-      const result = await query.getCount()
-  
-      return !!(result);     
+
+      const result = await query.getCount();
+
+      return !!result;
     }
   }
 

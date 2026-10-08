@@ -1,19 +1,13 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-@Entity("global_settings")
+@Entity('global_settings')
 export class GlobalSettingEntity {
   @Expose()
   @PrimaryGeneratedColumn('uuid')
   id?: string;
-
 
   @Expose()
   @Column()

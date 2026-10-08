@@ -23,9 +23,8 @@ export class ListResourceService implements IListResourceService {
     sort: string,
     order: string,
     search: string,
-    exclude: Array<string>
+    exclude: Array<string>,
   ): Promise<PaginatedDto<ReadResourceDto>> {
-
     const query = this.resourceRepository
       .createQueryBuilder('resource')
       .leftJoinAndSelect('resource.projects', 'project')
@@ -33,19 +32,14 @@ export class ListResourceService implements IListResourceService {
       .take(take);
 
     if (search && search.length > 0) {
-      query.where(
-        'resource.title like :search',
-        {
-          search: `%${search}%`,
-        },
-      );
+      query.where('resource.title like :search', {
+        search: `%${search}%`,
+      });
     }
 
-        
     if (exclude && exclude.length > 0) {
-      query.andWhere('resource.id NOT IN (:...exclude)', { exclude: exclude })
+      query.andWhere('resource.id NOT IN (:...exclude)', { exclude: exclude });
     }
-
 
     if (sort && sort.length > 0) {
       query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');

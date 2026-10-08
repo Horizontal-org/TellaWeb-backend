@@ -21,12 +21,14 @@ export class GenerateTokenAuthService implements IGenerateTokenAuthService {
   ) {}
 
   async execute(tokenOptions: TokenOptions): Promise<JWTResponse> {
-    const payload: JWTPayload = { 
+    const payload: JWTPayload = {
       userId: tokenOptions.user.id,
-      type: tokenOptions.type
+      type: tokenOptions.type,
     };
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: tokenOptions.expiresIn }),
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: tokenOptions.expiresIn,
+      }),
     };
   }
 }

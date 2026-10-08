@@ -86,12 +86,20 @@ describe('auth', () => {
   describe('token types', () => {
     it('accepts a web token on a web-only endpoint', async () => {
       const session = await loginWeb(t, USERS.admin);
-      await t.http().get('/user/list?limit=10&offset=0').set(bearer(session)).expect(200);
+      await t
+        .http()
+        .get('/user/list?limit=10&offset=0')
+        .set(bearer(session))
+        .expect(200);
     });
 
     it('rejects a mobile token on a web-only endpoint', async () => {
       const session = await loginMobile(t, USERS.admin);
-      await t.http().get('/user/list?limit=10&offset=0').set(bearer(session)).expect(403);
+      await t
+        .http()
+        .get('/user/list?limit=10&offset=0')
+        .set(bearer(session))
+        .expect(403);
     });
 
     it('accepts a mobile token on an endpoint open to all token types', async () => {
@@ -102,7 +110,11 @@ describe('auth', () => {
 
     it('authenticates with the cookie alone on an endpoint open to all token types', async () => {
       const session = await loginWeb(t, USERS.viewer);
-      const res = await t.http().get('/user').set('Cookie', session.cookie).expect(200);
+      const res = await t
+        .http()
+        .get('/user')
+        .set('Cookie', session.cookie)
+        .expect(200);
       expect(res.body).toMatchObject({ username: USERS.viewer });
     });
 
@@ -215,7 +227,9 @@ describe('auth', () => {
 
       secret = res.body.otp_code;
       expect(secret).toEqual(expect.any(String));
-      expect(res.body.otp_url).toMatch(/^otpauth:\/\/totp\/Tellaweb:otp%40e2e.test\?secret=/);
+      expect(res.body.otp_url).toMatch(
+        /^otpauth:\/\/totp\/Tellaweb:otp%40e2e.test\?secret=/,
+      );
     });
 
     it('verify accepts a valid code and rejects a wrong one', async () => {
@@ -332,10 +346,16 @@ describe('auth', () => {
         .http()
         .post('/auth/otp/disable')
         .set('Authorization', `Bearer ${otp.body.access_token}`)
-        .send({ code: recoveryKeys[2], is_otp: false, confirm_password: PASSWORD })
+        .send({
+          code: recoveryKeys[2],
+          is_otp: false,
+          confirm_password: PASSWORD,
+        })
         .expect(201);
 
-      const repo = t.app.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
+      const repo = t.app.get<Repository<UserEntity>>(
+        getRepositoryToken(UserEntity),
+      );
       const user = await repo.findOne({ where: { id: userId } });
       expect(user.otp_active).toBe(false);
 

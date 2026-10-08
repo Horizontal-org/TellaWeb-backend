@@ -8,17 +8,15 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class DeleteByIdRemoteConfigurationApplication
-  implements IDeleteByIdRemoteConfigurationApplication {
+export class DeleteByIdRemoteConfigurationApplication implements IDeleteByIdRemoteConfigurationApplication {
   constructor(
     @Inject(TYPES.services.IDeleteByIdRemoteConfigurationService)
     private deleteByIdRemoteConfigurationService: IDeleteByIdRemoteConfigurationService,
   ) {}
 
   async execute(configurationId: string): Promise<boolean> {
-    const deleted = await this.deleteByIdRemoteConfigurationService.execute(
-      configurationId,
-    );
+    const deleted =
+      await this.deleteByIdRemoteConfigurationService.execute(configurationId);
     if (!deleted)
       throw new NotFoundRemoteConfigurationException(configurationId);
     return deleted;

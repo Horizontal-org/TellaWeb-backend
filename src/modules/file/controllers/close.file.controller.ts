@@ -5,7 +5,10 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { OnlyAuthor } from 'modules/report/guard/only-author.report.guard';
 
 import { TYPES, ICloseFileApplication } from '../interfaces';
-import { TYPES as GLOBAL_SETTINGS_TYPES, IRecordAnalyticsEventGlobalSettingService } from '../../globalSettings/interfaces';
+import {
+  TYPES as GLOBAL_SETTINGS_TYPES,
+  IRecordAnalyticsEventGlobalSettingService,
+} from '../../globalSettings/interfaces';
 import { CloseFileDto } from '../dto';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
@@ -14,12 +17,18 @@ import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
  * @deprecated Use PUT /file/:reportId/:fileName with X-File-Info header instead.
  * Files are now automatically closed after upload completes.
  */
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER],
+  JwtTypes.ALL,
+)
 export class CloseFileReportController {
   constructor(
     @Inject(TYPES.applications.ICloseFileApplication)
     private readonly closeFileApplication: ICloseFileApplication,
-    @Inject(GLOBAL_SETTINGS_TYPES.services.IRecordAnalyticsEventGlobalSettingService)
+    @Inject(
+      GLOBAL_SETTINGS_TYPES.services.IRecordAnalyticsEventGlobalSettingService,
+    )
     private readonly recordAnalyticsService: IRecordAnalyticsEventGlobalSettingService,
   ) {}
 
@@ -29,32 +38,28 @@ export class CloseFileReportController {
   async handler(
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
-    @Body() closeFileDto: CloseFileDto
+    @Body() closeFileDto: CloseFileDto,
   ) {
-
-    closeFileDto.fileName = fileName
-    closeFileDto.bucket = reportId
+    closeFileDto.fileName = fileName;
+    closeFileDto.bucket = reportId;
 
     try {
-      await this.closeFileApplication.execute(
-        closeFileDto,
-        reportId,
-      )
-    } catch (err) {      
+      await this.closeFileApplication.execute(closeFileDto, reportId);
+    } catch (err) {
       return {
-        success: false
-      }
+        success: false,
+      };
     }
 
     await this.recordAnalyticsService.execute({
       measurement: true,
       timePrecision: 300,
       type: 'count',
-      id: 'MyApPucrtpDkJWoNHh_DHiXDSEQ7cH5s9Bl3GDPJfXg'
-    })
+      id: 'MyApPucrtpDkJWoNHh_DHiXDSEQ7cH5s9Bl3GDPJfXg',
+    });
 
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 }

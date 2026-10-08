@@ -18,7 +18,7 @@ export class BatchDeleteUsersService implements IBatchDeleteUsersService {
       .from(UserEntity)
       .where('id IN (:...toDelete)', { toDelete: toDelete }) //delete users by username
       .execute();
-      
+
     return true;
   }
 }

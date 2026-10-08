@@ -23,7 +23,7 @@ export class MailUtilService {
   }
 
   public async send(params) {
-    console.log("🚀 ~ MailUtilService ~ send ~ params:", params)
+    console.log('🚀 ~ MailUtilService ~ send ~ params:', params);
     try {
       await this.transporter.sendMail({
         to: params.to,

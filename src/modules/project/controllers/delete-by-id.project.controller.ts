@@ -7,7 +7,12 @@ import { TYPES, IDeleteByIdProjectApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB, 'id')
+@AuthController(
+  'project',
+  [RolesUser.ADMIN, RolesUser.EDITOR],
+  JwtTypes.WEB,
+  'id',
+)
 export class DeleteByIdProjectController {
   constructor(
     @Inject(TYPES.applications.IDeleteByIdProjectApplication)

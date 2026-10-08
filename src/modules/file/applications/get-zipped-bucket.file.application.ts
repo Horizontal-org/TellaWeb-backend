@@ -8,9 +8,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class GetZippedBucketFileApplication
-  implements IGetZippedBucketFileApplication
-{
+export class GetZippedBucketFileApplication implements IGetZippedBucketFileApplication {
   constructor(
     @Inject(TYPES.services.IZipBucketFileService)
     private readonly zipBucketFileService: IZipBucketFileService,

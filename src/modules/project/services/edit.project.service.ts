@@ -22,53 +22,65 @@ export class EditProjectService implements IEditProjectService {
   ) {}
 
   async execute(editProjectDto: EditProjectDto): Promise<ProjectEntity> {
-    let reports = null
-    let users = null
-    let resources = null
-    
-    const project = await this.projectRepository.findOne(editProjectDto.id, { relations: ['users', 'resources'] });
+    let reports = null;
+    let users = null;
+    let resources = null;
+
+    const project = await this.projectRepository.findOne(editProjectDto.id, {
+      relations: ['users', 'resources'],
+    });
 
     if (editProjectDto.reports && editProjectDto.reports.length > 0) {
-      reports = await this.reportRepository.findByIds(editProjectDto.reports)
+      reports = await this.reportRepository.findByIds(editProjectDto.reports);
     }
 
     if (editProjectDto.users && editProjectDto.users.length > 0) {
-      const currentUserIds = project.users.map(pu => pu.id)
-      const newIds = this.toggleEntityIds(editProjectDto.users, currentUserIds)         
-      users = await this.userRepository.findByIds(newIds)
+      const currentUserIds = project.users.map((pu) => pu.id);
+      const newIds = this.toggleEntityIds(editProjectDto.users, currentUserIds);
+      users = await this.userRepository.findByIds(newIds);
     }
 
     if (editProjectDto.resources && editProjectDto.resources.length > 0) {
-      const currentResourceIds = project.resources.map(pu => pu.id)
-      const newIds = this.toggleEntityIds(editProjectDto.resources, currentResourceIds)         
-      resources = await this.resourceRepository.findByIds(newIds)
+      const currentResourceIds = project.resources.map((pu) => pu.id);
+      const newIds = this.toggleEntityIds(
+        editProjectDto.resources,
+        currentResourceIds,
+      );
+      resources = await this.resourceRepository.findByIds(newIds);
     }
-    
-    const slug = (editProjectDto.slug || project.slug).toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-    project.name = editProjectDto.name || project.name
-    project.slug = slug
-    project.reports = reports || project.reports
-    project.users = users || project.users
-    project.resources = resources || project.resources
-    project.url = `${process.env.PUBLIC_DOMAIN}/p/${slug}`
 
-    await this.projectRepository.save(project)
+    const slug = (editProjectDto.slug || project.slug)
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\u0100-\uFFFF\w\-]/g, '-')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+    project.name = editProjectDto.name || project.name;
+    project.slug = slug;
+    project.reports = reports || project.reports;
+    project.users = users || project.users;
+    project.resources = resources || project.resources;
+    project.url = `${process.env.PUBLIC_DOMAIN}/p/${slug}`;
+
+    await this.projectRepository.save(project);
     return project;
   }
 
   private toggleEntityIds = (dtoIds: string[], currentIds: string[]) => {
-    const toDelete = []
-    const toAdd = []
-    
-    
+    const toDelete = [];
+    const toAdd = [];
+
     dtoIds.forEach((id) => {
       if (currentIds.includes(id)) {
-        toDelete.push(id)
+        toDelete.push(id);
       } else {
-        toAdd.push(id)
-      }        
-    })  
-    const remainingIds = currentIds.filter(uid => !toDelete.includes(uid))      
-    return [...remainingIds, ...toAdd]
-  }
+        toAdd.push(id);
+      }
+    });
+    const remainingIds = currentIds.filter((uid) => !toDelete.includes(uid));
+    return [...remainingIds, ...toAdd];
+  };
 }

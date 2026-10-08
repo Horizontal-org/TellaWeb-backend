@@ -31,16 +31,13 @@ export class ListProjectService implements IListProjectService {
       .take(take);
 
     if (user.role !== 'admin') {
-      query.where('users.id = :userId', { userId: user.id })
+      query.where('users.id = :userId', { userId: user.id });
     }
-    
+
     if (search && search.length > 0) {
-      query.andWhere(
-        'project.name like :search',
-        {
-          search: `%${search}%`,
-        },
-      );
+      query.andWhere('project.name like :search', {
+        search: `%${search}%`,
+      });
     }
 
     if (sort && sort.length > 0) {

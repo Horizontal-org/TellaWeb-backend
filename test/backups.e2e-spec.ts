@@ -71,7 +71,10 @@ describe('backups', () => {
     await t.http().post('/backup').set(bearer(admin)).expect(201);
 
     backup = await waitFor(async () => (await latest()).latest, 60000);
-    expect(backup).toMatchObject({ id: expect.any(String), status: 'finished' });
+    expect(backup).toMatchObject({
+      id: expect.any(String),
+      status: 'finished',
+    });
     expect((await latest()).processing).toBeUndefined();
   });
 
@@ -90,7 +93,9 @@ describe('backups', () => {
       .expect(200);
 
     expect(res.headers['content-type']).toBe('application/zip');
-    expect(res.headers['content-disposition']).toBe('attachment; filename="TELLAWEB_BACKUP.zip"');
+    expect(res.headers['content-disposition']).toBe(
+      'attachment; filename="TELLAWEB_BACKUP.zip"',
+    );
     expect(res.headers['accept-ranges']).toBe('bytes');
     expect(Number(res.headers['content-length'])).toBe(res.body.length);
 
@@ -122,13 +127,19 @@ describe('backups', () => {
       .parse(binaryParser)
       .expect(206);
 
-    expect(res.headers['content-range']).toBe(`bytes 10-19/${full.body.length}`);
+    expect(res.headers['content-range']).toBe(
+      `bytes 10-19/${full.body.length}`,
+    );
     expect(Buffer.compare(res.body, full.body.subarray(10, 20))).toBe(0);
   });
 
   it('accepts a mobile token too', async () => {
     const mobile = await loginMobile(t, USERS.admin);
-    await t.http().get(`/backup/download/${backup.id}`).set(bearer(mobile)).expect(200);
+    await t
+      .http()
+      .get(`/backup/download/${backup.id}`)
+      .set(bearer(mobile))
+      .expect(200);
   });
 
   it('an unknown backup is a 404', async () => {
@@ -140,7 +151,11 @@ describe('backups', () => {
   });
 
   it('deletes a backup; it can no longer be downloaded', async () => {
-    await t.http().delete(`/backup/delete/${backup.id}`).set(bearer(admin)).expect(200);
+    await t
+      .http()
+      .delete(`/backup/delete/${backup.id}`)
+      .set(bearer(admin))
+      .expect(200);
 
     // the delete service doesn't await its save, so the status can lag behind the response
     const after = await waitFor(async () => {
@@ -150,6 +165,10 @@ describe('backups', () => {
     expect(after.latest).toBeUndefined();
     expect(after.deleted).toMatchObject({ id: backup.id, status: 'deleted' });
 
-    await t.http().get(`/backup/download/${backup.id}`).set(bearer(admin)).expect(404);
+    await t
+      .http()
+      .get(`/backup/download/${backup.id}`)
+      .set(bearer(admin))
+      .expect(404);
   });
 });

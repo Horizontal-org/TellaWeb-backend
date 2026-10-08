@@ -51,7 +51,7 @@ describe('CreateReportService', () => {
       } as ReportEntity;
 
       const author = {
-        toEntity: () => ({ id: 'AAA111' } as UserEntity),
+        toEntity: () => ({ id: 'AAA111' }) as UserEntity,
       } as ReadUserDto;
 
       jest.spyOn(repositoryMock, 'save').mockResolvedValue(report);

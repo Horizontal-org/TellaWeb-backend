@@ -22,7 +22,10 @@ export class EditRemoteConfigurationController {
     @Param('configurationId', new ParseUUIDPipe()) configurationId: string,
   ): Promise<ReadRemoteConfigurationDto> {
     editRemoteConfigurationDto.id = configurationId;
-    const remoteConfiguration = await this.editRemoteConfigurationApplication.execute(editRemoteConfigurationDto);
+    const remoteConfiguration =
+      await this.editRemoteConfigurationApplication.execute(
+        editRemoteConfigurationDto,
+      );
 
     return remoteConfiguration;
   }

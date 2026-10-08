@@ -12,7 +12,7 @@ export function AuthController(
   controllerName: string,
   roles: RolesUser[] = [],
   accessType: string = null,
-  projectKeyType: string = null
+  projectKeyType: string = null,
 ) {
   return applyDecorators(
     Controller(controllerName),
@@ -21,6 +21,6 @@ export function AuthController(
     UseGuards(RolesUserGuard),
     Roles(...roles),
     UseGuards(TokenAccessGuard(accessType)),
-    UseGuards(ProjectAccessGuard(projectKeyType))
+    UseGuards(ProjectAccessGuard(projectKeyType)),
   );
 }

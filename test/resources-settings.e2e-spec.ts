@@ -97,7 +97,12 @@ describe('resources, remote configurations and global settings', () => {
         .put('/resource/upload/script.pdf')
         .set(bearer(admin))
         .set('Content-Type', 'application/octet-stream')
-        .send(Buffer.concat([document, Buffer.from('<< /S /JavaScript /JS (app.alert(1)) >>')]))
+        .send(
+          Buffer.concat([
+            document,
+            Buffer.from('<< /S /JavaScript /JS (app.alert(1)) >>'),
+          ]),
+        )
         .expect(400);
     });
 
@@ -118,7 +123,10 @@ describe('resources, remote configurations and global settings', () => {
         .set(bearer(editor))
         .expect(200);
       expect(res.body.total).toBe(1);
-      expect(res.body.results[0]).toMatchObject({ id: resource.id, fileName: 'guide.pdf' });
+      expect(res.body.results[0]).toMatchObject({
+        id: resource.id,
+        fileName: 'guide.pdf',
+      });
     });
 
     it('admins download any resource', async () => {
@@ -133,15 +141,26 @@ describe('resources, remote configurations and global settings', () => {
     });
 
     it('others only download resources of their projects', async () => {
-      await t.http().get('/resource/asset/guide.pdf').set(bearer(viewer)).expect(401);
-      await t.http().get('/resource/mobile/asset/guide.pdf').set(bearer(reporter)).expect(401);
+      await t
+        .http()
+        .get('/resource/asset/guide.pdf')
+        .set(bearer(viewer))
+        .expect(401);
+      await t
+        .http()
+        .get('/resource/mobile/asset/guide.pdf')
+        .set(bearer(reporter))
+        .expect(401);
 
       project = (
         await t
           .http()
           .post('/project')
           .set(bearer(admin))
-          .send({ name: 'E2E resources project', users: [t.users.viewer.id, t.users.reporter.id] })
+          .send({
+            name: 'E2E resources project',
+            users: [t.users.viewer.id, t.users.reporter.id],
+          })
           .expect(201)
       ).body;
       await t
@@ -180,7 +199,9 @@ describe('resources, remote configurations and global settings', () => {
       expect(res.body).toHaveLength(1);
       expect(res.body[0]).toMatchObject({
         id: project.id,
-        resources: [expect.objectContaining({ id: resource.id, fileName: 'guide.pdf' })],
+        resources: [
+          expect.objectContaining({ id: resource.id, fileName: 'guide.pdf' }),
+        ],
       });
     });
 
@@ -217,7 +238,11 @@ describe('resources, remote configurations and global settings', () => {
   });
 
   describe('remote configurations', () => {
-    const camouflage = JSON.stringify({ visible: true, change_name: false, calculator: true });
+    const camouflage = JSON.stringify({
+      visible: true,
+      change_name: false,
+      calculator: true,
+    });
     const crashReports = JSON.stringify({ visible: true, enabled: false });
     let configuration: any;
 
@@ -226,7 +251,12 @@ describe('resources, remote configurations and global settings', () => {
         .http()
         .post('/config')
         .set(bearer(admin))
-        .send({ name: 'E2E config', camouflage, crashReports, serversVisible: true })
+        .send({
+          name: 'E2E config',
+          camouflage,
+          crashReports,
+          serversVisible: true,
+        })
         .expect(201);
 
       configuration = res.body;
@@ -244,7 +274,12 @@ describe('resources, remote configurations and global settings', () => {
         .http()
         .post('/config')
         .set(bearer(admin))
-        .send({ name: 'bad', camouflage: 'not json', crashReports, serversVisible: true })
+        .send({
+          name: 'bad',
+          camouflage: 'not json',
+          crashReports,
+          serversVisible: true,
+        })
         .expect(400);
     });
 
@@ -273,13 +308,19 @@ describe('resources, remote configurations and global settings', () => {
         .get(`/config/${configuration.id}`)
         .set(bearer(reporter))
         .expect(200);
-      expect(res.body).toMatchObject({ id: configuration.id, name: 'E2E config', camouflage });
+      expect(res.body).toMatchObject({
+        id: configuration.id,
+        name: 'E2E config',
+        camouflage,
+      });
     });
 
     it('gets one by short code', async () => {
       // the short code isn't in any response; the mobile app gets it from the QR code
       const repo = t.app.get(getRepositoryToken(RemoteConfigurationEntity));
-      const { shortCode } = await repo.findOne({ where: { id: configuration.id } });
+      const { shortCode } = await repo.findOne({
+        where: { id: configuration.id },
+      });
       expect(shortCode).toMatch(/^[\w-]{8}$/);
 
       const res = await t
@@ -295,13 +336,26 @@ describe('resources, remote configurations and global settings', () => {
         .http()
         .post(`/config/${configuration.id}`)
         .set(bearer(admin))
-        .send({ id: configuration.id, name: 'E2E config edited', camouflage, crashReports, serversVisible: false })
+        .send({
+          id: configuration.id,
+          name: 'E2E config edited',
+          camouflage,
+          crashReports,
+          serversVisible: false,
+        })
         .expect(201);
-      expect(res.body).toMatchObject({ name: 'E2E config edited', serversVisible: false });
+      expect(res.body).toMatchObject({
+        name: 'E2E config edited',
+        serversVisible: false,
+      });
     });
 
     it('deletes', async () => {
-      await t.http().delete(`/config/${configuration.id}`).set(bearer(admin)).expect(200);
+      await t
+        .http()
+        .delete(`/config/${configuration.id}`)
+        .set(bearer(admin))
+        .expect(200);
       const res = await t
         .http()
         .get('/config?limit=10&offset=0')
@@ -323,9 +377,11 @@ describe('resources, remote configurations and global settings', () => {
         .expect(200);
 
       settings = res.body;
-      expect(settings.map((s) => s.name).sort()).toEqual(
-        ['ANALYTICS', 'FEEDBACK', 'SUSPICIOUS LOGIN DETECTION'],
-      );
+      expect(settings.map((s) => s.name).sort()).toEqual([
+        'ANALYTICS',
+        'FEEDBACK',
+        'SUSPICIOUS LOGIN DETECTION',
+      ]);
     });
 
     it('gets one by name', async () => {

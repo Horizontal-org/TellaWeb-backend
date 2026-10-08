@@ -1,4 +1,10 @@
-import { Get, Inject, Query, ParseIntPipe, ParseArrayPipe } from '@nestjs/common';
+import {
+  Get,
+  Inject,
+  Query,
+  ParseIntPipe,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { ApiExtraModels } from '@nestjs/swagger';
 
@@ -33,7 +39,7 @@ export class ListUserController {
       sort,
       order,
       search,
-      exclude
+      exclude,
     );
 
     return response;

@@ -1,4 +1,10 @@
-import { Get, Inject, ParseArrayPipe, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Get,
+  Inject,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiExtraModels } from '@nestjs/swagger';
 
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
@@ -35,7 +41,7 @@ export class ListResourceController {
       sort,
       order,
       search,
-      exclude
+      exclude,
     );
     return response;
   }

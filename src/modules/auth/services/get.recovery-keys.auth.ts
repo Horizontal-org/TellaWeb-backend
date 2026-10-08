@@ -14,12 +14,12 @@ import { IGetRecoveryKeysService } from '../interfaces/services/get.recovery-key
 export class GetRecoveryKeysService implements IGetRecoveryKeysService {
   constructor(
     @InjectRepository(RecoveryKeyEntity)
-    private readonly recoveryRepository: Repository<RecoveryKeyEntity>
+    private readonly recoveryRepository: Repository<RecoveryKeyEntity>,
   ) {}
 
   async execute(userId): Promise<string[]> {
-    const recoveryKeys = await this.recoveryRepository.find({ user: userId })
-    
-    return recoveryKeys.map(r => r.code)
+    const recoveryKeys = await this.recoveryRepository.find({ user: userId });
+
+    return recoveryKeys.map((r) => r.code);
   }
 }

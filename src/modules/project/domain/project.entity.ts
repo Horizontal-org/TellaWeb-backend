@@ -10,7 +10,7 @@ import {
   JoinTable,
   BeforeInsert,
   BeforeRemove,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -30,7 +30,7 @@ export class ProjectEntity {
   })
   reports: ReportEntity[];
 
-  @ManyToMany(() => UserEntity, user => user.projects)
+  @ManyToMany(() => UserEntity, (user) => user.projects)
   @JoinTable({
     name: 'projects_users',
     joinColumn: {
@@ -40,11 +40,11 @@ export class ProjectEntity {
     inverseJoinColumn: {
       name: 'user_id',
       referencedColumnName: 'id',
-    }
+    },
   })
   users: UserEntity[];
 
-  @ManyToMany(() => ResourceEntity, resource => resource.projects)
+  @ManyToMany(() => ResourceEntity, (resource) => resource.projects)
   @JoinTable({
     name: 'projects_resources',
     joinColumn: {
@@ -54,10 +54,9 @@ export class ProjectEntity {
     inverseJoinColumn: {
       name: 'resource_id',
       referencedColumnName: 'id',
-    }
+    },
   })
   resources: ResourceEntity[];
-
 
   @Column({ nullable: true })
   url: string;
@@ -72,5 +71,4 @@ export class ProjectEntity {
   private beforeInsert(): void {
     this.createdAt = new Date();
   }
-
 }

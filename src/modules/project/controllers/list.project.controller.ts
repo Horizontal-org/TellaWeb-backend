@@ -13,7 +13,11 @@ import { ReadUserDto } from 'modules/user/dto';
 import { ReadProjectDto } from '../dto';
 import { IListProjectApplication, TYPES } from '../interfaces';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController(
+  'project',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 @ApiExtraModels(PaginatedDto)
 export class ListProjectController {
   constructor(

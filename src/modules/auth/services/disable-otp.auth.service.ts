@@ -14,20 +14,18 @@ export class DisableOtpAuthService implements IDisableOtpAuthService {
   ) {}
 
   async execute(userId): Promise<void> {
-    
-    const userEntity = await this.userRepository.findOne(userId)
+    const userEntity = await this.userRepository.findOne(userId);
 
     userEntity.refreshOtpSecret(null);
-    userEntity.otp_active = false
+    userEntity.otp_active = false;
     await this.userRepository.save(userEntity);
-    
-    // delete recovery keys 
+
+    // delete recovery keys
     await getConnection()
       .createQueryBuilder()
       .delete()
       .from(RecoveryKeyEntity)
       .where({ user: userEntity.id })
       .execute();
-
   }
 }

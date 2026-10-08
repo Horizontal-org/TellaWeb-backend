@@ -7,7 +7,7 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import {
   IDeleteByIdRemoteConfigurationApplication,
-  TYPES
+  TYPES,
 } from '../interfaces';
 
 @AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)

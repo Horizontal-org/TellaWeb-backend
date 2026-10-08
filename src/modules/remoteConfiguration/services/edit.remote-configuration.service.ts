@@ -8,8 +8,7 @@ import { NotFoundRemoteConfigurationException } from '../exceptions';
 import { IEditRemoteConfigurationService } from '../interfaces';
 
 @Injectable()
-export class EditRemoteConfigurationService
-  implements IEditRemoteConfigurationService {
+export class EditRemoteConfigurationService implements IEditRemoteConfigurationService {
   constructor(
     @InjectRepository(RemoteConfigurationEntity)
     private remoteConfigurationRepository: Repository<RemoteConfigurationEntity>,
@@ -26,7 +25,7 @@ export class EditRemoteConfigurationService
       configuration.camouflage = editRemoteConfigurationDto.camouflage;
       configuration.crashReports = editRemoteConfigurationDto.crashReports;
       configuration.serversVisible = editRemoteConfigurationDto.serversVisible;
-      
+
       return this.remoteConfigurationRepository.save(configuration);
     } catch (_) {
       throw new NotFoundRemoteConfigurationException(
