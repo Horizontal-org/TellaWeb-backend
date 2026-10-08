@@ -1,4 +1,3 @@
-import { authenticator } from 'otplib';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,6 +11,7 @@ import {
   TestApp,
   USERS,
 } from './setup/app';
+import { totp } from './setup/totp';
 
 describe('auth', () => {
   let t: TestApp;
@@ -226,10 +226,25 @@ describe('auth', () => {
         .expect(201);
 
       secret = res.body.otp_code;
-      expect(secret).toEqual(expect.any(String));
-      expect(res.body.otp_url).toMatch(
-        /^otpauth:\/\/totp\/Tellaweb:otp%40e2e.test\?secret=/,
-      );
+      expect(secret).toMatch(/^[A-Z2-7]{16,}$/);
+
+      // what authenticator apps read from the QR code
+      const url = new URL(res.body.otp_url);
+      expect(url.protocol).toBe('otpauth:');
+      expect(url.host).toBe('totp');
+      expect(decodeURIComponent(url.pathname)).toBe('/Tellaweb:otp@e2e.test');
+      expect(url.searchParams.get('secret')).toBe(secret);
+      expect(url.searchParams.get('issuer')).toBe('Tellaweb');
+      // SHA1, 6 digits and 30s are the defaults when these are left out
+      for (const [param, value] of [
+        ['algorithm', 'SHA1'],
+        ['digits', '6'],
+        ['period', '30'],
+      ]) {
+        if (url.searchParams.has(param)) {
+          expect(url.searchParams.get(param)).toBe(value);
+        }
+      }
     });
 
     it('verify accepts a valid code and rejects a wrong one', async () => {
@@ -238,7 +253,7 @@ describe('auth', () => {
         .http()
         .post('/auth/otp/verify')
         .set(bearer(session))
-        .send({ code: authenticator.generate(secret) })
+        .send({ code: totp(secret) })
         .expect(201);
       await t
         .http()
@@ -254,7 +269,7 @@ describe('auth', () => {
         .http()
         .post('/auth/otp/activate')
         .set(bearer(session))
-        .send({ code: authenticator.generate(secret) })
+        .send({ code: totp(secret) })
         .expect(201);
 
       recoveryKeys = res.body;
@@ -277,7 +292,7 @@ describe('auth', () => {
       const res = await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: authenticator.generate(secret) })
+        .send({ userId, code: totp(secret) })
         .expect(201);
 
       expect(res.body.access_token).toEqual(expect.any(String));
@@ -325,7 +340,7 @@ describe('auth', () => {
       const otp = await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: authenticator.generate(secret) })
+        .send({ userId, code: totp(secret) })
         .expect(201);
       const res = await t
         .http()
@@ -339,7 +354,7 @@ describe('auth', () => {
       const otp = await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: authenticator.generate(secret) })
+        .send({ userId, code: totp(secret) })
         .expect(201);
 
       await t
@@ -361,6 +376,57 @@ describe('auth', () => {
 
       const session = await loginWeb(t, username);
       expect(session.access_token).toEqual(expect.any(String));
+    });
+
+    describe('a user who set up 2FA before the otplib 13 upgrade', () => {
+      // a 16-character secret, the format otplib 12 generated and stored
+      const storedSecret = 'JBSWY3DPEHPK3PXP';
+      let legacyId: string;
+
+      beforeAll(async () => {
+        const admin = await loginWeb(t, USERS.admin);
+        const res = await t
+          .http()
+          .post('/user')
+          .set(bearer(admin))
+          .send({
+            username: 'otp-legacy@e2e.test',
+            password: PASSWORD,
+            role: 'editor',
+          })
+          .expect(201);
+        legacyId = res.body.id;
+
+        const repo = t.app.get<Repository<UserEntity>>(
+          getRepositoryToken(UserEntity),
+        );
+        await repo.update(legacyId, {
+          otp_secret: storedSecret,
+          otp_active: true,
+        });
+      });
+
+      it('logs in with the code from their authenticator app', async () => {
+        const res = await t
+          .http()
+          .post('/auth/otp/login')
+          .send({ userId: legacyId, code: totp(storedSecret) })
+          .expect(201);
+        expect(res.body.access_token).toEqual(expect.any(String));
+      });
+
+      it('codes from earlier 30-second steps are rejected', async () => {
+        for (const secondsAgo of [30, 60, 90]) {
+          await t
+            .http()
+            .post('/auth/otp/login')
+            .send({
+              userId: legacyId,
+              code: totp(storedSecret, Date.now() - secondsAgo * 1000),
+            })
+            .expect(401);
+        }
+      });
     });
   });
 });
