@@ -144,7 +144,11 @@ describe('backups', () => {
   it('deletes a backup; it can no longer be downloaded', async () => {
     await t.http().delete(`/backup/delete/${backup.id}`).set(bearer(admin)).expect(200);
 
-    const after = await latest();
+    // the delete service doesn't await its save, so the status can lag behind the response
+    const after = await waitFor(async () => {
+      const l = await latest();
+      return l.deleted && l;
+    });
     expect(after.latest).toBeUndefined();
     expect(after.deleted).toMatchObject({ id: backup.id, status: 'deleted' });
 
