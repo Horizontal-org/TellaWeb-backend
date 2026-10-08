@@ -131,6 +131,18 @@ describe('users', () => {
     expect(ids).not.toContain(t.users.viewer.id);
     expect(ids).not.toContain(t.users.editor.id);
     expect(ids).toContain(t.users.admin.id);
+
+    // the same, with the key repeated instead of comma-separated
+    const repeated = await t
+      .http()
+      .get(
+        `/user/list?limit=100&offset=0&exclude=${t.users.viewer.id}&exclude=${t.users.editor.id}`,
+      )
+      .set(bearer(admin))
+      .expect(200);
+    expect(repeated.body.results.map((u) => u.id).sort()).toEqual(
+      [...ids].sort(),
+    );
   });
 
   it('limit=0 lists every user', async () => {

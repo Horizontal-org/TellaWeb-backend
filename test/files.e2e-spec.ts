@@ -246,6 +246,78 @@ describe('files', () => {
         .expect(201);
       expect(close.body).toEqual({ success: true });
     });
+
+    it('closes without a request body', async () => {
+      await t
+        .http()
+        .put(`/file/${reportId}/legacy-nobody.wav`)
+        .set(bearer(reporter))
+        .set('Content-Type', 'application/octet-stream')
+        .send(audio)
+        .expect(200);
+
+      const close = await t
+        .http()
+        .post(`/file/${reportId}/legacy-nobody.wav`)
+        .set(bearer(reporter))
+        .expect(201);
+      expect(close.body).toEqual({ success: true });
+    });
+  });
+
+  describe('file names in the URL', () => {
+    // what phones produce: spaces, parentheses, accents, a dot in the name
+    const names = ['Voice note (2).wav', 'grabación 12.03.wav', 'año+día.wav'];
+
+    it('uploads, lists, streams and zips files with these names', async () => {
+      for (const name of names) {
+        const res = await uploadChunk(
+          reporter,
+          encodeURIComponent(name),
+          audio,
+          0,
+          audio.length,
+        ).expect(200);
+        expect(res.body.fileName).toBe(name);
+
+        const head = await t
+          .http()
+          .head(`/file/${reportId}/${encodeURIComponent(name)}`)
+          .set(bearer(reporter))
+          .expect(200);
+        expect(head.headers.size).toBe(String(audio.length));
+
+        const download = await t
+          .http()
+          .get(`/file/download/${reportId}/${encodeURIComponent(name)}`)
+          .set(bearer(editor))
+          .buffer(true)
+          .parse(binaryParser)
+          .expect(200);
+        expect(Buffer.compare(download.body, audio)).toBe(0);
+      }
+
+      const report = await t
+        .http()
+        .get(`/report/${reportId}`)
+        .set(bearer(editor))
+        .expect(200);
+      const listed = report.body.files.map((f) => f.fileName);
+      expect(listed).toEqual(expect.arrayContaining(names));
+
+      const zip = await JSZip.loadAsync(
+        (
+          await t
+            .http()
+            .get(`/file/report/${reportId}`)
+            .set(bearer(editor))
+            .buffer(true)
+            .parse(binaryParser)
+            .expect(200)
+        ).body,
+      );
+      expect(Object.keys(zip.files)).toEqual(expect.arrayContaining(names));
+    });
   });
 
   describe('downloads', () => {
