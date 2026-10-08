@@ -388,7 +388,9 @@ describe('files', () => {
       expect(meta.width).toBe(800);
     });
 
-    it('returns a resized PNG thumbnail', async () => {
+    // made from the 800px JPEG preview; the header says PNG but the data is
+    // JPEG (see the bug doc)
+    it('returns a thumbnail of the requested width, keeping the aspect ratio', async () => {
       const res = await t
         .http()
         .get(`/file/asset/${reportId}/${imageFile.id}/100`)
@@ -399,7 +401,9 @@ describe('files', () => {
 
       expect(res.headers['content-type']).toBe('image/png');
       const meta = await sharp(res.body).metadata();
-      expect(meta.width).toBeLessThan(1200);
+      expect(meta.format).toBe('jpeg');
+      expect(meta.width).toBe(100);
+      expect(meta.height).toBe(75); // 1200x900 source
     });
 
     it('reporters cannot download files', async () => {
