@@ -17,7 +17,14 @@ import { BackupModule } from "modules/backup/backup.module";
       },
     }),
     BullModule.registerQueue(
-      { name: 'emails' },
+      {
+        name: 'emails',
+        // retry failed sends (e.g. SMTP down) at ~10s, 20s, 40s, 80s
+        defaultJobOptions: {
+          attempts: 5,
+          backoff: { type: 'exponential', delay: 10000 },
+        },
+      },
       { name: 'backups' }
     ),
     UtilsModule,
