@@ -2,11 +2,11 @@
 
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
-**Status (2026-10-08):** Tiers 0, 1 and 2 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2; Tier 2 is the first that changes runtime libraries for auth.
+**Status (2026-10-08):** Tiers 0–3 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3 on its own.
 
 ## Decisions
 
-- **One commit per step.** After each step: `npm run typecheck`, `npm run lint`, `npm run build`, `npm test`, `npm run test:e2e`, and after any dependency change `npm run check:lockfile` (npm 11 can write lockfiles the image's npm 10 refuses). A Docker build before each beta drop.
+- **One commit per step.** After each step: `npm run typecheck`, `npm run lint`, `npm run build` (it also checks declaration emit, which `typecheck` doesn't), `npm test`, `npm run test:e2e`, and after any dependency change `npm run check:lockfile` (npm 11 can write lockfiles the image's npm 10 refuses). A Docker build before each beta drop.
 - **A maintainer does tags and deploys.** The work stops at each beta checkpoint.
 - **Known bugs are pinned, not fixed.** A test marked `it.failing` describes the correct behaviour. It turns red when someone fixes the bug, so the marker gets removed then. Fixes go in their own commits or tickets.
 - **Held back on purpose:**
@@ -90,6 +90,29 @@
 - **The CASL checks don't restrict anything:** they build the abilities of the *target* user and check whether that user may read or update itself, which is always true. Real access control is the role guards. Editing an unknown user id returns 500 because the abilities are built before the existence check (pinned).
 - npm 11 vs npm 10: see `check:lockfile` above.
 
+## Done: Tier 3 (TypeORM 0.3)
+
+| Commit | Change |
+|---|---|
+| `c616864` | Tests first, passing on 0.2: deleting reports (single and batch) that have files, deletes their files and nothing else; `limit=0` lists everything |
+| `8f4496d` | **TypeORM 0.3.31, `@nestjs/typeorm` 8.1.4** (the last line for Nest 8). See below |
+
+What changed in the code:
+- `findOne(id[, opts])`, `findByIds` and where-shorthand (`find({ role })`, `findOne({ code, user })`) are now find options; relations are compared by id as `{ user: { id } }`. **Four of these took an untyped (`any`) id, so the compiler didn't flag them**; they were found by grep (`activate`/`disable`/`verify`-OTP, recovery keys).
+- `getConnection()` (14 calls) → the injected `DataSource`. The `ProjectAccessGuard` mixin keeps it `public`: with `declaration: true` a mixin can't have private members (only `npm run build` reports this).
+- **`invalidWhereValuesBehavior: { undefined: 'throw', null: 'throw' }`** in `ormconfig.ts`. In 0.3 a `where` value of `undefined`/`null` is dropped, so `findOne({ where: { id: undefined } })` returns the first row; now it throws instead.
+- `take(0)` / `skip(0)` keep meaning "no limit / no offset" in the five list services, as in 0.2 (0.3 sends `LIMIT 0`, and MySQL refuses an `OFFSET` without `LIMIT`). The console's `users list` relies on it.
+- `/backup/latest` keeps omitting empty fields (0.3 returns `null` where 0.2 returned `undefined`).
+- CLI: `src/data-source.ts`. `npm run typeorm:run` and `npm run typeorm:migrate <name>` work as before (the second now writes to `src/migrations/<timestamp>-<name>.ts`).
+
+New tests: recovery keys of several users (re-activating replaces only that user's keys, disabling deletes only theirs), report deletion with files, `limit=0`.
+
+**Gate:** typecheck, lint, build, 22 unit tests, 135 e2e tests, `check:lockfile`. **Upgrade path checked with Docker:** a database created and filled by the 0.2 image (migrations, an admin from the console, a project, a report, an uploaded image), then the 0.3 image on the same database: "No migrations are pending", the existing user logs in, the project, report and file are listed, the file streams, the project guard passes, no errors in the logs. `npm audit --omit=dev`: 43 (2 critical: mysql2 through `mysqldump`, webpack through Nest CLI 8).
+
+### Things learned in Tier 3
+- **`migration:generate` was already unsafe to use as is.** The hand-written migrations don't match the entities exactly: 0.2 already proposed 142 statements on a fully migrated database, 0.3 proposes 184 (the extra 42 are the `id` columns of seven tables, `varchar(255)` in the database vs `varchar(36)` expected for UUIDs). They include dropping and re-creating primary keys. Always review a generated migration and keep only your change; aligning the schema would be a separate, careful migration.
+- `utils migrate` (console) runs SQLite `PRAGMA` statements and has never worked on MySQL; migrations are run with `npm run typeorm:run`.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
 The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1. Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
@@ -114,7 +137,6 @@ Odd but current behaviour that the tests document:
 
 ## Notes for later tiers
 
-- **Tier 3, TypeORM:** besides `findOne(id)`, `findByIds` and `getConnection()`, the where-shorthand `find({ role })` (`GetByIdProjectService`) and `findOne({ code, user })` (`ValidateRecoveryKeysService`) are also removed in 0.3.
 - **Tier 4, Nest 11 / Express 5:** the e2e tests pin the current HTTP contract. Watch `ParseIntPipe` on missing `limit`/`offset` (400 today), comma-separated `exclude`/`projectId`/`fileNames` (`ParseArrayPipe`), `res.download` Range handling, and boolean responses sent as text.
 - **Audit baseline** (`npm audit --omit=dev`, after Tier 0): 52 (7 critical, 23 high). Most are fixed by Tiers 2–4. Not covered by any tier:
   - `mysqldump` (unmaintained) brings mysql2 2.3 with a critical RCE advisory.
@@ -150,6 +172,17 @@ Tier 1 checks above, plus:
 | bcrypt 6 | Existing users log in with their current passwords; change a password and log in with the new one |
 | CASL 7 | Admin edits another user; a non-admin edits their own profile |
 | nodemailer 10 | With emails enabled: a real email arrives for a finished backup and for a blocked login (suspicious login detection) |
+
+### #3: TypeORM 0.3 (`upgrade/dependencies` at `8f4496d` or later), on its own
+**Before deploying:** back up the database. Then, on beta, in the new container: `npm run typeorm:run` must print "No migrations are pending" (no migration is added in this drop).
+| Change | Check |
+|---|---|
+| Find options rewrite | Every list page (users, projects, reports, resources, configurations) with search, sort and paging; open a project, a report, a user |
+| `getConnection()` → DataSource | Non-member opening a project URL gets 403; delete a report with files, batch-delete reports and users, delete a project (its reports stay) |
+| Recovery keys | 2FA: activate (15 keys), log in with a recovery key, disable |
+| Suspicious login | Block and unblock flow (whitelist rows) |
+| Backups | Generate, download, delete (raw queries in the backup handler) |
+| Mobile app | Login, create a report in a project, resumable upload, remote configuration fetch |
 
 ## How to run the tests
 
