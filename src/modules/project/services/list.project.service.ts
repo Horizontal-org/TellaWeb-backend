@@ -35,7 +35,7 @@ export class ListProjectService implements IListProjectService {
     }
     
     if (search && search.length > 0) {
-      query.where(
+      query.andWhere(
         'project.name like :search',
         {
           search: `%${search}%`,

@@ -154,9 +154,7 @@ describe('projects and reports', () => {
       expect(ids).not.toContain(otherProject.id);
     });
 
-    // Known bug: a search replaces the "my projects" condition, so other roles
-    // see every matching project. Remove `.failing` once it's fixed.
-    it.failing('searching still lists only their own projects for other roles', async () => {
+    it('searching still lists only their own projects for other roles', async () => {
       const res = await t
         .http()
         .get('/project?limit=25&offset=0&search=E2E')
@@ -164,7 +162,8 @@ describe('projects and reports', () => {
         .expect(200);
 
       const ids = res.body.results.map((p) => p.id);
-      expect(ids).not.toContain(otherProject.id);
+      expect(ids).toEqual([project.id]);
+      expect(res.body.total).toBe(1);
     });
 
     it('paginates, searches and sorts', async () => {
