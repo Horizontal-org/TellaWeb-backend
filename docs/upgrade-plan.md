@@ -2,11 +2,11 @@
 
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
-**Status (2026-10-08):** Tiers 0 and 1 done. **Waiting for beta drop #1** (see "Beta drops"); Tier 1 can ship with it or with drop #2.
+**Status (2026-10-08):** Tiers 0, 1 and 2 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2; Tier 2 is the first that changes runtime libraries for auth.
 
 ## Decisions
 
-- **One commit per step.** After each step: `npm run typecheck`, `npm run build`, `npm test`, `npm run test:e2e`, and a Docker build before each beta drop.
+- **One commit per step.** After each step: `npm run typecheck`, `npm run lint`, `npm run build`, `npm test`, `npm run test:e2e`, and after any dependency change `npm run check:lockfile` (npm 11 can write lockfiles the image's npm 10 refuses). A Docker build before each beta drop.
 - **A maintainer does tags and deploys.** The work stops at each beta checkpoint.
 - **Known bugs are pinned, not fixed.** A test marked `it.failing` describes the correct behaviour. It turns red when someone fixes the bug, so the marker gets removed then. Fixes go in their own commits or tickets.
 - **Held back on purpose:**
@@ -14,7 +14,8 @@
   - **TypeScript 5:** needs Nest CLI ≥ 10 (Tier 4, see below).
   - **TypeScript 7.**
   - **ESLint 10.**
-  - **`file-type` > 16, `nanoid` > 3 and `archiver` 8:** ESM-only.
+  - **`file-type` > 16, `nanoid` > 3, `archiver` 8, `nodemailer-express-handlebars` 7:** ESM-only.
+  - **otplib 13:** depends on ESM-only packages Jest can't load (see Tier 2).
   - **Bull → BullMQ.**
   - **`@types/node` stays on 14.** Newer versions need TypeScript 5; it moves to 22 with TypeScript.
 
@@ -66,6 +67,29 @@
 - **dotenv 18:** since 15 an unquoted `#` starts a comment, and since 16 values containing backticks must be quoted. `@nestjs/config` already used dotenv 16, but `ormconfig.ts` loaded `.env` first with dotenv 8. `quiet: true` keeps the 17+ startup log out.
 - typescript-eslint 8 reports 294 unused variables where 4 reported 1,756 (fewer false positives); left as warnings.
 
+## Done: Tier 2
+
+| Commit | Change |
+|---|---|
+| `3360537` | **class-validator 0.15.** The password check validated a plain object, which 0.14+ rejects (`forbidUnknownValues`), so every login failed; it now validates a `CredentialUserDto` instance |
+| `ad655d6` | passport 0.7, `@nestjs/passport` 10.0.3 (the first that accepts passport 0.7; still supports Nest 8). No sessions are used |
+| `ab2cdee`, `50a49ab` | bcrypt 6, with a unit test that a hash made by bcrypt 5 still verifies. Prebuilt binaries for glibc and musl; drops `node-pre-gyp` and its vulnerable `tar` |
+| `cd1df4b` | 2FA tests now use an independent RFC 6238 TOTP (`test/setup/totp.ts`) instead of otplib, cover a stored otplib 12 secret, the QR code URI fields, and that only the current 30-second step is accepted |
+| `4f9a3f0`, `5de907c` | CASL 7 with `createMongoAbility`; unit tests of the ability rules pass on CASL 5 and 7 |
+| `9e146e2`, `b867a5a` | nodemailer 10, with a unit test rendering both email templates through nodemailer. `nodemailer-express-handlebars` stays on 6 |
+| `3e0a3e9`, `6b291a7` | **Docker build fix:** since `3360537` the lockfile failed `npm ci` with npm 10 (a `@nestjs/mapped-types` peer range); fixed with an override, and `npm run check:lockfile` now catches it. Commits `3360537`..`b867a5a` don't build in Docker |
+
+**Gate on the branch tip:** typecheck 0 errors, lint 0 errors, build, 22 unit tests, 131 e2e tests, `check:lockfile`. `npm audit --omit=dev`: 45 (3 critical, 21 high), down from 52 (7 critical, 23 high). The Docker image was built and checked on a fresh database: migrations, console, a bcrypt 5 hash verifies, login 201 / wrong password 401 / empty body 400.
+
+### Things learned in Tier 2
+- **otplib 13 is held back**, with three traps for whoever upgrades it:
+  1. `verify()` is async and returns `{ valid }`. The current `if (!isValid)` would treat the returned Promise as true and **accept every code**.
+  2. It rejects secrets under 16 bytes; every secret otplib 12 stored is 10 bytes, so **every 2FA user would be locked out** unless `new OTP({ guardrails: createGuardrails({ MIN_SECRET_BYTES: 10 }) })`.
+  3. Its CommonJS build requires ESM-only `@scure/base` / `@noble/hashes`: Node 22 loads them, Jest doesn't.
+  The 2FA tests (independent TOTP, stored 10-byte secret, time steps) are ready for when it moves.
+- **The CASL checks don't restrict anything:** they build the abilities of the *target* user and check whether that user may read or update itself, which is always true. Real access control is the role guards. Editing an unknown user id returns 500 because the abilities are built before the existence check (pinned).
+- npm 11 vs npm 10: see `check:lockfile` above.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
 The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1. Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
@@ -90,13 +114,12 @@ Odd but current behaviour that the tests document:
 
 ## Notes for later tiers
 
-- **Tier 2, class-validator:** `CheckPasswordUserApplication` calls `validate()` on a plain object. With 0.14's default `forbidUnknownValues: true`, **every login fails**. The auth e2e tests catch this.
 - **Tier 3, TypeORM:** besides `findOne(id)`, `findByIds` and `getConnection()`, the where-shorthand `find({ role })` (`GetByIdProjectService`) and `findOne({ code, user })` (`ValidateRecoveryKeysService`) are also removed in 0.3.
 - **Tier 4, Nest 11 / Express 5:** the e2e tests pin the current HTTP contract. Watch `ParseIntPipe` on missing `limit`/`offset` (400 today), comma-separated `exclude`/`projectId`/`fileNames` (`ParseArrayPipe`), `res.download` Range handling, and boolean responses sent as text.
 - **Audit baseline** (`npm audit --omit=dev`, after Tier 0): 52 (7 critical, 23 high). Most are fixed by Tiers 2–4. Not covered by any tier:
   - `mysqldump` (unmaintained) brings mysql2 2.3 with a critical RCE advisory.
   - `image-thumbnail` brings an old sharp.
-  - bcrypt 5's `node-pre-gyp` brings `tar`; bcrypt 6 (Tier 2) drops it.
+  - bcrypt 5's `node-pre-gyp` brings `tar`; bcrypt 6 dropped it (Tier 2).
 
 ## Beta drops (maintainer)
 
@@ -117,6 +140,16 @@ Odd but current behaviour that the tests document:
 | sharp 0.35 | Upload a photo (JPEG and HEIC from a phone): preview and thumbnails show in the web app |
 | node-ipinfo 4 | With suspicious login detection on: log in from a known country (goes through) |
 | Prettier reformat, ESLint 9 | Nothing to check on beta (formatting and tooling only) |
+
+### #2: Tiers 1 and 2 (`upgrade/dependencies` at `6b291a7` or later)
+Tier 1 checks above, plus:
+| Change | Check |
+|---|---|
+| class-validator 0.15 | Web login, mobile login, and creating/editing users, projects, resources and remote configurations from the web app (validation errors still show as before) |
+| passport 0.7 | Login, a 15+ minute idle then a page load (token refresh), logout |
+| bcrypt 6 | Existing users log in with their current passwords; change a password and log in with the new one |
+| CASL 7 | Admin edits another user; a non-admin edits their own profile |
+| nodemailer 10 | With emails enabled: a real email arrives for a finished backup and for a blocked login (suspicious login detection) |
 
 ## How to run the tests
 
