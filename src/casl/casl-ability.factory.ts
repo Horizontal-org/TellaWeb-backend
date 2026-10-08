@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Ability,
   AbilityBuilder,
-  AbilityClass,
+  createMongoAbility,
   ExtractSubjectType,
   InferSubjects,
+  MongoAbility,
 } from '@casl/ability';
 
 import { RolesUser, UserEntity } from 'modules/user/domain';
@@ -21,14 +21,12 @@ export enum Actions {
 export type Subjects =
   InferSubjects<typeof ReadUserDto> | InferSubjects<typeof UserEntity> | 'all';
 
-export type AppAbility = Ability<[Actions, Subjects]>;
+export type AppAbility = MongoAbility<[Actions, Subjects]>;
 
 @Injectable()
 export class AbilityFactory {
   createForUser(user: UserEntity) {
-    const { can, build } = new AbilityBuilder(
-      Ability as AbilityClass<AppAbility>,
-    );
+    const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
     switch (user.role) {
       case RolesUser.ADMIN:
