@@ -19,7 +19,11 @@ export class CheckPasswordUserApplication implements ICheckPasswordUserApplicati
   ) {}
 
   async execute(userCredentials: CredentialUserDto): Promise<ReadUserDto> {
-    const errors = await validate(userCredentials);
+    // callers pass plain objects; class-validator >= 0.14 rejects anything
+    // that isn't an instance of a decorated class (forbidUnknownValues)
+    const errors = await validate(
+      plainToClass(CredentialUserDto, userCredentials),
+    );
     if (errors.length > 0) throw new InvalidCredentailsUserException();
 
     const user = await this.findByUsernameUserService.execute(
