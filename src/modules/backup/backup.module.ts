@@ -7,7 +7,7 @@ import {
   servicesBackupProviders,
   applicationsBackupProviders,
   handlersBackupProviders,
-  backupsProcessorHandlerProvider
+  backupsProcessorHandlerProvider,
 } from './backup.provider';
 
 import { UserEntity } from 'modules/user/domain';
@@ -15,16 +15,16 @@ import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BackupEntity]), 
-    TypeOrmModule.forFeature([UserEntity]),  
-    TypeOrmModule.forFeature([GlobalSettingEntity]),  
+    TypeOrmModule.forFeature([BackupEntity]),
+    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([GlobalSettingEntity]),
   ],
   controllers: [...backupControllers],
   providers: [
-    ...applicationsBackupProviders, 
+    ...applicationsBackupProviders,
     ...servicesBackupProviders,
-    ...handlersBackupProviders
+    ...handlersBackupProviders,
   ],
-  exports: [backupsProcessorHandlerProvider]
+  exports: [backupsProcessorHandlerProvider],
 })
 export class BackupModule {}

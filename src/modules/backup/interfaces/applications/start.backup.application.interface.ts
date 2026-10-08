@@ -1,6 +1,5 @@
-import { ReadUserDto } from "modules/user/dto";
+import { ReadUserDto } from 'modules/user/dto';
 
 export interface IStartBackupApplication {
-    execute(user: ReadUserDto): Promise<void>;
-  }
-  
+  execute(user: ReadUserDto): Promise<void>;
+}

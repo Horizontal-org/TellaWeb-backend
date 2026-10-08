@@ -14,7 +14,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { ProjectEntity } from 'modules/project/domain';
 
 @Exclude()
-@Entity("resources")
+@Entity('resources')
 export class ResourceEntity {
   @Expose()
   @PrimaryGeneratedColumn('uuid')
@@ -28,9 +28,8 @@ export class ResourceEntity {
   @Column()
   title: string;
 
-  @ManyToMany(() => ProjectEntity, project => project.resources)
+  @ManyToMany(() => ProjectEntity, (project) => project.resources)
   projects: ProjectEntity[];
-
 
   @Expose()
   @Column({ name: 'created_at' })

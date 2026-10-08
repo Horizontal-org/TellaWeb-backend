@@ -4,7 +4,6 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
-
 import { ReadResourceDto } from '../dto';
 import { TYPES, IUploadResourceService } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
@@ -23,12 +22,11 @@ export class UploadResourceController {
     @Req() stream: Request,
     @Param('fileName') fileName: string,
   ): Promise<ReadResourceDto> {
-    
     const file = await this.uploadResourceService.execute({
       bucket: 'resources',
       fileName,
-      stream
-    })
+      stream,
+    });
 
     return file;
   }

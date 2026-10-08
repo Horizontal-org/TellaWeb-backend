@@ -1,4 +1,10 @@
-import { Get, Inject, ParseArrayPipe, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Get,
+  Inject,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
@@ -9,7 +15,11 @@ import { RolesUser } from 'modules/user/domain';
 import { ReadGlobalSettingDto } from '../dto';
 import { IListGlobalSettingService, TYPES } from '../interfaces';
 
-@AuthController('global-setting', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.WEB)
+@AuthController(
+  'global-setting',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER],
+  JwtTypes.WEB,
+)
 export class ListGlobalSettingController {
   constructor(
     @Inject(TYPES.services.IListGlobalSettingService)

@@ -26,7 +26,9 @@ export class EditUserController {
     @Param('userId', new ParseUUIDPipe()) userId: string,
   ): Promise<ReadUserDto> {
     editUserDto.id = userId;
-    editUserDto.password = editUserDto.password ? await hashPassword(editUserDto.password) : null
+    editUserDto.password = editUserDto.password
+      ? await hashPassword(editUserDto.password)
+      : null;
     const user = await this.editUserApplication.execute(editUserDto);
 
     return user;

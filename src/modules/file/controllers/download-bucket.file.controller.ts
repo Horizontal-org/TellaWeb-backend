@@ -24,9 +24,8 @@ export class DownloadBucketFileController {
     reportId: string,
     @Res() res: Response,
   ) {
-    const zipStream = await this.getZippedBucketFileApplication.execute(
-      reportId,
-    );
+    const zipStream =
+      await this.getZippedBucketFileApplication.execute(reportId);
     zipStream.pipe(res);
   }
 

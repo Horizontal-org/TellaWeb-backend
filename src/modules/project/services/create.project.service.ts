@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { ICreateProjectService } from '../interfaces';
 import { ProjectEntity } from '../domain';
@@ -19,29 +19,39 @@ export class CreateProjectService implements ICreateProjectService {
     private readonly reportRepository: Repository<ReportEntity>,
   ) {}
 
-  async execute(
-    createProjectDto: CreateProjectDto,
-  ): Promise<ProjectEntity> {
-    let reports = null
-    let users = null
+  async execute(createProjectDto: CreateProjectDto): Promise<ProjectEntity> {
+    let reports = null;
+    let users = null;
 
     if (createProjectDto.reports && createProjectDto.reports.length > 0) {
-      reports = await this.reportRepository.findByIds(createProjectDto.reports)
+      reports = await this.reportRepository.findBy({
+        id: In(createProjectDto.reports),
+      });
     }
 
     if (createProjectDto.users && createProjectDto.users.length > 0) {
-      users = await this.userRepository.findByIds(createProjectDto.users)
+      users = await this.userRepository.findBy({
+        id: In(createProjectDto.users),
+      });
     }
 
     const project = new ProjectEntity();
 
-    const slug = (createProjectDto.name).toString().trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\u0100-\uFFFF\w\-]/g,'-').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-    project.name = createProjectDto.name
-    project.slug = slug
-    project.reports = reports
-    project.users = users
-    project.url = `${process.env.PUBLIC_DOMAIN}/p/${slug}`
-    
+    const slug = createProjectDto.name
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\u0100-\uFFFF\w\-]/g, '-')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+    project.name = createProjectDto.name;
+    project.slug = slug;
+    project.reports = reports;
+    project.users = users;
+    project.url = `${process.env.PUBLIC_DOMAIN}/p/${slug}`;
+
     return this.projectRepository.save(project);
   }
 }

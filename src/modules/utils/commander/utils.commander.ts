@@ -4,12 +4,9 @@ import { createConnection, getConnectionManager } from 'typeorm';
 import { OrmConfig } from '../../../ormconfig';
 import * as prompt from 'prompt';
 
-
 @Injectable()
 export class UtilsCommander {
-  constructor(
-    private readonly consoleService: ConsoleService,
-  ){
+  constructor(private readonly consoleService: ConsoleService) {
     const cli = this.consoleService.getCli();
     const groupCommand = this.consoleService.createGroupCommand(
       {
@@ -29,18 +26,18 @@ export class UtilsCommander {
     );
   }
 
-  async migrate(){
-    const cm = getConnectionManager()
-    const connection = cm.get()
-    console.log("🚀 ~ UtilsCommander ~ migrate ~ connection:", connection)
+  async migrate() {
+    const cm = getConnectionManager();
+    const connection = cm.get();
+    console.log('🚀 ~ UtilsCommander ~ migrate ~ connection:', connection);
 
     try {
       await connection.query('PRAGMA foreign_keys=OFF');
       await connection.runMigrations();
       await connection.query('PRAGMA foreign_keys=ON');
-      console.log('migrated')
+      console.log('migrated');
     } catch (e) {
-      console.log('error migrating: ', e)
+      console.log('error migrating: ', e);
     }
   }
 }

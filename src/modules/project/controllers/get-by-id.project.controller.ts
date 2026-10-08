@@ -8,7 +8,12 @@ import { TYPES, IGetByIdProjectApplication } from '../interfaces';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.ALL, 'id')
+@AuthController(
+  'project',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.ALL,
+  'id',
+)
 export class GetByIdProjectController {
   constructor(
     @Inject(TYPES.applications.IGetByIdProjectApplication)
@@ -20,10 +25,16 @@ export class GetByIdProjectController {
   async handler(@Param('projectId') projectId: string) {
     const project = await this.getByIdProjectApplication.execute(projectId);
 
-    if (process.env.MASK_PUBLIC_DOMAIN && process.env.MASK_PUBLIC_DOMAIN.length > 0) {
-      project.url = project.url.replace(process.env.PUBLIC_DOMAIN, process.env.MASK_PUBLIC_DOMAIN)
+    if (
+      process.env.MASK_PUBLIC_DOMAIN &&
+      process.env.MASK_PUBLIC_DOMAIN.length > 0
+    ) {
+      project.url = project.url.replace(
+        process.env.PUBLIC_DOMAIN,
+        process.env.MASK_PUBLIC_DOMAIN,
+      );
     }
 
-    return project
+    return project;
   }
 }

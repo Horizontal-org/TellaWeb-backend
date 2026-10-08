@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsString } from 'class-validator';
 
-export class DisableOtpAuthDto {  
+export class DisableOtpAuthDto {
   @ApiProperty()
   @IsString()
   code: string;
@@ -9,7 +9,6 @@ export class DisableOtpAuthDto {
   @ApiProperty()
   @IsBoolean()
   is_otp: boolean;
-
 
   @ApiProperty()
   @IsString()

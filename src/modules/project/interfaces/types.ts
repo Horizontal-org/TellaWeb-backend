@@ -5,7 +5,7 @@ export const TYPES = {
     IGetByIdProjectApplication: 'IGetByIdProjectApplication',
     IEditProjectApplication: 'IEditProjectApplication',
     IDeleteByIdProjectApplication: 'IDeleteByIdProjectApplication',
-    IGetBySlugProjectApplication: 'IGetBySlugProjectApplication'
+    IGetBySlugProjectApplication: 'IGetBySlugProjectApplication',
   },
   services: {
     ICreateProjectService: 'ICreateProjectService',
@@ -13,7 +13,7 @@ export const TYPES = {
     IGetByIdProjectService: 'IGetByIdProjectService',
     IEditProjectService: 'IEditProjectService',
     IDeleteByIdProjectService: 'IDeleteByIdProjectService',
-    IGetBySlugProjectService: 'IGetBySlugProjectService'
+    IGetBySlugProjectService: 'IGetBySlugProjectService',
   },
   guards: {
     IProjectAccessGuard: 'IProjectAccess',

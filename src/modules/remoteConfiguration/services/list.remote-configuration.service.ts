@@ -6,8 +6,7 @@ import { RemoteConfigurationEntity } from '../domain';
 import { IListRemoteConfigurationService } from '../interfaces';
 
 @Injectable()
-export class ListRemoteConfigurationService
-  implements IListRemoteConfigurationService {
+export class ListRemoteConfigurationService implements IListRemoteConfigurationService {
   constructor(
     @InjectRepository(RemoteConfigurationEntity)
     private remoteConfigurationRepository: Repository<RemoteConfigurationEntity>,
@@ -17,13 +16,11 @@ export class ListRemoteConfigurationService
     take: number,
     skip: number,
   ): Promise<PartialResult<RemoteConfigurationEntity>> {
-    const [
-      configurations,
-      total,
-    ] = await this.remoteConfigurationRepository
+    const [configurations, total] = await this.remoteConfigurationRepository
       .createQueryBuilder('remote_configuration')
-      .skip(skip)
-      .take(take)
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined)
       .getManyAndCount();
 
     return {

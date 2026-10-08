@@ -7,7 +7,6 @@ import { ReadUserDto } from 'modules/user/dto';
 import { TYPES } from '../interfaces';
 import { IGetRecoveryKeysService } from '../interfaces/services/get.recovery-keys.service.interface';
 
-
 @AuthController('auth', [], JwtTypes.WEB)
 export class GetRecoveryKeysAuthController {
   constructor(
@@ -16,8 +15,8 @@ export class GetRecoveryKeysAuthController {
   ) {}
 
   @Get('/otp/recovery-key')
-  async handler(@LoggedUser() loggedUser: ReadUserDto): Promise<string[]> {    
-    const keys = await this.getRecoveryKeysService.execute(loggedUser.id)
-    return keys
+  async handler(@LoggedUser() loggedUser: ReadUserDto): Promise<string[]> {
+    const keys = await this.getRecoveryKeysService.execute(loggedUser.id);
+    return keys;
   }
 }

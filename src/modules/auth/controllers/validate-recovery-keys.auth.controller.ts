@@ -14,7 +14,6 @@ import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.se
 import { IValidateRecoveryKeysService } from '../interfaces/services/validate.recovery-keys.service.interface';
 import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
 
-
 @Controller('auth')
 export class ValidateRecoveryKeysController {
   constructor(
@@ -24,8 +23,8 @@ export class ValidateRecoveryKeysController {
 
   @Post('/otp/validate/recovery-key')
   async handler(@Body() body: LoginOtpAuthDto): Promise<boolean> {
-    await this.validateRecoveryKeys.execute(body.userId, body.code)
+    await this.validateRecoveryKeys.execute(body.userId, body.code);
 
-    return true
+    return true;
   }
 }

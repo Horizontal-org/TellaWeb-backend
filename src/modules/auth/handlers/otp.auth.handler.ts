@@ -5,19 +5,18 @@ import { authenticator } from 'otplib';
 
 @Injectable()
 export class OtpAuthHandler implements IOtpAuthHandler {
-  constructor(
-  ) {}
+  constructor() {}
 
   public async generate() {
-    return 
+    return;
   }
 
   public createQR(user, service, secret) {
     const otpUrl = authenticator.keyuri(user, service, secret);
-    return otpUrl
+    return otpUrl;
   }
 
   public verify(token, secret) {
-    return authenticator.verify({ token, secret })    
+    return authenticator.verify({ token, secret });
   }
 }

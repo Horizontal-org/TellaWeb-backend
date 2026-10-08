@@ -8,7 +8,12 @@ import { RolesUser } from 'modules/user/domain';
 import { EditProjectDto, ReadProjectDto } from '../dto';
 import { TYPES, IEditProjectApplication } from '../interfaces';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB, 'id')
+@AuthController(
+  'project',
+  [RolesUser.ADMIN, RolesUser.EDITOR],
+  JwtTypes.WEB,
+  'id',
+)
 export class EditProjectController {
   constructor(
     @Inject(TYPES.applications.IEditProjectApplication)

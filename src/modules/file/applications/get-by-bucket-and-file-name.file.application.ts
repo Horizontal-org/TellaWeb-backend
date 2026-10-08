@@ -8,8 +8,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class GetByNameAndBucketFileApplication
-  implements IGetByNameAndBucketFileApplication {
+export class GetByNameAndBucketFileApplication implements IGetByNameAndBucketFileApplication {
   constructor(
     @Inject(TYPES.services.IGetInfoFileService)
     private readonly getInfoFileService: IGetInfoFileService,

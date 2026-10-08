@@ -4,12 +4,12 @@ export const TYPES = {
     IStartBackupService: 'IStartBackupService',
     ILatestBackupService: 'ILatestBackupService',
     IDeleteBackupService: 'IDeleteBackupService',
-    IDownloadBackupService: 'IDownloadBackupService'
+    IDownloadBackupService: 'IDownloadBackupService',
   },
   applications: {
-    IStartBackupApplication: 'IStartBackupApplication',    
+    IStartBackupApplication: 'IStartBackupApplication',
   },
   handlers: {
-    IProcessBackupHandler: 'IProcessBackupHandler'
-  }
+    IProcessBackupHandler: 'IProcessBackupHandler',
+  },
 };

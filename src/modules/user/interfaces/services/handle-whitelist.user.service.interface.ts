@@ -1,7 +1,3 @@
-
 export interface IHandleWhitelistUserService {
-  execute(
-    location: string,
-    userId: string
-  ): Promise<boolean>;
+  execute(location: string, userId: string): Promise<boolean>;
 }

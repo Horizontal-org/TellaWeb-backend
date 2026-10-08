@@ -5,7 +5,7 @@ import { BackupEntity } from '../domain';
 import { IStartBackupService } from '../interfaces';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { rmSync } from 'fs';
+import { promises as fsp } from 'fs';
 import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 
 @Injectable()
@@ -16,42 +16,49 @@ export class StartBackupService implements IStartBackupService {
     @InjectRepository(GlobalSettingEntity)
     private readonly globalSettingRepo: Repository<GlobalSettingEntity>,
     @InjectQueue('backups')
-    private backQueue: Queue
+    private backQueue: Queue,
   ) {}
 
   async execute(user): Promise<void> {
     // delete previous backups
     const toDelete = await this.backupRepo
-      .createQueryBuilder('backups')      
+      .createQueryBuilder('backups')
       .where({ status: 'finished' })
-      .getMany()
+      .getMany();
 
-    await toDelete.forEach(async(d) => {      
+    for (const d of toDelete) {
       try {
-        rmSync(d.folderName + '.zip')
+        await fsp.rm(d.folderName + '.zip');
       } catch (e) {
-        console.log("ERROR TRYING TO DELETE => ", e)
+        console.log('ERROR TRYING TO DELETE => ', e);
       }
 
-      d.status = 'deleted'
-      await this.backupRepo.save(d)
-    })
+      d.status = 'deleted';
+      await this.backupRepo.save(d);
+    }
 
     const backup = new BackupEntity();
-    backup.user = user.id
-    backup.status = 'processing'
-    await this.backupRepo.save(backup)
-    
-    // TODO get emails enabled flag
-    const gSetting = await this.globalSettingRepo.findOne({
-      where: { name: 'SUSPICIOUS LOGIN DETECTION' }
-    });
-    console.log("🚀 ~ StartBackupService ~ execute ~ gSetting:", gSetting)
+    backup.user = user.id;
+    backup.status = 'processing';
+    await this.backupRepo.save(backup);
 
-    this.backQueue.add('start', {
-      backup: backup,
-      receiver: user.username,
-      emailEnabled: gSetting.enabled
-    })
+    // if the job never gets queued nothing will ever finish this backup,
+    // so it can't be left as 'processing'
+    try {
+      // TODO get emails enabled flag
+      const gSetting = await this.globalSettingRepo.findOne({
+        where: { name: 'SUSPICIOUS LOGIN DETECTION' },
+      });
+
+      await this.backQueue.add('start', {
+        backup: backup,
+        receiver: user.username,
+        emailEnabled: gSetting?.enabled ?? false,
+      });
+    } catch (e) {
+      backup.status = 'error';
+      await this.backupRepo.save(backup);
+      throw e;
+    }
   }
 }

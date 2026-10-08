@@ -4,14 +4,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class CloseResourceDto {
+  @ApiProperty()
+  @Expose()
+  @IsOptional()
+  fileName: string;
 
   @ApiProperty()
   @Expose()
   @IsOptional()
-  fileName: string;  
-
-  @ApiProperty()
-  @Expose()
-  @IsOptional()
-  size: string;  
+  size: string;
 }

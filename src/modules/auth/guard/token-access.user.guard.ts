@@ -1,23 +1,25 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, mixin } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+  mixin,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 export const TokenAccessGuard = (accessType) => {
-  
   @Injectable()
   class TokenAccessMixin implements CanActivate {
-    
-    constructor(
-      public jwtService: JwtService,
-      ) {}
-      
-    async canActivate(context: ExecutionContext) {      
+    constructor(public jwtService: JwtService) {}
+
+    async canActivate(context: ExecutionContext) {
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
-            
+
       if (accessType === JwtTypes.ALL) {
-        return true
+        return true;
       }
 
       if (!token) {
@@ -25,20 +27,17 @@ export const TokenAccessGuard = (accessType) => {
       }
 
       if (!accessType) {
-        return false
+        return false;
       }
 
       try {
-        const payload = await this.jwtService.verifyAsync(
-          token,
-          {
-            secret: process.env.JWT_SECRET
-          }
-        );
-        return accessType === payload.type
-      } catch(e) {
+        const payload = await this.jwtService.verifyAsync(token, {
+          secret: process.env.JWT_SECRET,
+        });
+        return accessType === payload.type;
+      } catch (e) {
         throw new UnauthorizedException();
-      }      
+      }
     }
 
     public extractTokenFromHeader(request: Request): string | undefined {
@@ -49,4 +48,4 @@ export const TokenAccessGuard = (accessType) => {
 
   const guard = mixin(TokenAccessMixin);
   return guard;
-}
+};

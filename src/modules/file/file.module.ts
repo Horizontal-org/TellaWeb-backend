@@ -27,6 +27,10 @@ import { GlobalSettingModule } from 'modules/globalSettings/global-settings.modu
     ...applicationsFileProviders,
     ...servicesFileProviders,
   ],
-  exports: [deleteBucketFileApplicationProvider, storageFileHandlerProvider, compressionFileHandlerProvider],
+  exports: [
+    deleteBucketFileApplicationProvider,
+    storageFileHandlerProvider,
+    compressionFileHandlerProvider,
+  ],
 })
 export class FileModule {}

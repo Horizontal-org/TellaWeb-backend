@@ -6,17 +6,17 @@ import { NotFoundRemoteConfigurationException } from '../exceptions';
 import { IGetByShortCodeRemoteConfigurationService } from '../interfaces';
 
 @Injectable()
-export class GetByShortCodeRemoteConfigurationService
-  implements IGetByShortCodeRemoteConfigurationService {
+export class GetByShortCodeRemoteConfigurationService implements IGetByShortCodeRemoteConfigurationService {
   constructor(
     @InjectRepository(RemoteConfigurationEntity)
     private remoteConfigurationRepository: Repository<RemoteConfigurationEntity>,
   ) {}
   async execute(shortCode: string): Promise<RemoteConfigurationEntity> {
     try {
-      const configuration = await this.remoteConfigurationRepository.findOneOrFail(
-        { shortCode },
-      );
+      const configuration =
+        await this.remoteConfigurationRepository.findOneOrFail({
+          where: { shortCode },
+        });
       return configuration;
     } catch (_) {
       throw new NotFoundRemoteConfigurationException(shortCode);

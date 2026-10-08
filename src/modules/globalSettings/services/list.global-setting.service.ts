@@ -18,11 +18,9 @@ export class ListGlobalSettingService implements IListGlobalSettingService {
   ) {}
 
   async execute(): Promise<ReadGlobalSettingDto[]> {
-
     const globalSettings = await this.globalSettingsRepo
       .createQueryBuilder('global_settings')
-      .getMany()
-      
+      .getMany();
 
     return globalSettings.map((g) => plainToClass(ReadGlobalSettingDto, g));
   }

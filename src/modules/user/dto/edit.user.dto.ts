@@ -32,5 +32,5 @@ export class EditUserDto {
 
   @ApiProperty({ type: Date })
   @Expose()
-  deletedAt?: Date
+  deletedAt?: Date;
 }

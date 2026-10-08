@@ -3,12 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
+import { applySort, SortableColumns } from 'common/utils/sort.utils';
 
 import { ResourceEntity } from '../domain';
 import { IListResourceService } from '../interfaces';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
 import { ReadResourceDto } from '../dto';
 import { plainToClass } from 'class-transformer';
+
+const SORTABLE: SortableColumns = {
+  'resource.title': 'resource.title',
+  'resource.fileName': 'resource.fileName',
+  'resource.createdAt': 'resource.createdAt',
+};
 
 @Injectable()
 export class ListResourceService implements IListResourceService {
@@ -23,33 +30,26 @@ export class ListResourceService implements IListResourceService {
     sort: string,
     order: string,
     search: string,
-    exclude: Array<string>
+    exclude: Array<string>,
   ): Promise<PaginatedDto<ReadResourceDto>> {
-
     const query = this.resourceRepository
       .createQueryBuilder('resource')
       .leftJoinAndSelect('resource.projects', 'project')
-      .skip(skip)
-      .take(take);
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined);
 
     if (search && search.length > 0) {
-      query.where(
-        'resource.title like :search',
-        {
-          search: `%${search}%`,
-        },
-      );
+      query.where('resource.title like :search', {
+        search: `%${search}%`,
+      });
     }
 
-        
     if (exclude && exclude.length > 0) {
-      query.andWhere('resource.id NOT IN (:...exclude)', { exclude: exclude })
+      query.andWhere('resource.id NOT IN (:...exclude)', { exclude: exclude });
     }
 
-
-    if (sort && sort.length > 0) {
-      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
-    }
+    applySort(query, sort, order, SORTABLE);
 
     const [resources, total] = await query.getManyAndCount();
 

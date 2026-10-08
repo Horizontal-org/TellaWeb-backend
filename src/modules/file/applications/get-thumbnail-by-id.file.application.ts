@@ -11,8 +11,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class GetThumbnailByIdFileApplication
-  implements IGetThumbnailByIdFileApplication {
+export class GetThumbnailByIdFileApplication implements IGetThumbnailByIdFileApplication {
   constructor(
     @Inject(TYPES.applications.IGetByIdFileApplication)
     private readonly getByIdFileApplication: IGetByIdFileApplication,

@@ -11,5 +11,5 @@ export const remoteConfigurationControllers = [
   DeleteByIdRemoteConfigurationController,
   CreateRemoteConfigurationController,
   GetByIdRemoteConfigurationController,
-  EditRemoteConfigurationController
+  EditRemoteConfigurationController,
 ];

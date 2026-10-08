@@ -1,1 +1,1 @@
-export { NotFoundProjectException } from './not-found.project.exception'
+export { NotFoundProjectException } from './not-found.project.exception';

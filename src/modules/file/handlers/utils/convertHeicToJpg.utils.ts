@@ -1,18 +1,23 @@
 import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'fs';
 import convert = require('heic-convert');
 
-export async function convertHeicFileToJpg(filePath: string): Promise<string | null> {
+export async function convertHeicFileToJpg(
+  filePath: string,
+): Promise<string | null> {
   const ext = filePath.toLowerCase().split('.').pop();
-  if (ext !== 'heic' 
-    && ext !== 'heif'
-    && ext !== 'HEIC'
-    && ext !== 'HEIF'
-  ) return null;
+  if (ext !== 'heic' && ext !== 'heif' && ext !== 'HEIC' && ext !== 'HEIF')
+    return null;
 
   const inputBuffer = readFileSync(filePath);
-  const outputBuffer = await convert({ buffer: inputBuffer, format: 'JPEG', quality: 0.92 });
+  const outputBuffer = await convert({
+    buffer: inputBuffer,
+    format: 'JPEG',
+    quality: 0.92,
+  });
 
-  let jpgPath = filePath.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg');
+  let jpgPath = filePath
+    .replace(/\.heic$/i, '.jpg')
+    .replace(/\.heif$/i, '.jpg');
 
   if (existsSync(jpgPath)) {
     const basePath = jpgPath.replace(/\.jpg$/, '');

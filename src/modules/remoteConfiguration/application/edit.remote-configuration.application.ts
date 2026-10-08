@@ -9,8 +9,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class EditRemoteConfigurationApplication
-  implements IEditRemoteConfigurationApplication {
+export class EditRemoteConfigurationApplication implements IEditRemoteConfigurationApplication {
   constructor(
     @Inject(TYPES.services.IEditRemoteConfigurationService)
     private readonly editRemoteConfigurationService: IEditRemoteConfigurationService,
@@ -19,9 +18,10 @@ export class EditRemoteConfigurationApplication
   async execute(
     editRemoteConfigurationDto: EditRemoteConfigurationDto,
   ): Promise<ReadRemoteConfigurationDto> {
-    const RemoteConfiguration = await this.editRemoteConfigurationService.execute(
-      editRemoteConfigurationDto,
-    );
+    const RemoteConfiguration =
+      await this.editRemoteConfigurationService.execute(
+        editRemoteConfigurationDto,
+      );
     return plainToClass(ReadRemoteConfigurationDto, RemoteConfiguration, {
       excludeExtraneousValues: true,
     });

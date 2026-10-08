@@ -9,11 +9,10 @@ import {
 export class PdfAnalyzerService implements IPdfAnalyzerService {
   private readonly logger = new Logger(PdfAnalyzerService.name);
 
-
   async analyze(buffer: Buffer): Promise<PdfAnalysisResult> {
     try {
       const fileType = await FileType.fromBuffer(buffer);
-      console.log("🚀 ~ PdfAnalyzerService ~ analyze ~ fileType:", fileType)
+      console.log('🚀 ~ PdfAnalyzerService ~ analyze ~ fileType:', fileType);
 
       if (!fileType || fileType.mime !== 'application/pdf') {
         this.logger.warn(
@@ -32,7 +31,6 @@ export class PdfAnalyzerService implements IPdfAnalyzerService {
         isValid: true,
         containsJavaScript: containsJs,
       };
-      
     } catch (error) {
       this.logger.error(`Error analyzing PDF: ${error.message}`);
       return {
@@ -42,7 +40,6 @@ export class PdfAnalyzerService implements IPdfAnalyzerService {
       };
     }
   }
-  
 
   private detectJavaScript(buffer: Buffer): boolean {
     const content = buffer.toString('binary');

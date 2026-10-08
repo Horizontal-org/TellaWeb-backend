@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from '../domain';
 import { IGetByIdProjectService } from '../interfaces/service/get-by-id.project.service.interface';
 import { RolesUser, UserEntity } from 'modules/user/domain';
-import { clone } from 'lodash'
+import { clone } from 'lodash';
 @Injectable()
 export class GetByIdProjectService implements IGetByIdProjectService {
   constructor(
@@ -16,23 +16,24 @@ export class GetByIdProjectService implements IGetByIdProjectService {
   ) {}
 
   async execute(projectId: string): Promise<ProjectEntity> {
-    const project = await this.projectRepository.findOne(projectId, { relations: [
-      'users', 
-      'resources', 
-      'resources.projects'
-    ]});
-    
-    const adminUsers = await this.userRepository.find({ role: RolesUser.ADMIN })
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ['users', 'resources', 'resources.projects'],
+    });
 
-    const newUsers = clone(project.users)
+    const adminUsers = await this.userRepository.find({
+      where: { role: RolesUser.ADMIN },
+    });
+
+    const newUsers = clone(project.users);
     adminUsers.forEach((u) => {
-      const hasUser = !!(project.users.find(pu => pu.id == u.id))            
+      const hasUser = !!project.users.find((pu) => pu.id == u.id);
       if (!hasUser) {
-        newUsers.push(u) 
+        newUsers.push(u);
       }
-    })
-    
-    project.users = newUsers
-    return project
+    });
+
+    project.users = newUsers;
+    return project;
   }
 }

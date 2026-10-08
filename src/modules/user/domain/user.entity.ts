@@ -59,28 +59,36 @@ export class UserEntity {
   @Column({ name: 'deleted_at', nullable: true })
   deletedAt: Date;
 
-  @OneToMany(() => UserVerificationCodeEntity, (user_verification: UserVerificationCodeEntity) => user_verification.user)
-  @JoinColumn({ name: "user_id" })
+  @OneToMany(
+    () => UserVerificationCodeEntity,
+    (user_verification: UserVerificationCodeEntity) => user_verification.user,
+  )
+  @JoinColumn({ name: 'user_id' })
   verification_code: UserVerificationCodeEntity;
 
-  @OneToMany(() => UserWhitelistEntity, (user_whitelist: UserWhitelistEntity) => user_whitelist.user)
-  @JoinColumn({ name: "user_id" })
+  @OneToMany(
+    () => UserWhitelistEntity,
+    (user_whitelist: UserWhitelistEntity) => user_whitelist.user,
+  )
+  @JoinColumn({ name: 'user_id' })
   locations: UserWhitelistEntity[];
-
 
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.author)
   reports: ReportEntity[];
 
-  @OneToMany(() => RecoveryKeyEntity, (rec_key: RecoveryKeyEntity) => rec_key.user)
-  @JoinColumn({ name: "user_id" })
+  @OneToMany(
+    () => RecoveryKeyEntity,
+    (rec_key: RecoveryKeyEntity) => rec_key.user,
+  )
+  @JoinColumn({ name: 'user_id' })
   recovery_keys: RecoveryKeyEntity[];
 
   @OneToMany(() => BackupEntity, (backup: BackupEntity) => backup.user)
-  @JoinColumn({ name: "user_id" })
+  @JoinColumn({ name: 'user_id' })
   backups: BackupEntity[];
 
-  @ManyToMany(() => ProjectEntity, project => project.users, {
-    onDelete: 'CASCADE'
+  @ManyToMany(() => ProjectEntity, (project) => project.users, {
+    onDelete: 'CASCADE',
   })
   projects: ProjectEntity[];
 
@@ -97,10 +105,10 @@ export class UserEntity {
   }
 
   public refreshOtpSecret(otp_secret) {
-    this.otp_secret = otp_secret
+    this.otp_secret = otp_secret;
   }
 
   public setOtpActive(value) {
-    this.otp_active = value
+    this.otp_active = value;
   }
 }

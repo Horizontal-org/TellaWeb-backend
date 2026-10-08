@@ -6,7 +6,11 @@ import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetThumbnailByIdFileApplication } from '../interfaces';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 export class GetThumbnailByIdFileController {
   constructor(
     @Inject(TYPES.applications.IGetThumbnailByIdFileApplication)
@@ -21,11 +25,13 @@ export class GetThumbnailByIdFileController {
     @Param('size') size: number,
     @Res() res: Response,
   ) {
-    console.log(`[GET THUMBNAIL] GetThumbnailByIdFileController.handler() called for fileId=${fileId}, size=${size}`);
-    const thumbnailReadable = await this.getThumbnailByIdFileApplication.execute(
-      fileId,
-      { width: size | 200 },
+    console.log(
+      `[GET THUMBNAIL] GetThumbnailByIdFileController.handler() called for fileId=${fileId}, size=${size}`,
     );
+    const thumbnailReadable =
+      await this.getThumbnailByIdFileApplication.execute(fileId, {
+        width: size | 200,
+      });
     thumbnailReadable.pipe(res);
   }
 }

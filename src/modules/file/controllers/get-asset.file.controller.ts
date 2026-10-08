@@ -12,7 +12,11 @@ import { TYPES, IGetAssetFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.ALL)
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.ALL,
+)
 export class GetAssetFileController {
   constructor(
     @Inject(TYPES.applications.IGetAssetFileApplication)

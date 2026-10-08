@@ -1,7 +1,6 @@
 import { Get, Inject, Param } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 
-
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadRemoteConfigurationDto } from '../dto';
