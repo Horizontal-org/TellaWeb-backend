@@ -155,7 +155,7 @@ Code changes for Nest 11:
 
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
-The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`), `folderName` in `/backup/latest` (`a4487ea`), and the **SQL injection through `sort`** on the project, report, user and resource lists (`8575759`, also cherry-picked onto `upgrade/nestjs` and `upgrade/typeorm-1`), all shipping with beta drop #1. The `sort` fix also repairs the web app's projects list, which sends `sort=project.created_at` and got a 500 (in production too). Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
+The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`), `folderName` in `/backup/latest` (`a4487ea`), and the **SQL injection through `sort`** on the project, report, user and resource lists (`8575759`, also cherry-picked onto `upgrade/nestjs` and `upgrade/typeorm-1`), all shipping with beta drop #1. Also fixed for drop #1: **blocked users can't use the web until they unblock** (`45fc341`; mobile is deliberately not affected) and **the server refuses to start without a real `JWT_SECRET`** (`d09ed86`; missing, empty or the `.env` placeholder). Both are cherry-picked onto the later branches. The `sort` fix also repairs the web app's projects list, which sends `sort=project.created_at` and got a 500 (in production too). Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
 
 | Bug | Where | Impact |
 |---|---|---|
@@ -185,11 +185,13 @@ Odd but current behaviour that the tests document:
 
 ## Beta drops (maintainer)
 
-### #1: Tier 0, the two leak fixes and the sort fix (`upgrade/dependencies` at `8575759` or later)
+### #1: Tier 0 and the security fixes (`upgrade/dependencies` at `d09ed86` or later)
+**Before deploying:** every server must set `JWT_SECRET` in its environment. A server without one now refuses to start (before, it silently used the placeholder from `.env`).
 | Change | Check |
 |---|---|
 | Project search fix | As an editor or viewer, search the projects list: only your own projects show. As an admin: all of them |
 | `/backup/latest` fix | Admin Center → backups: the list and download still work (the response no longer has `folderName`) |
+| Blocked users (suspicious login detection on) | Log in from a new country: flagged, email arrives. Then, until the email link is used: web login (password, 2FA, recovery key) shows "Account blocked", an open web session is logged out, **the mobile app keeps working**. After the link: web login works again |
 | Sort allow-list | Sort every column of every list page (projects, reports, users, resources) both ways. **The projects page now loads** (before: 500 on `sort=project.created_at`) |
 | Docker image on Node 22, `npm ci` | Container starts on beta; `npm run typeorm:run` inside it ("No migrations are pending") |
 | `console.ts` change | `npm run console -- users list` inside the container exits without an error |
