@@ -2,8 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from 'app.module';
 import { configureApp } from 'app.setup';
+import { assertJwtSecret } from 'environment/jwt-secret.environment';
 
 async function bootstrap() {
+  assertJwtSecret();
+
   const app = configureApp(await NestFactory.create(AppModule));
 
   const swaggerConfig = new DocumentBuilder()
