@@ -406,6 +406,26 @@ describe('files', () => {
       expect(meta.height).toBe(75); // 1200x900 source
     });
 
+    it('never enlarges, and defaults to 200px for a size of 0', async () => {
+      const big = await t
+        .http()
+        .get(`/file/asset/${reportId}/${imageFile.id}/5000`)
+        .set(bearer(editor))
+        .buffer(true)
+        .parse(binaryParser)
+        .expect(200);
+      expect((await sharp(big.body).metadata()).width).toBe(800);
+
+      const zero = await t
+        .http()
+        .get(`/file/asset/${reportId}/${imageFile.id}/0`)
+        .set(bearer(editor))
+        .buffer(true)
+        .parse(binaryParser)
+        .expect(200);
+      expect((await sharp(zero.body).metadata()).width).toBe(200);
+    });
+
     it('reporters cannot download files', async () => {
       await t
         .http()
