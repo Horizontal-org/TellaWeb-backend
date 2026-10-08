@@ -2,7 +2,7 @@
 
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
-**Status (2026-10-08):** Tier 0 done. **Waiting for beta drop #1** (see "Beta drops").
+**Status (2026-10-08):** Tiers 0 and 1 done. **Waiting for beta drop #1** (see "Beta drops"); Tier 1 can ship with it or with drop #2.
 
 ## Decisions
 
@@ -14,7 +14,7 @@
   - **TypeScript 5:** needs Nest CLI ≥ 10 (Tier 4, see below).
   - **TypeScript 7.**
   - **ESLint 10.**
-  - **`file-type` > 16 and `nanoid` > 3:** ESM-only.
+  - **`file-type` > 16, `nanoid` > 3 and `archiver` 8:** ESM-only.
   - **Bull → BullMQ.**
   - **`@types/node` stays on 14.** Newer versions need TypeScript 5; it moves to 22 with TypeScript.
 
@@ -23,7 +23,7 @@
 | Tier | What | Risk |
 |---|---|---|
 | 0 | Safety net (API e2e suite), Jest 30, remove unused packages, Node 22, minor/patch updates | none |
-| 1 | ESLint 9 + Prettier 3, small single-call-site libraries (archiver 8, sharp 0.35, node-ipinfo 4, dotenv) | low |
+| 1 | ESLint 9 + Prettier 3, small single-call-site libraries (sharp 0.35, node-ipinfo 4, dotenv 18) | low |
 | 2 | class-validator 0.14+, passport 0.7, bcrypt 6, otplib 13, CASL 7, nodemailer 8+ | medium |
 | 3 | TypeORM 0.2 → 0.3, still on Nest 8 (`@nestjs/typeorm` ≥ 9 needs TypeORM 0.3, so it has to come first) | high |
 | 4 | NestJS 8 → 9 → 10 → 11, and TypeScript 5 with Nest CLI 10. Express 5 comes with Nest 11 | high |
@@ -48,9 +48,27 @@
 - **npm 11 doesn't run install scripts** of packages it hasn't been told to allow (`npm install-scripts ls`). Docker uses npm 10, which does. Locally, bcrypt and sharp still loaded after reinstalls, but check native modules after `npm ci` with npm 11.
 - The e2e suite runs on its own MySQL (`docker-compose -f docker-compose.e2e.yml up -d`, port 3307). The local dev database's root password no longer matches `.env`, so root (which backups use for `mysqldump`) can't log in there.
 
+## Done: Tier 1
+
+| Commit | Change |
+|---|---|
+| `339b316`, `a4487ea` | **Bug fixes before beta drop #1:** the project search no longer lists other users' projects, and `/backup/latest` no longer exposes `folderName` |
+| `b66cd68` | ESLint 9 with a flat config (`eslint.config.mjs`), typescript-eslint 8, Prettier 3. Same rules as before; test files are linted too, with no tsconfig of their own (the uncommitted `tsconfig.eslint.json` isn't needed). Dropped `eslint-plugin-import`, which was configured but never enabled |
+| `da9932e` | Prettier 3 reformat of `src` and `test`, formatting only (271 files weren't formatted). Skipped by `git blame` via `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`) |
+| `f4133c2` | e2e for suspicious login detection and unblocking, with node-ipinfo mocked (written before upgrading it) |
+| `e1409d7` | sharp 0.35, node-ipinfo 4, dotenv 18 |
+
+**Gate on the branch tip:** typecheck 0 errors, lint 0 errors (294 `no-unused-vars` warnings), build, 6 unit tests, 128 e2e tests. The Docker image was checked again on a fresh database (migrations, console, upload, preview, thumbnail).
+
+### Things learned in Tier 1
+- **sharp ≥ 0.35 types vs runtime:** with `node10` module resolution TypeScript reads sharp's ESM types (a default export), while `require('sharp')` is the function itself. Without `esModuleInterop`, `import sharp from 'sharp'` would compile to `require('sharp').default` and crash. sharp is loaded through `src/common/utils/sharp.utils.ts` (a typed `require`); drop it once the project uses `node16` resolution (with TypeScript 5, Tier 4).
+- **node-ipinfo 4** maps country codes to the same 250 names as 3 (checked), so stored login whitelists keep matching.
+- **dotenv 18:** since 15 an unquoted `#` starts a comment, and since 16 values containing backticks must be quoted. `@nestjs/config` already used dotenv 16, but `ormconfig.ts` loaded `.env` first with dotenv 8. `quiet: true` keeps the 17+ startup log out.
+- typescript-eslint 8 reports 294 unused variables where 4 reported 1,756 (fewer false positives); left as warnings.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
-The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1.
+The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1. Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
 
 | Bug | Where | Impact |
 |---|---|---|
@@ -82,13 +100,23 @@ Odd but current behaviour that the tests document:
 
 ## Beta drops (maintainer)
 
-### #1: Tier 0 (`upgrade/dependencies` at `bc12414` or later)
+### #1: Tier 0 and the two leak fixes (`upgrade/dependencies` at `fde6b04`)
 | Change | Check |
 |---|---|
+| Project search fix | As an editor or viewer, search the projects list: only your own projects show. As an admin: all of them |
+| `/backup/latest` fix | Admin Center → backups: the list and download still work (the response no longer has `folderName`) |
 | Docker image on Node 22, `npm ci` | Container starts on beta; `npm run typeorm:run` inside it ("No migrations are pending") |
 | `console.ts` change | `npm run console -- users list` inside the container exits without an error |
 | Unused packages removed | Swagger (`/api`) renders; the six delete endpoints show a boolean response |
 | Minor/patch updates (mysql2, bull, ioredis, nodemailer) | Web login + 2FA; mobile app login, resumable upload and remote configuration fetch; a backup (generate, download a large one, delete); an email (unblock a user or a finished backup, with emails enabled) |
+
+### #1 or #2: Tier 1 (`upgrade/dependencies` at `e1409d7` or later)
+| Change | Check |
+|---|---|
+| dotenv 18 parsing | **Before deploying:** in each server's `.env`, values with `#` or a backtick are quoted (an unquoted `#` now starts a comment) |
+| sharp 0.35 | Upload a photo (JPEG and HEIC from a phone): preview and thumbnails show in the web app |
+| node-ipinfo 4 | With suspicious login detection on: log in from a known country (goes through) |
+| Prettier reformat, ESLint 9 | Nothing to check on beta (formatting and tooling only) |
 
 ## How to run the tests
 
