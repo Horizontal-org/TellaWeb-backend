@@ -75,11 +75,9 @@ describe('backups', () => {
     expect((await latest()).processing).toBeUndefined();
   });
 
-  // Known bug: /backup/latest wraps the entities in a plain object, which
-  // TransformInterceptor doesn't serialize, so @Exclude is ignored and the
-  // absolute server path leaks. Remove `.failing` once it's fixed.
-  it.failing('does not expose the server folder of a backup', async () => {
-    expect((await latest()).latest.folderName).toBeUndefined();
+  it('does not expose the server folder of a backup', async () => {
+    const { latest: finished } = await latest();
+    expect(Object.keys(finished).sort()).toEqual(['createdAt', 'id', 'status']);
   });
 
   it('downloads the zip with the CSVs, the database dump and the files', async () => {

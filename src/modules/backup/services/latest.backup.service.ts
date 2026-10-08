@@ -15,11 +15,13 @@ export class LatestBackupService implements ILatestBackupService {
 
   async execute(): Promise<LatestBackupDto> {
 
-    const latest = {
+    // a class instance, not a plain object: TransformInterceptor only serializes
+    // class instances, and that is what applies @Exclude on the entities
+    const latest = Object.assign(new LatestBackupDto(), {
         deleted: await this.getLatest('deleted'),
         latest: await this.getLatest('finished'),
         processing: await this.getLatest('processing')
-    }
+    })
             
     return latest
   }
