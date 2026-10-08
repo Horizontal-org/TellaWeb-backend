@@ -5,6 +5,13 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../domain';
 import { IListUserService } from '../interfaces';
 import { PartialResult } from 'common/dto/partial-result.common.dto';
+import { applySort, SortableColumns } from 'common/utils/sort.utils';
+
+const SORTABLE: SortableColumns = {
+  'user.username': 'user.username',
+  'user.role': 'user.role',
+  'user.createdAt': 'user.createdAt',
+};
 
 @Injectable()
 export class ListUserService implements IListUserService {
@@ -35,9 +42,7 @@ export class ListUserService implements IListUserService {
       query.andWhere('user.id NOT IN (:...exclude)', { exclude: exclude });
     }
 
-    if (sort && sort.length > 0) {
-      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
-    }
+    applySort(query, sort, order, SORTABLE);
 
     const [users, total] = await query.getManyAndCount();
     return {
