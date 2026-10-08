@@ -21,7 +21,7 @@ export class BackupEntity {
   @JoinColumn({ name: "user_id" })
   user: UserEntity;
 
-  @Expose()
+  // absolute server path, internal only
   @Column({ name: 'folder_name' })
   folderName: string;
   
