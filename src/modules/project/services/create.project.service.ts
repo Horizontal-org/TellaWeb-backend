@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { ICreateProjectService } from '../interfaces';
 import { ProjectEntity } from '../domain';
@@ -24,11 +24,15 @@ export class CreateProjectService implements ICreateProjectService {
     let users = null;
 
     if (createProjectDto.reports && createProjectDto.reports.length > 0) {
-      reports = await this.reportRepository.findByIds(createProjectDto.reports);
+      reports = await this.reportRepository.findBy({
+        id: In(createProjectDto.reports),
+      });
     }
 
     if (createProjectDto.users && createProjectDto.users.length > 0) {
-      users = await this.userRepository.findByIds(createProjectDto.users);
+      users = await this.userRepository.findBy({
+        id: In(createProjectDto.users),
+      });
     }
 
     const project = new ProjectEntity();

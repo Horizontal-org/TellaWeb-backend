@@ -16,12 +16,13 @@ export class GetByIdProjectService implements IGetByIdProjectService {
   ) {}
 
   async execute(projectId: string): Promise<ProjectEntity> {
-    const project = await this.projectRepository.findOne(projectId, {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
       relations: ['users', 'resources', 'resources.projects'],
     });
 
     const adminUsers = await this.userRepository.find({
-      role: RolesUser.ADMIN,
+      where: { role: RolesUser.ADMIN },
     });
 
     const newUsers = clone(project.users);

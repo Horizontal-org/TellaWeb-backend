@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { EditProjectDto } from '../dto';
 import { ProjectEntity } from '../domain';
 import { UserEntity } from 'modules/user/domain';
@@ -26,18 +26,21 @@ export class EditProjectService implements IEditProjectService {
     let users = null;
     let resources = null;
 
-    const project = await this.projectRepository.findOne(editProjectDto.id, {
+    const project = await this.projectRepository.findOne({
+      where: { id: editProjectDto.id },
       relations: ['users', 'resources'],
     });
 
     if (editProjectDto.reports && editProjectDto.reports.length > 0) {
-      reports = await this.reportRepository.findByIds(editProjectDto.reports);
+      reports = await this.reportRepository.findBy({
+        id: In(editProjectDto.reports),
+      });
     }
 
     if (editProjectDto.users && editProjectDto.users.length > 0) {
       const currentUserIds = project.users.map((pu) => pu.id);
       const newIds = this.toggleEntityIds(editProjectDto.users, currentUserIds);
-      users = await this.userRepository.findByIds(newIds);
+      users = await this.userRepository.findBy({ id: In(newIds) });
     }
 
     if (editProjectDto.resources && editProjectDto.resources.length > 0) {
@@ -46,7 +49,7 @@ export class EditProjectService implements IEditProjectService {
         editProjectDto.resources,
         currentResourceIds,
       );
-      resources = await this.resourceRepository.findByIds(newIds);
+      resources = await this.resourceRepository.findBy({ id: In(newIds) });
     }
 
     const slug = (editProjectDto.slug || project.slug)

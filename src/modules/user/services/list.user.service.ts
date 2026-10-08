@@ -23,8 +23,9 @@ export class ListUserService implements IListUserService {
   ): Promise<PartialResult<UserEntity>> {
     const query = this.userRepository
       .createQueryBuilder('user')
-      .skip(skip)
-      .take(take);
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined);
 
     if (search && search.length > 0) {
       query.andWhere('user.username like :search', { search: `%${search}%` });

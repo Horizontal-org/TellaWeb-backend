@@ -16,7 +16,9 @@ export class ActivateOtpAuthService implements IActivateOtpAuthService {
   ) {}
 
   async execute(userId): Promise<void> {
-    const userEntity = await this.userRepository.findOne(userId);
+    const userEntity = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
     userEntity.otp_active = true;
     await this.userRepository.save(userEntity);

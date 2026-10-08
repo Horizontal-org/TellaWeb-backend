@@ -38,7 +38,9 @@ export class EnableOtpAuthService implements IEnableOtpAuthService {
     }
 
     const secret = authenticator.generateSecret();
-    const userEntity = await this.userRepository.findOne(userDto.id);
+    const userEntity = await this.userRepository.findOne({
+      where: { id: userDto.id },
+    });
 
     userEntity.refreshOtpSecret(secret);
     await this.userRepository.save(userEntity);

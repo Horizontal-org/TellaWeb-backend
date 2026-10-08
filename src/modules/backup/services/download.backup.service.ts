@@ -14,7 +14,7 @@ export class DownloadBackupService implements IDownloadBackupService {
   ) {}
 
   async execute(backupId: string): Promise<string> {
-    const backup = await this.backupRepo.findOne(backupId);
+    const backup = await this.backupRepo.findOne({ where: { id: backupId } });
 
     // a 'processing' zip is still being written and 'error'/'deleted' ones
     // were removed from disk

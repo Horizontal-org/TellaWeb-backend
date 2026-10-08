@@ -7,7 +7,7 @@ import mysqldump from 'mysqldump';
 import * as archiver from 'archiver';
 
 import { IProcessBackupHandler } from '../interfaces/handlers/process.backup.handler.interface';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ProjectEntity } from 'modules/project/domain';
 import { ReportEntity } from 'modules/report/domain';
 import { UserEntity } from 'modules/user/domain';
@@ -22,6 +22,7 @@ import { ProcessBackupDto } from '../dto/process.backup.dto';
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(BackupEntity)
     private readonly backupRepo: Repository<BackupEntity>,
     @InjectQueue('emails')
@@ -132,14 +133,14 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async parseFiles() {
-    const fileCount = await getConnection()
+    const fileCount = await this.dataSource
       .createQueryBuilder()
       .from(FileEntity, 'file_entity')
       .leftJoin('report_entity', 'report', 'file_entity.reportId = report.id')
       .where('report.projectId IS NOT NULL')
       .getCount();
 
-    const reports = await getConnection()
+    const reports = await this.dataSource
       .createQueryBuilder()
       .from(ReportEntity, 'report_entity')
       .leftJoin(
@@ -208,7 +209,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async parseProjectsCsv() {
-    const rawProjects = await getConnection()
+    const rawProjects = await this.dataSource
       .createQueryBuilder()
       .from(ProjectEntity, 'project_entity')
       .leftJoin(
@@ -229,7 +230,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async parseResourcesCsv() {
-    const rawResources = await getConnection()
+    const rawResources = await this.dataSource
       .createQueryBuilder()
       .from(ResourceEntity, 'resource_entity')
       .getRawMany();
@@ -243,7 +244,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async parseReportsCsv() {
-    const rawReports = await getConnection()
+    const rawReports = await this.dataSource
       .createQueryBuilder()
       .from(ReportEntity, 'report_entity')
       .innerJoin('user_entity', 'user', 'report_entity.authorId = user.id')
@@ -275,7 +276,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
   }
 
   private async parseUsersCsv() {
-    const rawUsers = await getConnection()
+    const rawUsers = await this.dataSource
       .createQueryBuilder()
       .from(UserEntity, 'user_entity')
       .getRawMany();

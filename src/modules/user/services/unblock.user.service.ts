@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { UserEntity } from '../domain';
 import { UserVerificationCodeEntity } from '../domain/user-verification-code.entity';
@@ -10,6 +10,7 @@ import IPinfoWrapper from 'node-ipinfo';
 
 export class UnblockUserService implements IUnblockUserService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(UserVerificationCodeEntity)
@@ -41,7 +42,7 @@ export class UnblockUserService implements IUnblockUserService {
       whitelistItem.user = verification.user;
       await this.userWhitelist.save(whitelistItem);
 
-      await getConnection()
+      await this.dataSource
         .createQueryBuilder()
         .delete()
         .from(UserVerificationCodeEntity)

@@ -15,7 +15,9 @@ export class UpdateGlobalSettingService implements IUpdateGlobalSettingService {
   ) {}
 
   async execute(id: string, enabled: boolean): Promise<void> {
-    const globalSetting = await this.globalSettingRepository.findOne(id);
+    const globalSetting = await this.globalSettingRepository.findOne({
+      where: { id },
+    });
 
     if (!globalSetting) throw new NotFoundUserException();
 

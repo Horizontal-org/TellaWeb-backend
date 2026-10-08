@@ -18,8 +18,9 @@ export class ListRemoteConfigurationService implements IListRemoteConfigurationS
   ): Promise<PartialResult<RemoteConfigurationEntity>> {
     const [configurations, total] = await this.remoteConfigurationRepository
       .createQueryBuilder('remote_configuration')
-      .skip(skip)
-      .take(take)
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined)
       .getManyAndCount();
 
     return {

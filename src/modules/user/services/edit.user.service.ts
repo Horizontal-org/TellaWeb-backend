@@ -20,7 +20,9 @@ export class EditUserService implements IEditUserService {
   ) {}
 
   async execute(editUserDto: EditUserDto): Promise<UserEntity> {
-    const user = await this.userRepository.findOne(editUserDto.id);
+    const user = await this.userRepository.findOne({
+      where: { id: editUserDto.id },
+    });
     const ability = this.abilityFactory.createForUser(user);
 
     // IS THIS WRONG ?

@@ -27,8 +27,9 @@ export class ListProjectService implements IListProjectService {
       .createQueryBuilder('project')
       .leftJoinAndSelect('project.reports', 'reports')
       .leftJoinAndSelect('project.users', 'users')
-      .skip(skip)
-      .take(take);
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined);
 
     if (user.role !== 'admin') {
       query.where('users.id = :userId', { userId: user.id });

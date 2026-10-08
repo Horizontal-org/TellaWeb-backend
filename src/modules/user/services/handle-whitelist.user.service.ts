@@ -16,12 +16,12 @@ export class HandleWhitelistUserService implements IHandleWhitelistUserService {
 
   async execute(location, userId): Promise<boolean> {
     const userWhitelist = await this.userWhitelistRepo.find({
-      where: { user: userId },
+      where: { user: { id: userId } },
     });
     if (userWhitelist.length > 0) {
       const hasLocation = await this.userWhitelistRepo.find({
         where: {
-          user: userId,
+          user: { id: userId },
           location: location,
         },
       });

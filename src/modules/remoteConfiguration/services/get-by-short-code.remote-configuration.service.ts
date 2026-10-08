@@ -14,7 +14,9 @@ export class GetByShortCodeRemoteConfigurationService implements IGetByShortCode
   async execute(shortCode: string): Promise<RemoteConfigurationEntity> {
     try {
       const configuration =
-        await this.remoteConfigurationRepository.findOneOrFail({ shortCode });
+        await this.remoteConfigurationRepository.findOneOrFail({
+          where: { shortCode },
+        });
       return configuration;
     } catch (_) {
       throw new NotFoundRemoteConfigurationException(shortCode);

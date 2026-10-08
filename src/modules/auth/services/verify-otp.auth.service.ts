@@ -16,7 +16,9 @@ export class VerifyOtpAuthService implements IVerifyOtpAuthService {
   ) {}
 
   async execute(code, userId): Promise<void> {
-    const userEntity = await this.userRepository.findOne(userId);
+    const userEntity = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
     if (!userEntity.otp_secret) {
       throw new UnauthorizedException();

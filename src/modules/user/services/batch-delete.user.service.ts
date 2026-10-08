@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../domain';
 import { IBatchDeleteUsersService } from '../interfaces/services/batch-delete.user.service.interface';
@@ -7,12 +7,13 @@ import { IBatchDeleteUsersService } from '../interfaces/services/batch-delete.us
 @Injectable()
 export class BatchDeleteUsersService implements IBatchDeleteUsersService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
 
   async execute(toDelete: Array<string>): Promise<boolean> {
-    await getConnection()
+    await this.dataSource
       .createQueryBuilder()
       .delete()
       .from(UserEntity)

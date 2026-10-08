@@ -1,9 +1,10 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { DataSourceOptions } from 'typeorm';
 
 dotenv.config({ quiet: true });
 
-export const OrmConfig: TypeOrmModuleOptions = {
+// Shared by the Nest app (app.module.ts) and the TypeORM CLI (data-source.ts)
+export const OrmConfig: DataSourceOptions = {
   type: 'mysql',
   // 'db' for prod
   host: process.env.MYSQL_HOST || 'db',
@@ -15,9 +16,9 @@ export const OrmConfig: TypeOrmModuleOptions = {
   migrationsRun: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   entities: [__dirname + '/modules/**/domain/*.entity{.ts,.js}'],
-  cli: {
-    migrationsDir: './src/migrations',
-  },
+  // TypeORM 0.3 drops a where condition whose value is undefined or null, so
+  // findOne({ where: { id: undefined } }) would return the first row. Fail instead.
+  invalidWhereValuesBehavior: { undefined: 'throw', null: 'throw' },
 };
 
 export default OrmConfig;

@@ -2,7 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IEnableOtpAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { IActivateOtpAuthService } from '../interfaces/services/activate-otp.auth.service.interface';
 import { randomInt } from 'crypto';
 import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
@@ -11,6 +11,7 @@ import { ICreateRecoveryKeysService } from '../interfaces/services/create.recove
 @Injectable()
 export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(RecoveryKeyEntity)
@@ -18,9 +19,11 @@ export class CreateRecoveryKeysService implements ICreateRecoveryKeysService {
   ) {}
 
   async execute(userId): Promise<string[]> {
-    const userEntity = await this.userRepository.findOne(userId);
+    const userEntity = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
-    await getConnection()
+    await this.dataSource
       .createQueryBuilder()
       .delete()
       .from(RecoveryKeyEntity)

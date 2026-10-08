@@ -2,6 +2,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { UserEntity } from 'modules/user/domain';
+import { RecoveryKeyEntity } from 'modules/user/domain/recovery-key.entity';
 import {
   bearer,
   createTestApp,
@@ -376,6 +377,80 @@ describe('auth', () => {
 
       const session = await loginWeb(t, username);
       expect(session.access_token).toEqual(expect.any(String));
+    });
+
+    describe('recovery keys of several users', () => {
+      // sets up 2FA for a new user and returns its id, secret and a session
+      async function withTwoFactor(username: string) {
+        const admin = await loginWeb(t, USERS.admin);
+        const created = await t
+          .http()
+          .post('/user')
+          .set(bearer(admin))
+          .send({ username, password: PASSWORD, role: 'editor' })
+          .expect(201);
+        const session = await loginWeb(t, username);
+        const enabled = await t
+          .http()
+          .post('/auth/otp/enable')
+          .set(bearer(session))
+          .send({ password: PASSWORD })
+          .expect(201);
+        const keys = await t
+          .http()
+          .post('/auth/otp/activate')
+          .set(bearer(session))
+          .send({ code: totp(enabled.body.otp_code) })
+          .expect(201);
+        return {
+          id: created.body.id,
+          secret: enabled.body.otp_code,
+          keys: keys.body,
+        };
+      }
+
+      const keysOf = (userId: string) =>
+        t.app
+          .get<Repository<RecoveryKeyEntity>>(
+            getRepositoryToken(RecoveryKeyEntity),
+          )
+          .count({ where: { user: { id: userId } } });
+
+      it("re-activating replaces the keys, and disabling removes only that user's keys", async () => {
+        const first = await withTwoFactor('keys-one@e2e.test');
+        const second = await withTwoFactor('keys-two@e2e.test');
+        expect(await keysOf(first.id)).toBe(15);
+        expect(await keysOf(second.id)).toBe(15);
+
+        // activating again regenerates: still 15, all new
+        const otp = await t
+          .http()
+          .post('/auth/otp/login')
+          .send({ userId: first.id, code: totp(first.secret) })
+          .expect(201);
+        const again = await t
+          .http()
+          .post('/auth/otp/activate')
+          .set('Authorization', `Bearer ${otp.body.access_token}`)
+          .send({ code: totp(first.secret) })
+          .expect(201);
+        expect(await keysOf(first.id)).toBe(15);
+        expect(again.body).not.toContain(first.keys[0]);
+        expect(await keysOf(second.id)).toBe(15);
+
+        await t
+          .http()
+          .post('/auth/otp/disable')
+          .set('Authorization', `Bearer ${otp.body.access_token}`)
+          .send({
+            code: again.body[0],
+            is_otp: false,
+            confirm_password: PASSWORD,
+          })
+          .expect(201);
+        expect(await keysOf(first.id)).toBe(0);
+        expect(await keysOf(second.id)).toBe(15);
+      });
     });
 
     describe('a user who set up 2FA before the otplib 13 upgrade', () => {

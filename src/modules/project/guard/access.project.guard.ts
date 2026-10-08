@@ -8,13 +8,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'modules/user/domain';
 import { Observable } from 'rxjs';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ProjectEntity } from '../domain';
 
 export const ProjectAccessGuard = (projectKeyType) => {
   @Injectable()
   class ProjectAccessMixin implements CanActivate {
-    constructor() {}
+    // public: a mixin class with private members can't be declared (declaration: true)
+    constructor(public readonly dataSource: DataSource) {}
 
     async canActivate(context: ExecutionContext) {
       if (!projectKeyType) {
@@ -27,7 +28,7 @@ export const ProjectAccessGuard = (projectKeyType) => {
         return true;
       }
 
-      const query = getConnection()
+      const query = this.dataSource
         .createQueryBuilder()
         .from(ProjectEntity, 'project')
         .leftJoinAndSelect('project.users', 'users')

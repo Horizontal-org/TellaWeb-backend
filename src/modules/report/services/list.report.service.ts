@@ -25,8 +25,9 @@ export class ListReportService implements IListReportService {
       .createQueryBuilder('report')
       .leftJoinAndSelect('report.files', 'files')
       .innerJoinAndSelect('report.author', 'author')
-      .skip(skip)
-      .take(take);
+      // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
+      .skip(skip || undefined)
+      .take(take || undefined);
 
     if (search && search.length > 0) {
       query.where(

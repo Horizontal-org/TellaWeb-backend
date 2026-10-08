@@ -17,9 +17,9 @@ export class EditRemoteConfigurationService implements IEditRemoteConfigurationS
     editRemoteConfigurationDto: EditRemoteConfigurationDto,
   ): Promise<RemoteConfigurationEntity> {
     try {
-      const configuration = await this.remoteConfigurationRepository.findOne(
-        editRemoteConfigurationDto.id,
-      );
+      const configuration = await this.remoteConfigurationRepository.findOne({
+        where: { id: editRemoteConfigurationDto.id },
+      });
 
       configuration.name = editRemoteConfigurationDto.name;
       configuration.camouflage = editRemoteConfigurationDto.camouflage;

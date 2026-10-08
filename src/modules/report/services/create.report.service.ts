@@ -28,9 +28,9 @@ export class CreateReportService implements ICreateReportService {
     report.deviceInfo = createReportDto.deviceInfo;
 
     if (createReportDto.projectId) {
-      const project = await this.projectRepository.findOne(
-        createReportDto.projectId,
-      );
+      const project = await this.projectRepository.findOne({
+        where: { id: createReportDto.projectId },
+      });
       report.project = project;
     }
 

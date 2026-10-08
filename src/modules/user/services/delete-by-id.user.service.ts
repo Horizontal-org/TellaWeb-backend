@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { getConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IDeleteByIdUserService } from '../interfaces';
 import { UserEntity } from '../domain';
