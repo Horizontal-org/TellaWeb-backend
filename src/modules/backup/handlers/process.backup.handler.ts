@@ -188,6 +188,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     await mysqldump({
       connection: {
         host: process.env.MYSQL_HOST,
+        port: +process.env.MYSQL_PORT || 3306,
         user: 'root',
         password: process.env.MYSQL_ROOT_PASSWORD,
         database: process.env.MYSQL_DATABASE,

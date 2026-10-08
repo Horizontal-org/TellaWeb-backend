@@ -7,7 +7,7 @@ export const OrmConfig: TypeOrmModuleOptions = {
   type: 'mysql',
   // 'db' for prod 
   host: process.env.MYSQL_HOST || 'db',
-  port: 3306,
+  port: +process.env.MYSQL_PORT || 3306,
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,

@@ -15,6 +15,8 @@ import { BackupModule } from "modules/backup/backup.module";
         port: 6379,
         password: process.env.REDIS_PASSWORD
       },
+      // the e2e tests set their own prefix so a running dev server doesn't take their jobs
+      ...(process.env.BULL_PREFIX && { prefix: process.env.BULL_PREFIX }),
     }),
     BullModule.registerQueue(
       {
