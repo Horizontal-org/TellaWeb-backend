@@ -14,7 +14,7 @@ import {
 } from 'fs';
 import * as path from 'path';
 import * as GetFileType from 'file-type';
-import * as sharp from 'sharp';
+import { sharp } from 'common/utils/sharp.utils';
 
 import { BadRequestException } from '@nestjs/common';
 import {

@@ -1,5 +1,5 @@
 import * as JSZip from 'jszip';
-import * as sharp from 'sharp';
+import { sharp } from 'common/utils/sharp.utils';
 
 import {
   bearer,

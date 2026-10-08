@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { join } from 'path';
 
-dotenv.config({ path: join(__dirname, '../../.env') });
+dotenv.config({ path: join(__dirname, '../../.env'), quiet: true });
 
 // The e2e tests run against the throwaway MySQL in docker-compose.e2e.yml,
 // their own Bull prefix and their own working directory, so they don't

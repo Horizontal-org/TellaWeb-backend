@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 export const MailConfig = {
   host: process.env.SMTP_HOST,

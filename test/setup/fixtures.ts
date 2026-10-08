@@ -1,4 +1,4 @@
-import * as sharp from 'sharp';
+import { sharp } from 'common/utils/sharp.utils';
 
 // A short mono 8 kHz 16-bit PCM WAV of silence.
 export function wav(dataBytes = 4000): Buffer {
