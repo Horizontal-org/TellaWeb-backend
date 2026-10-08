@@ -3,10 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
+import { applySort, SortableColumns } from 'common/utils/sort.utils';
 
 import { ProjectEntity } from '../domain';
 import { IListProjectService } from '../interfaces';
 import { ReadUserDto } from 'modules/user/dto';
+
+// the web app sends project.created_at (the column name), which TypeORM can't
+// sort by when paginating with joins; it's mapped to the property
+const SORTABLE: SortableColumns = {
+  'project.created_at': 'project.createdAt',
+  'project.createdAt': 'project.createdAt',
+  'project.name': 'project.name',
+};
 
 @Injectable()
 export class ListProjectService implements IListProjectService {
@@ -41,9 +50,7 @@ export class ListProjectService implements IListProjectService {
       });
     }
 
-    if (sort && sort.length > 0) {
-      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
-    }
+    applySort(query, sort, order, SORTABLE);
 
     const [projects, total] = await query.getManyAndCount();
     return {

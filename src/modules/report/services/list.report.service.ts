@@ -3,9 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
+import { applySort, SortableColumns } from 'common/utils/sort.utils';
 
 import { ReportEntity } from '../domain';
 import { IListReportService } from '../interfaces';
+
+const SORTABLE: SortableColumns = {
+  'report.title': 'report.title',
+  'report.createdAt': 'report.createdAt',
+  'author.username': 'author.username',
+};
 
 @Injectable()
 export class ListReportService implements IListReportService {
@@ -38,9 +45,7 @@ export class ListReportService implements IListReportService {
       );
     }
 
-    if (sort && sort.length > 0) {
-      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
-    }
+    applySort(query, sort, order, SORTABLE);
 
     const [reports, total] = await query.getManyAndCount();
     return {

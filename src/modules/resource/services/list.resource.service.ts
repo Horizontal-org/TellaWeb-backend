@@ -3,12 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
+import { applySort, SortableColumns } from 'common/utils/sort.utils';
 
 import { ResourceEntity } from '../domain';
 import { IListResourceService } from '../interfaces';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
 import { ReadResourceDto } from '../dto';
 import { plainToClass } from 'class-transformer';
+
+const SORTABLE: SortableColumns = {
+  'resource.title': 'resource.title',
+  'resource.fileName': 'resource.fileName',
+  'resource.createdAt': 'resource.createdAt',
+};
 
 @Injectable()
 export class ListResourceService implements IListResourceService {
@@ -42,9 +49,7 @@ export class ListResourceService implements IListResourceService {
       query.andWhere('resource.id NOT IN (:...exclude)', { exclude: exclude });
     }
 
-    if (sort && sort.length > 0) {
-      query.orderBy(sort, order === 'asc' ? 'ASC' : 'DESC');
-    }
+    applySort(query, sort, order, SORTABLE);
 
     const [resources, total] = await query.getManyAndCount();
 
