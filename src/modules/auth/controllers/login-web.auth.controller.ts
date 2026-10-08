@@ -1,4 +1,3 @@
-import { MailerService } from '@nestjs-modules/mailer';
 import { Body, ConsoleLogger, Controller, Inject, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LoginAuthDto } from '../domain/';
