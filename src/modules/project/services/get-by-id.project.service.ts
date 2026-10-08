@@ -18,7 +18,7 @@ export class GetByIdProjectService implements IGetByIdProjectService {
   async execute(projectId: string): Promise<ProjectEntity> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
-      relations: ['users', 'resources', 'resources.projects'],
+      relations: { users: true, resources: { projects: true } },
     });
 
     const adminUsers = await this.userRepository.find({

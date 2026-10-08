@@ -28,7 +28,7 @@ export class EditProjectService implements IEditProjectService {
 
     const project = await this.projectRepository.findOne({
       where: { id: editProjectDto.id },
-      relations: ['users', 'resources'],
+      relations: { users: true, resources: true },
     });
 
     if (editProjectDto.reports && editProjectDto.reports.length > 0) {

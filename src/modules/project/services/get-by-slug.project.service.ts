@@ -14,7 +14,7 @@ export class GetBySlugProjectService implements IGetBySlugProjectService {
 
   async execute(projectSlug: string): Promise<ProjectEntity> {
     return this.projectRepository.findOne({
-      relations: ['users'],
+      relations: { users: true },
       where: { slug: projectSlug },
     });
   }

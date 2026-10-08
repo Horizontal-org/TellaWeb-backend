@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { rmSync } from 'fs';
 import { join } from 'path';
-import { Connection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from 'app.module';
 import { configureApp, setupSwagger } from 'app.setup';
@@ -72,7 +72,7 @@ export async function createTestApp({
 // Each spec file starts from an empty database (the schema and the global
 // settings rows from the migrations stay) and empty data/ and backups/.
 async function resetData(app: INestApplication): Promise<void> {
-  const connection = app.get(Connection);
+  const connection = app.get(DataSource);
   const tables: { name: string }[] = await connection.query(
     'SELECT table_name AS name FROM information_schema.tables WHERE table_schema = DATABASE()',
   );

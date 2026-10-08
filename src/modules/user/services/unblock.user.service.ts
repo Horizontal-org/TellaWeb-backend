@@ -29,7 +29,7 @@ export class UnblockUserService implements IUnblockUserService {
 
     const verification = await this.userVerification.findOne({
       where: { code },
-      relations: ['user'],
+      relations: { user: true },
     });
 
     const now = new Date();
