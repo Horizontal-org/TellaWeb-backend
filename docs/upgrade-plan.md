@@ -2,7 +2,8 @@
 
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
-**Status (2026-10-08):** Tiers 0–3 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3 on its own.
+**Status (2026-10-08):** Tiers 0–4 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3, NestJS 11 (Tier 4) in drop #4, each on its own.
+**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`).
 
 ## Decisions
 
@@ -113,6 +114,29 @@ New tests: recovery keys of several users (re-activating replaces only that user
 - **`migration:generate` was already unsafe to use as is.** The hand-written migrations don't match the entities exactly: 0.2 already proposed 142 statements on a fully migrated database, 0.3 proposes 184 (the extra 42 are the `id` columns of seven tables, `varchar(255)` in the database vs `varchar(36)` expected for UUIDs). They include dropping and re-creating primary keys. Always review a generated migration and keep only your change; aligning the schema would be a separate, careful migration.
 - `utils migrate` (console) runs SQLite `PRAGMA` statements and has never worked on MySQL; migrations are run with `npm run typeorm:run`.
 
+## Done: Tier 4 (NestJS 8 → 11, TypeScript 5, Express 5), branch `upgrade/nestjs`
+
+| Commit | Change |
+|---|---|
+| `325e3e3` | Tests first: CORS (credentials, exposed `Range`/`Content-Range`/`size`, other origins refused) and Swagger (`/api`, `/api-json`, the JWT scheme, DTO bodies, a **snapshot of all 66 routes**). Swagger's setup moved to `app.setup.ts` (`setupSwagger`) |
+| `40b4097` | **Nest 9**: `@nestjs/*` 9.4, typeorm 9, jwt 9, swagger 6, nestjs-console 8, CLI 9. No code changes |
+| `ad1ce7e` | **Nest 10**: `@nestjs/*` 10.4, typeorm 10, jwt 10, swagger 7 (bundles its UI; `swagger-ui-express` removed), config 3, bull 10, nestjs-console 9, CLI 10. No code changes |
+| `a652f3e` | **TypeScript 5.9**, ts-node 10.9.2, `@types/node` 22. CLI 10 rewrites `baseUrl` imports correctly (no bare `require("modules/...")` in `dist`). The TypeORM and console scripts run ts-node with `--files` (see below) |
+| `cc2dd10` | Tests first for Express 5: a body-less POST (closing a file), file names with spaces, parentheses, accents and `+` in the URL, repeated query keys |
+| `a14c209` | **Nest 11 + Express 5**: `@nestjs/*` 11.2, typeorm 11, jwt 11, passport 11, swagger 11, config 4, bull 11, nestjs-console 10, CLI 11, `@types/express` 5. Two code changes, below |
+
+Code changes for Nest 11:
+- **Backup download:** Express 5's `res.download` refuses an absolute path with a dot directory anywhere in it (`dotfiles: 'ignore'` now covers the whole path); production paths don't have one, but any install under a dot directory would get 500. The directory now goes in the `root` option, so only the file name is checked.
+- `TokenOptions.expiresIn` is typed from `JwtSignOptions` (`@nestjs/jwt` 11 types it as an `ms` duration).
+
+**Gate:** typecheck, lint, build, 22 unit tests, 146 e2e tests, route snapshot unchanged, `check:lockfile`. The built `dist` starts without warnings (67 routes mapped). **Docker, as an upgrade:** data created by the previous image (Nest 8), then the Nest 11 image on it: no pending migrations, console works, the existing report is served, a two-chunk resumable upload of `Voice note (2).wav` (206, HEAD size, then 200), a Range request returns the right bytes, a backup is generated in the container and downloads whole and by range, no errors in the logs. `npm audit --omit=dev`: **11** (1 critical, 3 high), all from `mysqldump` and `image-thumbnail`.
+
+### Things learned in Tier 4
+- **ts-node + TypeScript 5:** without `--files`, ts-node treats some files reached through `baseUrl` barrels as "external library" files and refuses to compile them ("Unable to require file"), which broke `npm run typeorm:run`. `--files` makes every file in the tsconfig a root file. `--transpile-only` is not an alternative (enum columns lose their type metadata).
+- Swagger's routes must be registered before `app.init()` (in `main.ts`, `listen()` runs init).
+- `tsc --noEmit` doesn't report declaration-emit errors; `npm run build` does (Tier 3).
+- Nest 12 stays held: ESM-only, and `nestjs-console` has no version for it. Moving to it is the "ESM move" that also unlocks otplib 13, `file-type`, `nanoid`, `archiver` 8 and `nodemailer-express-handlebars` 7.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
 The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1. Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
@@ -183,6 +207,17 @@ Tier 1 checks above, plus:
 | Suspicious login | Block and unblock flow (whitelist rows) |
 | Backups | Generate, download, delete (raw queries in the backup handler) |
 | Mobile app | Login, create a report in a project, resumable upload, remote configuration fetch |
+
+### #4: NestJS 11 + Express 5 (`upgrade/nestjs` at `a14c209` or later), on its own
+| Change | Check |
+|---|---|
+| Express 5 request handling | Mobile app: login, create a report, a **resumable upload of a large video interrupted halfway** (airplane mode) and resumed, files with spaces or accents in the name |
+| Express 5 `res.download` | Admin Center: generate a backup and download it (a large one, and resume an interrupted download in the browser) |
+| Range streaming | Play audio and video in the web app, seek in the middle |
+| Swagger 11 | `/api` loads and lists the endpoints |
+| `@nestjs/config` 4, jwt 11, passport 11 | Login (web, mobile, 2FA), token refresh after 15+ minutes, logout |
+| Bull 11 | A backup email and a suspicious-login email arrive (emails enabled) |
+| Console (nestjs-console 10) | `npm run console -- users list` in the container |
 
 ## How to run the tests
 
