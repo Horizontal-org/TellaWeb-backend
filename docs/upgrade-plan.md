@@ -2,8 +2,8 @@
 
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
-**Status (2026-10-08):** Tiers 0–4 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3, NestJS 11 (Tier 4) in drop #4, each on its own.
-**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`).
+**Status (2026-10-08):** Tiers 0–5 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3, NestJS 11 (Tier 4) in drop #4, TypeORM 1.x (Tier 5) in drop #5, each on its own.
+**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`); Tier 5 on `upgrade/typeorm-1`, started from the tip of `upgrade/nestjs` (`2d75602`).
 
 ## Decisions
 
@@ -29,7 +29,7 @@
 | 2 | class-validator 0.14+, passport 0.7, bcrypt 6, otplib 13, CASL 7, nodemailer 8+ | medium |
 | 3 | TypeORM 0.2 → 0.3, still on Nest 8 (`@nestjs/typeorm` ≥ 9 needs TypeORM 0.3, so it has to come first) | high |
 | 4 | NestJS 8 → 9 → 10 → 11, and TypeScript 5 with Nest CLI 10. Express 5 comes with Nest 11 | high |
-| 5 | TypeORM 1.x (optional, later) | low–medium |
+| 5 | TypeORM 1.x. Not optional: npm tags 0.3 as `legacy`, and it has had no release since July 2026 while 1.x has | low–medium |
 
 ## Done: Tier 0 (beta drop #1)
 
@@ -137,6 +137,22 @@ Code changes for Nest 11:
 - `tsc --noEmit` doesn't report declaration-emit errors; `npm run build` does (Tier 3).
 - Nest 12 stays held: ESM-only, and `nestjs-console` has no version for it. Moving to it is the "ESM move" that also unlocks otplib 13, `file-type`, `nanoid`, `archiver` 8 and `nodemailer-express-handlebars` 7.
 
+## Done: Tier 5 (TypeORM 1.x), branch `upgrade/typeorm-1`
+
+| Commit | Change |
+|---|---|
+| `61b82ff` | **TypeORM 1.1.2.** `relations` in find options use the object form (the string arrays were removed in 1.0); `utils migrate` rewritten with the injected `DataSource` (1.0 removed `getConnectionManager`); the e2e setup uses `DataSource` instead of the removed `Connection` |
+
+- **Why now:** 0.3.31 is tagged `legacy` on npm; its last release was July 2026 (the same day as 1.1.0), while 1.x has had two since.
+- **`utils migrate` works now.** It ran SQLite `PRAGMA` statements, so on MySQL it only ever printed an error, and it **logged the connection options, database password included**. It now runs the pending migrations from the compiled code (`npm run console -- utils migrate`), the same as `npm run typeorm:run`; checked on an empty database (15 migrations) and on a migrated one.
+- **1.0 changes that don't apply here:** INNER JOIN for `nullable: false` relations (no relation declares it); `invalidWhereValuesBehavior` defaulting to `throw` (already set in Tier 3).
+- **CLI:** TypeORM 1.x's CLI uses yargs 18, which is ESM-only; Node 22 loads it, checked in the container. `migration:run` now also prints its queries.
+- **Schema drift** (`migration:generate --dr`): still 184 statements; the differences from 0.3 are only in how 1.x writes them (`tinyint` without display width, `ON UPDATE CASCADE` for join tables).
+
+**Gate:** typecheck, lint, build, 22 unit tests, 146 e2e tests, route snapshot unchanged, `check:lockfile`. **Docker, as an upgrade:** a database created and filled by the Tier 4 image (TypeORM 0.3), including a user with 2FA and 15 recovery keys; then the 1.x image: `typeorm:run` and `utils migrate` report no pending migrations, 2FA login with the stored secret works, the 15 recovery keys are there, the project loads with its nested relations, a Range request on an old file returns the right bytes, lists with `limit=0` and sorting work, a backup downloads, no errors in the logs.
+
+**Checked while here:** TypeORM 1.0's runtime `orderBy` validation does **not** stop the `sort` injection: `sort=user.username,(SELECT SLEEP(2))` made the user list take 8 seconds (2 s per row). See the bug doc.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
 The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1. Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
@@ -218,6 +234,14 @@ Tier 1 checks above, plus:
 | `@nestjs/config` 4, jwt 11, passport 11 | Login (web, mobile, 2FA), token refresh after 15+ minutes, logout |
 | Bull 11 | A backup email and a suspicious-login email arrive (emails enabled) |
 | Console (nestjs-console 10) | `npm run console -- users list` in the container |
+
+### #5: TypeORM 1.x (`upgrade/typeorm-1` at `61b82ff` or later), on its own
+Back up the database first. Then the same checks as drop #3 (TypeORM 0.3), plus:
+| Change | Check |
+|---|---|
+| `relations` object form | Open a project (users, resources and each resource's projects), the project page by slug, the unblock link from a blocked-login email |
+| `utils migrate` | `npm run console -- utils migrate` in the container prints "No migrations are pending" |
+| 2FA with stored secrets | A user who set up 2FA before the upgrade logs in with their app and with a recovery key |
 
 ## How to run the tests
 
