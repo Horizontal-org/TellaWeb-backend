@@ -133,6 +133,16 @@ describe('users', () => {
     expect(ids).toContain(t.users.admin.id);
   });
 
+  it('limit=0 lists every user', async () => {
+    const res = await t
+      .http()
+      .get('/user/list?limit=0&offset=0')
+      .set(bearer(admin))
+      .expect(200);
+    expect(res.body.results.length).toBe(res.body.total);
+    expect(res.body.total).toBeGreaterThanOrEqual(4);
+  });
+
   it('get by id', async () => {
     const res = await t
       .http()

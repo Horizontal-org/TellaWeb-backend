@@ -1,4 +1,8 @@
 import * as JSZip from 'jszip';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { FileEntity } from 'modules/file/domain';
 import { sharp } from 'common/utils/sharp.utils';
 
 import {
@@ -19,6 +23,13 @@ describe('files', () => {
   let reporter: Session;
   let adminMobile: Session;
   let reportId: string;
+  let projectId: string;
+  const filesOf = async (id: string) =>
+    (
+      await t.app
+        .get<Repository<FileEntity>>(getRepositoryToken(FileEntity))
+        .query('SELECT COUNT(*) AS n FROM file_entity WHERE reportId = ?', [id])
+    )[0].n * 1;
 
   const audio = wav(4000);
   let image: Buffer;
@@ -64,6 +75,7 @@ describe('files', () => {
         })
         .expect(201)
     ).body;
+    projectId = project.id;
     reportId = (
       await t
         .http()
@@ -393,6 +405,53 @@ describe('files', () => {
         .delete(`/file/${reportId}/${imageFile.id}`)
         .set(bearer(reporter))
         .expect(403);
+    });
+
+    // a report with files, in the files' project, created by the reporter
+    async function reportWithFile(title: string) {
+      const id = (
+        await t
+          .http()
+          .post(`/project/${projectId}`)
+          .set(bearer(reporter))
+          .send({ title })
+          .expect(201)
+      ).body.id;
+      await t
+        .http()
+        .put(`/file/v2/${id}/note.wav`)
+        .set(bearer(reporter))
+        .set('Content-Type', 'application/octet-stream')
+        .set('Content-Range', `bytes 0-${audio.length - 1}/${audio.length}`)
+        .send(audio)
+        .expect(200);
+      return id;
+    }
+
+    it('deleting a report deletes its files', async () => {
+      const id = await reportWithFile('E2E report with a file');
+
+      await t.http().delete(`/report/${id}`).set(bearer(editor)).expect(200);
+      await t.http().get(`/report/${id}`).set(bearer(editor)).expect(404);
+      expect(await filesOf(id)).toBe(0);
+    });
+
+    it('batch delete deletes the reports and their files, and nothing else', async () => {
+      const one = await reportWithFile('E2E batch with a file 1');
+      const two = await reportWithFile('E2E batch with a file 2');
+      const kept = await reportWithFile('E2E batch kept');
+
+      await t
+        .http()
+        .post('/report/batch-delete')
+        .set(bearer(editor))
+        .send({ toDelete: [one, two] })
+        .expect(201);
+
+      expect(await filesOf(one)).toBe(0);
+      expect(await filesOf(two)).toBe(0);
+      expect(await filesOf(kept)).toBe(1);
+      await t.http().get(`/report/${kept}`).set(bearer(editor)).expect(200);
     });
   });
 });
