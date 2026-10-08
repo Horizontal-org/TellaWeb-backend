@@ -124,5 +124,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "overrides": {
+    "@nestjs/mapped-types": {
+      "class-validator": "$class-validator"
+    }
   }
 }
