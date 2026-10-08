@@ -2,7 +2,9 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { Repository } from 'typeorm';
+import { rmSync } from 'fs';
+import { join } from 'path';
+import { Connection, Repository } from 'typeorm';
 
 import { AppModule } from 'app.module';
 import { configureApp } from 'app.setup';
@@ -51,6 +53,7 @@ export async function createTestApp(): Promise<TestApp> {
   const app = configureApp(moduleRef.createNestApplication());
   await app.init();
 
+  await resetData(app);
   const users = await seedUsers(app);
 
   return {
@@ -62,7 +65,27 @@ export async function createTestApp(): Promise<TestApp> {
   };
 }
 
-// One user per role. Created once per database, then reused.
+// Each spec file starts from an empty database (the schema and the global
+// settings rows from the migrations stay) and empty data/ and backups/.
+async function resetData(app: INestApplication): Promise<void> {
+  const connection = app.get(Connection);
+  const tables: { name: string }[] = await connection.query(
+    'SELECT table_name AS name FROM information_schema.tables WHERE table_schema = DATABASE()',
+  );
+  await connection.query('SET FOREIGN_KEY_CHECKS = 0');
+  for (const { name } of tables) {
+    if (name === 'migrations' || name === 'global_settings') continue;
+    await connection.query(`TRUNCATE TABLE \`${name}\``);
+  }
+  await connection.query('SET FOREIGN_KEY_CHECKS = 1');
+  await connection.query('UPDATE global_settings SET enabled = 0');
+
+  for (const dir of ['data', 'backups']) {
+    rmSync(join(process.cwd(), dir), { recursive: true, force: true });
+  }
+}
+
+// One user per role.
 async function seedUsers(
   app: INestApplication,
 ): Promise<Record<RolesUser, UserEntity>> {
