@@ -50,10 +50,10 @@
 
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
+The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`) and `folderName` in `/backup/latest` (`a4487ea`), both shipping with beta drop #1.
+
 | Bug | Where | Impact |
 |---|---|---|
-| **Project list search ignores membership:** with `search`, non-admins see every matching project | `ListProjectService`: `query.where()` for the search replaces the user condition | Data leak: project names, members and report counts |
-| **`/backup/latest` exposes the backup folder path** (`folderName`) | `LatestBackupService` returns entities inside a plain object, which `TransformInterceptor` doesn't serialize, so `@Exclude` is ignored | Absolute server path in the response (`27243bb` meant to hide it) |
 | `GET /file/asset/...` without a Range header never completes | `getContentRange` uses `end = size` instead of `size - 1`, so Content-Length is one byte too long | Browsers send `Range: bytes=0-` for media, so they're fine. Other clients hang |
 | `GET /file/download/:bucket/:name` with an unknown name → 500 | `downloadFileFromBucket` returns null, the controller calls `.pipe` on it | Error response instead of 404 |
 
