@@ -5,12 +5,15 @@ import { UserEntity } from 'modules/user/domain';
 import {
   bearer,
   createTestApp,
+  loginMobile,
   loginWeb,
   PASSWORD,
+  Session,
   TestApp,
   USERS,
   waitFor,
 } from './setup/app';
+import { totp } from './setup/totp';
 
 // node-ipinfo looks the IP up on ipinfo.io; here it answers with whatever
 // country the test sets
@@ -29,6 +32,9 @@ jest.mock('node-ipinfo', () => ({
 describe('suspicious login detection', () => {
   let t: TestApp;
   let users: Repository<UserEntity>;
+  // sessions the viewer opened before being blocked
+  let webSession: Session;
+  let mobileSession: Session;
 
   const login = () =>
     t
@@ -72,6 +78,9 @@ describe('suspicious login detection', () => {
   it('later logins from that country go through', async () => {
     const res = await login();
     expect(res.body.access_token).toEqual(expect.any(String));
+
+    webSession = await loginWeb(t, USERS.viewer);
+    mobileSession = await loginMobile(t, USERS.viewer);
   });
 
   it('a login from a new country is flagged: no tokens, the user is blocked and gets an email', async () => {
@@ -94,15 +103,79 @@ describe('suspicious login detection', () => {
     });
   });
 
-  // Known bug: `blocked` is never checked, so a blocked user still logs in
-  // from a whitelisted country. Remove `.failing` once it's fixed.
-  it.failing('a blocked user cannot log in until unblocked', async () => {
-    mockCountry = 'AR';
-    const res = await t
-      .http()
-      .post('/login/web')
-      .send({ username: USERS.viewer, password: PASSWORD });
-    expect(res.body.access_token).toBeUndefined();
+  // Blocking applies to the web only: suspicious login detection runs on web
+  // logins, and the mobile app keeps working.
+  describe('while blocked', () => {
+    it('web login is refused, even from a whitelisted country', async () => {
+      mockCountry = 'AR';
+      const res = await t
+        .http()
+        .post('/login/web')
+        .send({ username: USERS.viewer, password: PASSWORD })
+        .expect(403);
+      expect(res.body.message).toMatch(/blocked/i);
+      expect(res.body.access_token).toBeUndefined();
+      expect(res.headers['set-cookie']).toBeUndefined();
+    });
+
+    it('the existing web session stops working, and its refresh token is refused', async () => {
+      await t.http().get('/user').set(bearer(webSession)).expect(401);
+      await t
+        .http()
+        .post('/auth/refresh')
+        .send({ refresh_token: webSession.refresh_token })
+        .expect(403);
+    });
+
+    it('mobile login and the existing mobile session keep working', async () => {
+      await t.http().get('/user').set(bearer(mobileSession)).expect(200);
+      const session = await loginMobile(t, USERS.viewer);
+      await t.http().get('/user').set(bearer(session)).expect(200);
+    });
+
+    it('2FA code and recovery key logins are refused', async () => {
+      const admin = await loginWeb(t, USERS.admin);
+      const created = await t
+        .http()
+        .post('/user')
+        .set(bearer(admin))
+        .send({
+          username: 'blocked-2fa@e2e.test',
+          password: PASSWORD,
+          role: 'editor',
+        })
+        .expect(201);
+      const session = await loginWeb(t, 'blocked-2fa@e2e.test');
+      const { otp_code: secret } = (
+        await t
+          .http()
+          .post('/auth/otp/enable')
+          .set(bearer(session))
+          .send({ password: PASSWORD })
+          .expect(201)
+      ).body;
+      const keys = (
+        await t
+          .http()
+          .post('/auth/otp/activate')
+          .set(bearer(session))
+          .send({ code: totp(secret) })
+          .expect(201)
+      ).body;
+
+      await users.update(created.body.id, { blocked: true });
+
+      await t
+        .http()
+        .post('/auth/otp/login')
+        .send({ userId: created.body.id, code: totp(secret) })
+        .expect(403);
+      await t
+        .http()
+        .post('/auth/otp/recovery-key')
+        .send({ userId: created.body.id, code: keys[0], password: PASSWORD })
+        .expect(403);
+    });
   });
 
   it('the emailed code unblocks the user and whitelists the new country', async () => {
