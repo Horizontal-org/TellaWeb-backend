@@ -7,6 +7,7 @@ import { TYPES } from '../../interfaces/types';
 import { ICreateReportService } from '../../interfaces/services/create.report.service.interface';
 import { ReadUserDto } from 'modules/user/dto';
 import { UserEntity } from 'modules/user/domain';
+import { ProjectEntity } from 'modules/project/domain';
 
 describe('CreateReportService', () => {
   let service: ICreateReportService;
@@ -21,6 +22,10 @@ describe('CreateReportService', () => {
         },
         {
           provide: getRepositoryToken(ReportEntity),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(ProjectEntity),
           useClass: Repository,
         },
       ],
@@ -60,7 +65,7 @@ describe('CreateReportService', () => {
       );
 
       expect(result).toEqual(report);
-      expect(repositoryMock.save).toBeCalled();
+      expect(repositoryMock.save).toHaveBeenCalled();
     });
   });
 });
