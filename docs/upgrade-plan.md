@@ -3,7 +3,7 @@
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
 **Status (2026-10-08):** Tiers 0–5 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3, NestJS 11 (Tier 4) in drop #4, TypeORM 1.x (Tier 5) in drop #5, each on its own.
-**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`); Tier 5 on `upgrade/typeorm-1`, started from the tip of `upgrade/nestjs` (`2d75602`).
+**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`); Tier 5 on `upgrade/typeorm-1`, started from the tip of `upgrade/nestjs` (`2d75602`). Audit findings on `fix/audit-findings`, from the tip of `upgrade/typeorm-1`.
 
 ## Decisions
 
@@ -152,6 +152,25 @@ Code changes for Nest 11:
 **Gate:** typecheck, lint, build, 22 unit tests, 146 e2e tests, route snapshot unchanged, `check:lockfile`. **Docker, as an upgrade:** a database created and filled by the Tier 4 image (TypeORM 0.3), including a user with 2FA and 15 recovery keys; then the 1.x image: `typeorm:run` and `utils migrate` report no pending migrations, 2FA login with the stored secret works, the 15 recovery keys are there, the project loads with its nested relations, a Range request on an old file returns the right bytes, lists with `limit=0` and sorting work, a backup downloads, no errors in the logs.
 
 **Checked while here:** TypeORM 1.0's runtime `orderBy` validation does **not** stop the `sort` injection: `sort=user.username,(SELECT SLEEP(2))` made the user list take 8 seconds (2 s per row). See the bug doc.
+
+## Done: audit findings, branch `fix/audit-findings`
+
+`npm audit --omit=dev`: **11 → 6** (critical 1 → 0, high 3 → 0, all 6 left are moderate). Whole tree: 33 → 25, no high or critical.
+
+| Commit | Change |
+|---|---|
+| `8418415` | Removed `ts-loader` (never used: `nest build` compiles with `tsc`; it brought braces/micromatch, high) and `rimraf` (Nest CLI's `deleteOutDir` cleans `dist/` now) |
+| `80634e7` | **Bug fix:** thumbnail width was `size \| 200`, a bitwise OR: asking for 100 gave 236 pixels, 5000 gave 5064 |
+| `a3d3ae4` | `image-thumbnail` replaced by the app's `sharp`, same settings (3 high findings: old sharp/libvips, image-size). Thumbnails are now never larger than their source: with only a width, the old `fit: 'contain'` ignored `withoutEnlargement`, so any size could be requested |
+| `d0aa6e8` | Test first: the backup's database dump restores to an identical database (`CHECKSUM TABLE` on every table, values with quotes, backslashes, newlines, accents). Passed with `mysqldump` |
+| `533be57` | `mysqldump` (unmaintained, mysql2 2.3: critical RCE) replaced by `backup/handlers/database-dump.ts` on the app's mysql2 3.x, same file format. Rows streamed, one consistent snapshot, `utf8mb4`. Checked in Docker too |
+
+**Left (moderate):**
+- `file-type` 16: infinite loop on a malformed ASF file. Newer versions are ESM-only.
+- `bull` → `uuid`, `@nestjs/bull`: wait for bull, or BullMQ.
+- `@nestjs/swagger` → `js-yaml`.
+
+**Beta checks:** generate a backup, download it, and restore `database_dump.sql` into an empty database (it must import without errors and contain the data); thumbnails of images and videos still show.
 
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
