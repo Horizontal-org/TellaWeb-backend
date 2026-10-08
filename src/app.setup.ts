@@ -1,4 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as requestIp from 'request-ip';
 import { TransformInterceptor } from 'common/interceptors/transform.interceptor';
@@ -26,4 +27,26 @@ export function configureApp(app: INestApplication): INestApplication {
   return app
     .useGlobalInterceptors(new TransformInterceptor())
     .use(cookieParser());
+}
+
+// Swagger UI at /api, the OpenAPI document at /api-json
+export function setupSwagger(app: INestApplication): void {
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Tella Web')
+    .setDescription('Tella Web API documentation')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'jwt',
+    )
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, swaggerDocument);
 }

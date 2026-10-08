@@ -20,5 +20,7 @@ export const e2eEnv = {
   BULL_PREFIX: 'bull-e2e',
   JWT_SECRET: 'e2e-secret',
   COOKIE_DOMAIN: 'localhost',
+  WEB_ORIGIN: 'https://web.e2e.test',
+  APP_ORIGIN: 'https://app.e2e.test',
   BCRYPT_SALT: '4',
 };

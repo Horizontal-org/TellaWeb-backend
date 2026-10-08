@@ -7,7 +7,7 @@ import { join } from 'path';
 import { Connection, Repository } from 'typeorm';
 
 import { AppModule } from 'app.module';
-import { configureApp } from 'app.setup';
+import { configureApp, setupSwagger } from 'app.setup';
 import { hashPassword } from 'common/utils/password.utils';
 import { RolesUser, UserEntity } from 'modules/user/domain';
 import { TYPES as TYPES_UTIL } from 'modules/utils/interfaces';
@@ -38,7 +38,9 @@ export interface TestApp {
 
 // Boots the whole AppModule against the e2e database, with the same request
 // pipeline as main.ts. Emails are captured instead of sent.
-export async function createTestApp(): Promise<TestApp> {
+export async function createTestApp({
+  swagger = false,
+} = {}): Promise<TestApp> {
   const sentMails: SentMail[] = [];
 
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
@@ -51,6 +53,8 @@ export async function createTestApp(): Promise<TestApp> {
     .compile();
 
   const app = configureApp(moduleRef.createNestApplication());
+  // like main.ts: Swagger's routes go in before init
+  if (swagger) setupSwagger(app);
   await app.init();
 
   await resetData(app);
