@@ -12,7 +12,7 @@ export class DownloadBackupController {
   constructor(
     @Inject(TYPES.services.IDownloadBackupService)
     private readonly downloadBackupService: IDownloadBackupService,
-  ) {}
+  ) { }
 
   @Get('download/:backupId')
   async handler(

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 import {
   TYPES,
@@ -13,14 +13,11 @@ export class GetZippedBucketFileApplication implements IGetZippedBucketFileAppli
     @Inject(TYPES.services.IZipBucketFileService)
     private readonly zipBucketFileService: IZipBucketFileService,
   ) {}
-  execute(bocketId: string): Promise<ReadStream> {
+  execute(bocketId: string): Promise<Readable> {
     return this.zipBucketFileService.execute(bocketId);
   }
 
-  downloadFileFromBucket(
-    bucketId: string,
-    fileName: string,
-  ): Promise<ReadStream> {
-    return this.zipBucketFileService.downloadFileFromBucket(bucketId, fileName);
+  getFilePathFromBucket(bucketId: string, fileName: string): Promise<string> {
+    return this.zipBucketFileService.getFilePathFromBucket(bucketId, fileName);
   }
 }

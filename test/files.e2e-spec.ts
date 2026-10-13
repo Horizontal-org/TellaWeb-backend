@@ -444,6 +444,12 @@ describe('files', () => {
         .expect(200);
 
       expect(res.headers['content-type']).toBe('application/zip');
+      expect(res.headers['content-disposition']).toBe(
+        `attachment; filename="report-${reportId}.zip"`,
+      );
+      // streamed while it's built, not buffered first
+      expect(res.headers['transfer-encoding']).toBe('chunked');
+      expect(res.headers['content-length']).toBeUndefined();
       const zip = await JSZip.loadAsync(res.body);
       const names = Object.keys(zip.files);
       expect(names).toEqual(
@@ -453,9 +459,20 @@ describe('files', () => {
       expect(Buffer.compare(content, audio)).toBe(0);
     });
 
-    // despite the route param name and the zip Content-Type, this takes the
-    // file name and sends the file itself (that's how the web app calls it)
-    it('downloads a single file by name', async () => {
+    it('a report without files on disk is a 404', async () => {
+      await t
+        .http()
+        .get('/file/report/00000000-0000-4000-8000-000000000000')
+        .set(bearer(editor))
+        .expect(404);
+    });
+
+    it('a report id that is not a UUID is a 400', async () => {
+      await t.http().get('/file/report/..').set(bearer(editor)).expect(400);
+    });
+
+    // the web app hands this URL to the browser, which saves it as a file
+    it('downloads a single file by name, as an attachment', async () => {
       const res = await t
         .http()
         .get(`/file/download/${reportId}/image.png`)
@@ -464,15 +481,55 @@ describe('files', () => {
         .parse(binaryParser)
         .expect(200);
 
-      expect(res.headers['content-type']).toBe('application/zip');
+      expect(res.headers['content-type']).toBe('image/png');
+      expect(res.headers['content-disposition']).toBe(
+        'attachment; filename="image.png"',
+      );
+      expect(res.headers['accept-ranges']).toBe('bytes');
+      expect(Number(res.headers['content-length'])).toBe(image.length);
       expect(Buffer.compare(res.body, image)).toBe(0);
     });
 
-    // Known bug: an unknown file name crashes the handler (null.pipe).
-    it.failing('an unknown file name is a 404', async () => {
+    it('resumes a single file download from a byte range', async () => {
+      const res = await t
+        .http()
+        .get(`/file/download/${reportId}/image.png`)
+        .set(bearer(editor))
+        .set('Range', 'bytes=0-9')
+        .buffer(true)
+        .parse(binaryParser)
+        .expect(206);
+
+      expect(res.body.length).toBe(10);
+      expect(Buffer.compare(res.body, image.subarray(0, 10))).toBe(0);
+    });
+
+    // a browser download sends the session cookie, not a Bearer header
+    it('downloads with only the web session cookie', async () => {
+      await t
+        .http()
+        .get(`/file/download/${reportId}/image.png`)
+        .set('Cookie', editor.cookie)
+        .expect(200);
+      await t
+        .http()
+        .get(`/file/report/${reportId}`)
+        .set('Cookie', editor.cookie)
+        .expect(200);
+    });
+
+    it('an unknown file name is a 404', async () => {
       await t
         .http()
         .get(`/file/download/${reportId}/missing.png`)
+        .set(bearer(editor))
+        .expect(404);
+    });
+
+    it('a file name outside the bucket is a 404', async () => {
+      await t
+        .http()
+        .get(`/file/download/${reportId}/..%2F..%2Fpackage.json`)
         .set(bearer(editor))
         .expect(404);
     });

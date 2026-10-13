@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReadStream } from 'node:fs';
+import { Readable } from 'stream';
 
 import {
   TYPES,
@@ -16,18 +16,11 @@ export class ZipBucketFileService implements IZipBucketFileService {
     @Inject(TYPES.handlers.ICompressionFileHandler)
     private compressionFileHandler: ICompressionFileHandler,
   ) {}
-  async execute(bucketId: string): Promise<ReadStream> {
+  async execute(bucketId: string): Promise<Readable> {
     const filesStream = await this.storageFileHandlerl.getBucket(bucketId);
     return await this.compressionFileHandler.execute(filesStream);
   }
-  async downloadFileFromBucket(
-    bucketId: string,
-    fileName: string,
-  ): Promise<ReadStream> {
-    const fileStream = await this.storageFileHandlerl.downloadFileFromBucket(
-      bucketId,
-      fileName,
-    );
-    return fileStream;
+  getFilePathFromBucket(bucketId: string, fileName: string): Promise<string> {
+    return this.storageFileHandlerl.getFilePathFromBucket(bucketId, fileName);
   }
 }
