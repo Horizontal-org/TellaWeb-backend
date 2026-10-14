@@ -345,9 +345,10 @@ describe('auth', () => {
         .expect(201);
       const res = await t
         .http()
-        .get('/auth/otp/recovery-key')
+        .post('/auth/otp/retrieve-recovery-key')
+        .send({ current: PASSWORD })
         .set('Authorization', `Bearer ${otp.body.access_token}`)
-        .expect(200);
+        .expect(201);
       expect(res.body).toHaveLength(15);
     });
 

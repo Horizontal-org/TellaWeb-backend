@@ -26,6 +26,7 @@ bootstrap.init().then(async (app) => {
 
     process.exit(0);
   } catch (e) {
+    console.error(e);
     closing = true;
     app.close();
 

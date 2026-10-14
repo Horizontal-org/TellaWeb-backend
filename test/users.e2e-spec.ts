@@ -127,7 +127,7 @@ describe('users', () => {
       )
       .set(bearer(admin))
       .expect(200);
-    const ids = excluded.body.results.map((u) => u.id);
+    const ids = excluded.body.results.map((u: any) => u.id);
     expect(ids).not.toContain(t.users.viewer.id);
     expect(ids).not.toContain(t.users.editor.id);
     expect(ids).toContain(t.users.admin.id);
@@ -140,7 +140,7 @@ describe('users', () => {
       )
       .set(bearer(admin))
       .expect(200);
-    expect(repeated.body.results.map((u) => u.id).sort()).toEqual(
+    expect(repeated.body.results.map((u: any) => u.id).sort()).toEqual(
       [...ids].sort(),
     );
   });
@@ -191,9 +191,7 @@ describe('users', () => {
       .expect(401);
   });
 
-  // Known bug: EditUserService builds CASL abilities for the target user before
-  // checking it exists, so an unknown id throws a TypeError (500).
-  it.failing('editing an unknown user is a 404', async () => {
+  it('editing an unknown user is a 404', async () => {
     await t
       .http()
       .post('/user/00000000-0000-4000-8000-000000000000')

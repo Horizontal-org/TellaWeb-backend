@@ -14,13 +14,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "public",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.mock.ts" 
-  ]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist", "public", "test/.e2e-workdir"]
 }

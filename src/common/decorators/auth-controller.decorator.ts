@@ -1,6 +1,6 @@
 import { applyDecorators, Controller, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'modules/auth/guard/jwt-auth.guard'
 import { TokenAccessGuard } from 'modules/auth/guard/token-access.user.guard';
 import { ProjectAccessGuard } from 'modules/project/guard/access.project.guard';
 
@@ -17,7 +17,7 @@ export function AuthController(
   return applyDecorators(
     Controller(controllerName),
     ApiBearerAuth('jwt'),
-    UseGuards(AuthGuard('jwt')),
+    UseGuards(JwtAuthGuard),
     UseGuards(RolesUserGuard),
     Roles(...roles),
     UseGuards(TokenAccessGuard(accessType)),

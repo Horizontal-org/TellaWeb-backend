@@ -2,12 +2,12 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
   mixin,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { InvalidSessionException } from 'common/exceptions/invalid-session.exception'
 
 export const TokenAccessGuard = (accessType) => {
   @Injectable()
@@ -23,7 +23,7 @@ export const TokenAccessGuard = (accessType) => {
       }
 
       if (!token) {
-        throw new UnauthorizedException();
+        throw new InvalidSessionException()
       }
 
       if (!accessType) {
@@ -36,7 +36,7 @@ export const TokenAccessGuard = (accessType) => {
         });
         return accessType === payload.type;
       } catch (e) {
-        throw new UnauthorizedException();
+        throw new InvalidSessionException()
       }
     }
 
