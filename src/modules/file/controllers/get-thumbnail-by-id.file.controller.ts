@@ -22,7 +22,7 @@ export class GetThumbnailByIdFileController {
   async handler(
     @Param('fileId')
     fileId: string,
-    @Param('size') size: number,
+    @Param('size') size: string,
     @Res() res: Response,
   ) {
     console.log(
@@ -30,7 +30,9 @@ export class GetThumbnailByIdFileController {
     );
     const thumbnailReadable =
       await this.getThumbnailByIdFileApplication.execute(fileId, {
-        width: size | 200,
+        // the route param is a string; 0 or anything that isn't a number
+        // gives the default width (this was `size | 200`, a bitwise OR)
+        width: Number(size) || 200,
       });
     thumbnailReadable.pipe(res);
   }

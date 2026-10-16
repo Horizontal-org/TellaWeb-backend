@@ -55,9 +55,7 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   async getBucket(bucketId: string): Promise<ReadStream[]> {
     const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
-    const bucketFullFiles = readdirSync(bucketFullPath, {
-      withFileTypes: true,
-    });
+    const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
     return bucketFullFiles
       .filter((different) => different.isFile())
@@ -84,24 +82,31 @@ export class StorageFileHandler implements IStorageFileHandler {
       );
   }
 
-  async downloadFileFromBucket(
+  async getFilePathFromBucket(
     bucketId: string,
     fileName: string,
-  ): Promise<ReadStream | null> {
+  ): Promise<string> {
     const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
-    const bucketFullFiles = readdirSync(bucketFullPath, {
-      withFileTypes: true,
-    });
+    const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
+    // only names listed in the bucket, so fileName can't point outside it
     const file = bucketFullFiles.find(
       (file) => file.isFile() && file.name === fileName,
     );
     if (!file) {
-      return null; // File not found in the bucket
+      throw new NotFoundFileException(fileName);
     }
 
-    const filePath = path.join(bucketFullPath, file.name);
-    return createReadStream(filePath);
+    return path.join(bucketFullPath, file.name);
+  }
+
+  private readBucket(bucketId: string, bucketFullPath: string) {
+    try {
+      return readdirSync(bucketFullPath, { withFileTypes: true });
+    } catch (err) {
+      if (err.code === 'ENOENT') throw new NotFoundFileException(bucketId);
+      throw err;
+    }
   }
 
   async deleteBucket(bucketId: string): Promise<boolean> {

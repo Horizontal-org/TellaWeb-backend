@@ -3,7 +3,7 @@
 **Goal:** every dependency on a supported version, without changing how the API behaves. Same approach as the frontend (`TellaWeb-FrontEnd-nextjs/docs/upgrade-plan-*.md`): tests first, one commit per step, beta drops at fixed checkpoints.
 **Branch:** `upgrade/dependencies`, started from `upgrade/rop-last` (`27243bb`, the backup download fixes). Rebase onto `development` once those are merged.
 **Status (2026-10-08):** Tiers 0–5 done. **Waiting for beta drop #1** (see "Beta drops"). Tiers 1 and 2 go in drop #2, TypeORM 0.3 (Tier 3) in drop #3, NestJS 11 (Tier 4) in drop #4, TypeORM 1.x (Tier 5) in drop #5, each on its own.
-**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`); Tier 5 on `upgrade/typeorm-1`, started from the tip of `upgrade/nestjs` (`2d75602`).
+**Branches:** Tiers 0–3 on `upgrade/dependencies`; Tier 4 on `upgrade/nestjs`, started from its tip (`8a8d4e4`); Tier 5 on `upgrade/typeorm-1`, started from the tip of `upgrade/nestjs` (`2d75602`). Audit findings on `fix/audit-findings`, from the tip of `upgrade/typeorm-1`.
 
 ## Decisions
 
@@ -153,9 +153,28 @@ Code changes for Nest 11:
 
 **Checked while here:** TypeORM 1.0's runtime `orderBy` validation does **not** stop the `sort` injection: `sort=user.username,(SELECT SLEEP(2))` made the user list take 8 seconds (2 s per row). See the bug doc.
 
+## Done: audit findings, branch `fix/audit-findings`
+
+`npm audit --omit=dev`: **11 → 6** (critical 1 → 0, high 3 → 0, all 6 left are moderate). Whole tree: 33 → 25, no high or critical.
+
+| Commit | Change |
+|---|---|
+| `8418415` | Removed `ts-loader` (never used: `nest build` compiles with `tsc`; it brought braces/micromatch, high) and `rimraf` (Nest CLI's `deleteOutDir` cleans `dist/` now) |
+| `80634e7` | **Bug fix:** thumbnail width was `size \| 200`, a bitwise OR: asking for 100 gave 236 pixels, 5000 gave 5064 |
+| `a3d3ae4` | `image-thumbnail` replaced by the app's `sharp`, same settings (3 high findings: old sharp/libvips, image-size). Thumbnails are now never larger than their source: with only a width, the old `fit: 'contain'` ignored `withoutEnlargement`, so any size could be requested |
+| `d0aa6e8` | Test first: the backup's database dump restores to an identical database (`CHECKSUM TABLE` on every table, values with quotes, backslashes, newlines, accents). Passed with `mysqldump` |
+| `533be57` | `mysqldump` (unmaintained, mysql2 2.3: critical RCE) replaced by `backup/handlers/database-dump.ts` on the app's mysql2 3.x, same file format. Rows streamed, one consistent snapshot, `utf8mb4`. Checked in Docker too |
+
+**Left (moderate):**
+- `file-type` 16: infinite loop on a malformed ASF file. Newer versions are ESM-only.
+- `bull` → `uuid`, `@nestjs/bull`: wait for bull, or BullMQ.
+- `@nestjs/swagger` → `js-yaml`.
+
+**Beta checks:** generate a backup, download it, and restore `database_dump.sql` into an empty database (it must import without errors and contain the data); thumbnails of images and videos still show.
+
 ## Known bugs found by the e2e suite (not fixed, pinned with `it.failing`)
 
-The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`), `folderName` in `/backup/latest` (`a4487ea`), and the **SQL injection through `sort`** on the project, report, user and resource lists (`8575759`, also cherry-picked onto `upgrade/nestjs` and `upgrade/typeorm-1`), all shipping with beta drop #1. The `sort` fix also repairs the web app's projects list, which sends `sort=project.created_at` and got a 500 (in production too). Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
+The full list, with status, is in the shared bug doc. Fixed so far: the project search membership leak (`339b316`), `folderName` in `/backup/latest` (`a4487ea`), and the **SQL injection through `sort`** on the project, report, user and resource lists (`8575759`, also cherry-picked onto `upgrade/nestjs` and `upgrade/typeorm-1`), all shipping with beta drop #1. Also fixed for drop #1: **blocked users can't use the web until they unblock** (`45fc341`; mobile is deliberately not affected) and **the server refuses to start without a real `JWT_SECRET`** (`d09ed86`; missing, empty or the `.env` placeholder). Both are cherry-picked onto the later branches. The `sort` fix also repairs the web app's projects list, which sends `sort=project.created_at` and got a 500 (in production too). Found in Tier 1: the `blocked` flag is never checked at login (pinned), and unblocking doesn't await its save.
 
 | Bug | Where | Impact |
 |---|---|---|
@@ -185,11 +204,13 @@ Odd but current behaviour that the tests document:
 
 ## Beta drops (maintainer)
 
-### #1: Tier 0, the two leak fixes and the sort fix (`upgrade/dependencies` at `8575759` or later)
+### #1: Tier 0 and the security fixes (`upgrade/dependencies` at `d09ed86` or later)
+**Before deploying:** every server must set `JWT_SECRET` in its environment. A server without one now refuses to start (before, it silently used the placeholder from `.env`).
 | Change | Check |
 |---|---|
 | Project search fix | As an editor or viewer, search the projects list: only your own projects show. As an admin: all of them |
 | `/backup/latest` fix | Admin Center → backups: the list and download still work (the response no longer has `folderName`) |
+| Blocked users (suspicious login detection on) | Log in from a new country: flagged, email arrives. Then, until the email link is used: web login (password, 2FA, recovery key) shows "Account blocked", an open web session is logged out, **the mobile app keeps working**. After the link: web login works again |
 | Sort allow-list | Sort every column of every list page (projects, reports, users, resources) both ways. **The projects page now loads** (before: 500 on `sort=project.created_at`) |
 | Docker image on Node 22, `npm ci` | Container starts on beta; `npm run typeorm:run` inside it ("No migrations are pending") |
 | `console.ts` change | `npm run console -- users list` inside the container exits without an error |

@@ -32,6 +32,10 @@ export class DownloadResourceController {
     @Res() res: Response,
   ) {
     const zipStream = await this.downloadService.execute(fileNames);
+    zipStream.on('error', (err) => {
+      console.log('error zipping resources => ', err);
+      res.destroy(err);
+    });
     zipStream.pipe(res);
   }
 }

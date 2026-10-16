@@ -23,12 +23,12 @@ export class EditUserService implements IEditUserService {
     const user = await this.userRepository.findOne({
       where: { id: editUserDto.id },
     });
+    if (!user) throw new NotFoundUserException();
+
     const ability = this.abilityFactory.createForUser(user);
 
     // IS THIS WRONG ?
     if (ability.cannot(Actions.Update, user)) throw new UnauthorizedException();
-
-    if (!user) throw new NotFoundUserException();
 
     if (editUserDto.username) {
       const taken = await this.userRepository

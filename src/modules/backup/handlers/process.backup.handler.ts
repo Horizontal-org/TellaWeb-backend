@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { createWriteStream, promises as fsp } from 'fs';
 import * as path from 'path';
 import { join } from 'path';
-import mysqldump from 'mysqldump';
 import * as archiver from 'archiver';
 
 import { IProcessBackupHandler } from '../interfaces/handlers/process.backup.handler.interface';
@@ -18,6 +17,7 @@ import { BackupEntity } from '../domain';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { ProcessBackupDto } from '../dto/process.backup.dto';
+import { dumpDatabase } from './database-dump';
 
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
@@ -194,18 +194,16 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
 
   //NON DATA PROCESSES
   private async createDatabaseDump() {
-    // don't log the result: it holds the whole dump, and writing it to stdout
-    // is synchronous inside docker
-    await mysqldump({
-      connection: {
+    await dumpDatabase(
+      {
         host: process.env.MYSQL_HOST,
         port: +process.env.MYSQL_PORT || 3306,
         user: 'root',
         password: process.env.MYSQL_ROOT_PASSWORD,
         database: process.env.MYSQL_DATABASE,
       },
-      dumpToFile: this.backupDir + '/database_dump.sql',
-    });
+      this.backupDir + '/database_dump.sql',
+    );
   }
 
   private async parseProjectsCsv() {
