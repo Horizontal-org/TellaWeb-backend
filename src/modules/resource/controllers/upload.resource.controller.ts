@@ -1,6 +1,6 @@
-import { Inject, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Inject, Param, Put, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 
@@ -17,11 +17,17 @@ export class UploadResourceController {
   ) {}
 
   @ApiCreatedResponse({ type: ReadResourceDto })
+  @ApiBadRequestResponse({ description: 'The file is not a PDF' })
   @Put('upload/:fileName')
   async handler(
     @Req() stream: Request,
     @Param('fileName') fileName: string,
   ): Promise<ReadResourceDto> {
+    // Rejected before the body is read; the service still checks the content
+    if (!/\.pdf$/i.test(fileName)) {
+      throw new BadRequestException('Only PDF files can be uploaded');
+    }
+
     const file = await this.uploadResourceService.execute({
       bucket: 'resources',
       fileName,

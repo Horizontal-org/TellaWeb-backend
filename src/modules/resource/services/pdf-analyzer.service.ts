@@ -12,7 +12,6 @@ export class PdfAnalyzerService implements IPdfAnalyzerService {
   async analyze(buffer: Buffer): Promise<PdfAnalysisResult> {
     try {
       const fileType = await FileType.fromBuffer(buffer);
-      console.log('🚀 ~ PdfAnalyzerService ~ analyze ~ fileType:', fileType);
 
       if (!fileType || fileType.mime !== 'application/pdf') {
         this.logger.warn(
