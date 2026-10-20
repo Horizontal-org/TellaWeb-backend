@@ -19,13 +19,13 @@ export class StartBackupApplication implements IStartBackupApplication {
   ) {}
 
   async execute(user): Promise<void> {
-    const backupsInProgress = await this.checkInProgressService.execute()
+    const backupsInProgress = await this.checkInProgressService.execute();
 
     // COMMENT FOR QUICK TESTING
     if (backupsInProgress) {
-        throw new BackupAlreadyInProgressException()
+      throw new BackupAlreadyInProgressException();
     }
 
-    await this.startBackupService.execute(user)
+    await this.startBackupService.execute(user);
   }
 }

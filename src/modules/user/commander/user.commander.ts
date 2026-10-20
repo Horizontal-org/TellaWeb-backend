@@ -24,7 +24,7 @@ export class UserCommander {
     private readonly createUserApplication: ICreateUserApplication,
     private readonly consoleService: ConsoleService,
     @Inject(TYPES.applications.IBatchDeleteUsersApplication)
-    private readonly batchDeleteUsersApplication: IBatchDeleteUsersApplication
+    private readonly batchDeleteUsersApplication: IBatchDeleteUsersApplication,
   ) {
     const cli = this.consoleService.getCli();
     const groupCommand = this.consoleService.createGroupCommand(
@@ -80,13 +80,13 @@ export class UserCommander {
     this.consoleService.createCommand(
       {
         command: 'bulk-delete',
-        description: 'Delete users specified in commander script'
+        description: 'Delete users specified in commander script',
       },
       () =>
         this.deleteUsers(
           // Enter test id's to delete here
-          ['', '']
-          ),
+          ['', ''],
+        ),
       groupCommand,
     );
   }
@@ -104,7 +104,7 @@ export class UserCommander {
       sort,
       order,
       search,
-      []
+      [],
     );
     if (users.results.length === 0)
       return console.log('No users found in the application');
@@ -118,9 +118,8 @@ export class UserCommander {
   }
 
   async toggleUserRoleByUsername(username: string) {
-    const user = await this.toggleRoleByUsernameUserApplication.execute(
-      username,
-    );
+    const user =
+      await this.toggleRoleByUsernameUserApplication.execute(username);
 
     console.log(`${user.username} is now ${getUserRole(user)}`);
   }
@@ -155,11 +154,10 @@ export class UserCommander {
   async deleteUsers(toDelete) {
     prompt.start();
 
-    await this.batchDeleteUsersApplication.execute(toDelete)
+    await this.batchDeleteUsersApplication.execute(toDelete);
 
     console.log(`Users deleted`);
   }
-
 }
 
 const getUserRole = (user: ReadUserDto) =>

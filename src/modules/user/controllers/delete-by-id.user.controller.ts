@@ -5,7 +5,6 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 
 import { RolesUser } from '../domain';
 import { IDeleteByIdUserApplication, TYPES } from '../interfaces';
-import { boolean } from 'yargs';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 @AuthController('user', [RolesUser.ADMIN], JwtTypes.WEB)
@@ -15,7 +14,7 @@ export class DeleteByIdUserController {
     private readonly deleteByIdUserApplication: IDeleteByIdUserApplication,
   ) {}
 
-  @ApiOkResponse({ type: boolean })
+  @ApiOkResponse({ type: Boolean })
   @Delete(':userId')
   async handler(@Param('userId', new ParseUUIDPipe()) userId: string) {
     return this.deleteByIdUserApplication.execute(userId);

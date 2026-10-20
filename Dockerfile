@@ -1,4 +1,4 @@
-FROM node:20.14.0-alpine as production
+FROM node:22.23.3-alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -9,9 +9,7 @@ RUN apk add ffmpeg
 
 COPY package*.json ./
 
-COPY package-lock.json ./
-
-RUN npm install
+RUN npm ci
 
 RUN npm install -g ts-node
 

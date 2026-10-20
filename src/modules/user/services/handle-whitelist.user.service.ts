@@ -15,26 +15,28 @@ export class HandleWhitelistUserService implements IHandleWhitelistUserService {
   ) {}
 
   async execute(location, userId): Promise<boolean> {
-    
-    const userWhitelist = await this.userWhitelistRepo.find({ where: { user: userId }})
+    const userWhitelist = await this.userWhitelistRepo.find({
+      where: { user: { id: userId } },
+    });
     if (userWhitelist.length > 0) {
-      const hasLocation = await this.userWhitelistRepo.find({ where: { 
-        user: userId,
-        location: location
-      }})
+      const hasLocation = await this.userWhitelistRepo.find({
+        where: {
+          user: { id: userId },
+          location: location,
+        },
+      });
 
       if (hasLocation.length === 0) {
-        return true
+        return true;
       }
     } else {
       // first time you can pass
       const whitelistItem = new UserWhitelistEntity();
-      whitelistItem.location = location
-      whitelistItem.user = userId
-      await this.userWhitelistRepo.save(whitelistItem)
+      whitelistItem.location = location;
+      whitelistItem.user = userId;
+      await this.userWhitelistRepo.save(whitelistItem);
     }
 
-
-    return false
+    return false;
   }
 }

@@ -12,6 +12,6 @@ export class GetByIdReportService implements IGetByIdReportService {
   ) {}
 
   async execute(reportId: string): Promise<ReportEntity> {
-    return this.reportRepository.findOne(reportId);
+    return this.reportRepository.findOne({ where: { id: reportId } });
   }
 }

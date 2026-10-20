@@ -8,8 +8,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class BatchDeleteReportApplication
-  implements IBatchDeleteReportApplication {
+export class BatchDeleteReportApplication implements IBatchDeleteReportApplication {
   constructor(
     @Inject(TYPES.services.IBatchDeleteReportService)
     private batchDeleteReportService: IBatchDeleteReportService,

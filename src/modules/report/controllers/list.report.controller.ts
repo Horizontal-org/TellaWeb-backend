@@ -11,7 +11,11 @@ import { RolesUser } from 'modules/user/domain';
 import { ReadReportDto } from '../dto';
 import { IListReportApplication, TYPES } from '../interfaces';
 
-@AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController(
+  'report',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 @ApiExtraModels(PaginatedDto)
 export class ListReportController {
   constructor(

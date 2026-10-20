@@ -7,8 +7,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class GetByShortCodeRemoteConfigurationApplication
-  implements IGetByShortCodeRemoteConfigurationApplication {
+export class GetByShortCodeRemoteConfigurationApplication implements IGetByShortCodeRemoteConfigurationApplication {
   constructor(
     @Inject(TYPES.services.IGetByShortCodeRemoteConfigurationService)
     private getByShortCodeService: IGetByShortCodeRemoteConfigurationService,

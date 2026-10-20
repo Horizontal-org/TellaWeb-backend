@@ -1,9 +1,9 @@
-import { BackupEntity } from "../domain";
+import { BackupEntity } from '../domain';
 
 export class ProcessBackupDto {
-    receiver: string;
+  receiver: string;
 
-    backup: BackupEntity;
+  backup: BackupEntity;
 
-    emailEnabled: boolean;    
+  emailEnabled: boolean;
 }

@@ -1,6 +1,7 @@
-import { Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { Get, Inject, Param, ParseUUIDPipe, Res } from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
+import { basename, dirname } from 'path';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
@@ -18,32 +19,46 @@ export class DownloadBucketFileController {
   ) {}
 
   @Get('report/:reportId')
-  @Header('Content-Type', 'application/zip')
   async handler(
-    @Param('reportId')
+    @Param('reportId', ParseUUIDPipe)
     reportId: string,
     @Res() res: Response,
   ) {
-    const zipStream = await this.getZippedBucketFileApplication.execute(
-      reportId,
-    );
+    const zipStream =
+      await this.getZippedBucketFileApplication.execute(reportId);
+
+    res.attachment(`report-${reportId}.zip`);
+    zipStream.on('error', (err) => {
+      console.log('error zipping report => ', err);
+      res.destroy(err);
+    });
     zipStream.pipe(res);
   }
 
   @Get('/download/:bucketId/:fileId')
-  @Header('Content-Type', 'application/zip')
   async downloadFile(
-    @Param('bucketId')
+    @Param('bucketId', ParseUUIDPipe)
     bucketId: string,
     @Param('fileId')
     fileId: string,
     @Res() res: Response,
   ) {
-    const zipStream =
-      await this.getZippedBucketFileApplication.downloadFileFromBucket(
+    const filePath =
+      await this.getZippedBucketFileApplication.getFilePathFromBucket(
         bucketId,
         fileId,
       );
-    zipStream.pipe(res);
+
+    // res.download sets Content-Type/Content-Length/Content-Disposition and
+    // supports Range requests (resumable downloads); see the backup download
+    // for why the directory goes in `root`
+    const options = { root: dirname(filePath) };
+    res.download(basename(filePath), fileId, options, (err) => {
+      if (!err) return;
+      console.log('error downloading file => ', err);
+      if (!res.headersSent) {
+        res.status(500).end();
+      }
+    });
   }
 }

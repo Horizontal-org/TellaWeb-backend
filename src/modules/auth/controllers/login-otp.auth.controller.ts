@@ -9,7 +9,6 @@ import {
 } from 'modules/user/interfaces';
 import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
 
-
 @Controller('auth')
 export class LoginOtpAuthController {
   constructor(
@@ -24,15 +23,18 @@ export class LoginOtpAuthController {
   ) {}
 
   @Post('/otp/login')
-  async handler(@Body() body: LoginOtpAuthDto, @Res() response: Response): Promise<boolean> {
-    await this.verifyOtpService.execute(body.code, body.userId)
-    const user = await this.getByIdUserApplication.execute(body.userId)
+  async handler(
+    @Body() body: LoginOtpAuthDto,
+    @Res() response: Response,
+  ): Promise<boolean> {
+    await this.verifyOtpService.execute(body.code, body.userId);
+    const user = await this.getByIdUserApplication.execute(body.userId);
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '15m'
+      expiresIn: '15m',
     });
-    
+
     const refresh_token = await this.refreshTokenService.generate(user.id);
 
     response
@@ -46,7 +48,7 @@ export class LoginOtpAuthController {
         refresh_token,
         user,
       });
-        
-    return true
+
+    return true;
   }
 }

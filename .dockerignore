@@ -34,3 +34,7 @@ lerna-debug.log*
 # Data
 /data
 /db
+# Build output, backups and e2e test data
+/dist
+/backups
+/test/.e2e-workdir

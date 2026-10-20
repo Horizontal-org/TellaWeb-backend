@@ -39,7 +39,7 @@ import { BackupModule } from 'modules/backup/backup.module';
     BackupModule,
     QueueModule,
     GlobalJwtModule,
-    GlobalSettingModule
+    GlobalSettingModule,
   ],
 })
 export class AppModule {}

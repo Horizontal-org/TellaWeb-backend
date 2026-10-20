@@ -45,10 +45,7 @@ export class RefreshTokenAuthService implements IRefreshTokenAuthService {
   }
 
   async revoke(token: string): Promise<void> {
-    await this.refreshTokenRepo.update(
-      { token },
-      { revokedAt: new Date() },
-    );
+    await this.refreshTokenRepo.update({ token }, { revokedAt: new Date() });
   }
 
   async revokeAllForUser(userId: string): Promise<void> {
@@ -66,7 +63,9 @@ export class RefreshTokenAuthService implements IRefreshTokenAuthService {
       .createQueryBuilder()
       .delete()
       .where('expires_at < :now', { now })
-      .orWhere('revoked_at IS NOT NULL AND revoked_at < :oneDayAgo', { oneDayAgo })
+      .orWhere('revoked_at IS NOT NULL AND revoked_at < :oneDayAgo', {
+        oneDayAgo,
+      })
       .execute();
   }
 }

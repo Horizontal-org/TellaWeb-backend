@@ -1,5 +1,13 @@
 import { ForbiddenError } from '@casl/ability';
-import { Body, Controller, Get, Inject, Post, Res, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -7,7 +15,12 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { LoggedUser } from 'modules/auth/decorators';
 import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
 import { ReadUserDto } from 'modules/user/dto';
-import { IEnableOtpAuthService, IGenerateTokenAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
+import {
+  IEnableOtpAuthService,
+  IGenerateTokenAuthService,
+  IOtpAuthHandler,
+  TYPES,
+} from '../interfaces';
 import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
 
 import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
@@ -20,7 +33,6 @@ import {
 import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
 import { LoginRecoveryKeysAuthDto } from '../dto/login-recovery-keys.auth.dto';
 import { IValidateRecoveryKeysService } from '../interfaces/services/validate.recovery-keys.service.interface';
-
 
 @Controller('auth')
 export class LoginRecoveryKeysAuthController {
@@ -38,28 +50,31 @@ export class LoginRecoveryKeysAuthController {
   ) {}
 
   @Post('/otp/recovery-key')
-  async handler(@Body() body: LoginRecoveryKeysAuthDto, @Res() response: Response): Promise<boolean> {
-    const user = await this.getByIdUserApplication.execute(body.userId)
-    
+  async handler(
+    @Body() body: LoginRecoveryKeysAuthDto,
+    @Res() response: Response,
+  ): Promise<boolean> {
+    const user = await this.getByIdUserApplication.execute(body.userId);
+
     // extra layer of security
     try {
       await this.checkPasswordApplication.execute({
         username: user.username,
-        password: body.password
-      })
+        password: body.password,
+      });
     } catch (_) {
       throw new UnauthorizedException();
     }
 
-    await this.validateRecoveryKeysService.execute(body.userId, body.code)
+    await this.validateRecoveryKeysService.execute(body.userId, body.code);
 
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '15m'
+      expiresIn: '15m',
     });
     const refresh_token = await this.refreshTokenService.generate(user.id);
-    
+
     response
       .cookie('access_token', authToken.access_token, {
         httpOnly: true,
@@ -71,7 +86,7 @@ export class LoginRecoveryKeysAuthController {
         refresh_token,
         user,
       });
-        
-    return true
+
+    return true;
   }
 }

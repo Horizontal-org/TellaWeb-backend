@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IBatchDeleteReportService } from '../interfaces';
 import { ReportEntity } from '../domain';
@@ -12,6 +12,7 @@ import { FileEntity } from 'modules/file/domain';
 @Injectable()
 export class BatchDeleteReportService implements IBatchDeleteReportService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(ReportEntity)
     private reportRepository: Repository<ReportEntity>,
     @Inject(TYPES_FILE.applications.IDeleteBucketFileApplication)
@@ -19,14 +20,14 @@ export class BatchDeleteReportService implements IBatchDeleteReportService {
   ) {}
 
   async execute(toDelete: Array<string>): Promise<boolean> {
-    await getConnection()
+    await this.dataSource
       .createQueryBuilder()
       .delete()
       .from(FileEntity)
       .where('report.id IN (:...toDelete)', { toDelete: toDelete })
       .execute();
 
-    await getConnection()
+    await this.dataSource
       .createQueryBuilder()
       .delete()
       .from(ReportEntity)

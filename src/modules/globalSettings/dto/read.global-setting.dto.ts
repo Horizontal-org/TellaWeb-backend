@@ -2,7 +2,6 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-
 import { GlobalSettingEntity } from '../domain';
 
 @Exclude()

@@ -20,10 +20,8 @@ export class GetByUsernameController {
 
   @ApiResponse({ type: ReadUserDto })
   @Get(':username')
-  async handler(
-    @Param('username') username: string,
-  ): Promise<ReadUserDto> {
+  async handler(@Param('username') username: string): Promise<ReadUserDto> {
     const user = await this.findByUserNameApplication.execute(username);
-    return user
+    return user;
   }
 }

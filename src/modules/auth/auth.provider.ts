@@ -1,11 +1,17 @@
 import { OtpAuthHandler } from './handlers/otp.auth.handler';
 import { TYPES } from './interfaces';
-import { ValidateAuthService, GenerateTokenAuthService, EnableOtpAuthService, VerifyOtpAuthService, ActivateOtpAuthService, CreateRecoveryKeysService } from './services';
+import {
+  ValidateAuthService,
+  GenerateTokenAuthService,
+  EnableOtpAuthService,
+  VerifyOtpAuthService,
+  ActivateOtpAuthService,
+  CreateRecoveryKeysService,
+} from './services';
 import { DisableOtpAuthService } from './services/disable-otp.auth.service';
 import { GetRecoveryKeysService } from './services/get.recovery-keys.auth';
 import { ValidateRecoveryKeysService } from './services/validate.recovery-keys.auth';
 import { RefreshTokenAuthService } from './services/refresh-token.auth.service';
-
 
 export const generateTokenAuthServiceProvider = {
   provide: TYPES.services.IGenerateTokenAuthService,
@@ -19,51 +25,49 @@ export const validateAuthServiceProvider = {
 
 export const enableOtpAuthServiceProvider = {
   provide: TYPES.services.IEnableOtpAuthService,
-  useClass: EnableOtpAuthService
-}
+  useClass: EnableOtpAuthService,
+};
 
 export const verifyOtpAuthServiceProvider = {
   provide: TYPES.services.IVerifyOtpAuthService,
-  useClass: VerifyOtpAuthService
-}
+  useClass: VerifyOtpAuthService,
+};
 
 export const disableOtpAuthServiceProvider = {
   provide: TYPES.services.IDisableOtpAuthService,
-  useClass: DisableOtpAuthService
-}
+  useClass: DisableOtpAuthService,
+};
 
 export const activateOtpAuthServiceProvider = {
   provide: TYPES.services.IActivateOtpAuthService,
-  useClass: ActivateOtpAuthService
-}
+  useClass: ActivateOtpAuthService,
+};
 
 export const createRecoveryKeysServiceProvider = {
   provide: TYPES.services.ICreateRecoveryKeysService,
-  useClass: CreateRecoveryKeysService
-}
+  useClass: CreateRecoveryKeysService,
+};
 
 export const validateRecoveryKeysServiceProvider = {
   provide: TYPES.services.IValidateRecoveryKeysService,
-  useClass: ValidateRecoveryKeysService
-}
+  useClass: ValidateRecoveryKeysService,
+};
 
 export const getRecoveryKeysServiceProvider = {
   provide: TYPES.services.IGetRecoveryKeysService,
-  useClass: GetRecoveryKeysService
-}
+  useClass: GetRecoveryKeysService,
+};
 export const refreshTokenAuthServiceProvider = {
   provide: TYPES.services.IRefreshTokenAuthService,
   useClass: RefreshTokenAuthService,
-}
+};
 
 export const otpHandlerProvider = {
   provide: TYPES.handlers.IOtpAuthHandler,
-  useClass: OtpAuthHandler
-}
+  useClass: OtpAuthHandler,
+};
 
-export const handlersAuthProviders = [
-  otpHandlerProvider
-];
+export const handlersAuthProviders = [otpHandlerProvider];
 
 export const applicationsAuthProviders = [];
 

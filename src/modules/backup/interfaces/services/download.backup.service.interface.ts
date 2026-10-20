@@ -1,6 +1,4 @@
-import { ReadStream } from "fs";
-
 export interface IDownloadBackupService {
-    execute(backupId: string): Promise<ReadStream>;
+  // returns the absolute path of the backup zip
+  execute(backupId: string): Promise<string>;
 }
-  

@@ -1,17 +1,24 @@
 import { createWriteStream } from 'fs';
 import { Stream } from 'stream';
-import fs from 'fs'
+import fs from 'fs';
 
-export const createWritePromise = (filePath: string, stream: Stream, start?: number) =>
+export const createWritePromise = (
+  filePath: string,
+  stream: Stream,
+  start?: number,
+) =>
   new Promise<number>((res, rej) => {
     const startTime = Date.now();
     let written = 0;
 
-    console.log(`[STREAM] Starting stream write to: ${filePath}${start !== undefined ? ` at offset ${start}` : ''}`);
+    console.log(
+      `[STREAM] Starting stream write to: ${filePath}${start !== undefined ? ` at offset ${start}` : ''}`,
+    );
 
-    const writeStreamOptions = !!(start) && start > 0
-      ? { flags: 'r+', start, mode: 0o644 }
-      : { flags: 'a', mode: 0o644 };
+    const writeStreamOptions =
+      !!start && start > 0
+        ? { flags: 'r+', start, mode: 0o644 }
+        : { flags: 'a', mode: 0o644 };
 
     stream
       .on('data', (c) => {

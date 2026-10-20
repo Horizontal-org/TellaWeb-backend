@@ -9,19 +9,23 @@ export class RolesUserGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     try {
-      const roles = this.reflector.get<RolesUser[]>('roles', context.getClass());
+      const roles = this.reflector.get<RolesUser[]>(
+        'roles',
+        context.getClass(),
+      );
       const request = context.switchToHttp().getRequest();
       const user: UserEntity = request.user;
       if (typeof roles === 'undefined' || roles.length === 0) return true;
-      
+
       if (!user) return false;
-  
+
       return matchRoles(roles, user.role);
     } catch (e) {
-      console.log("🚀 ~ file: roles.user.guard.ts:15 ~ RolesUserGuard ~ canActivate ~ e:", e)
-      
+      console.log(
+        '🚀 ~ file: roles.user.guard.ts:15 ~ RolesUserGuard ~ canActivate ~ e:',
+        e,
+      );
     }
-    
   }
 }
 

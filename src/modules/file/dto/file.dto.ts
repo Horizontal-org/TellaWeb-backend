@@ -31,5 +31,4 @@ export class FileDto {
   fileInfo?: unknown;
 
   bytesWritten?: number;
-
 }

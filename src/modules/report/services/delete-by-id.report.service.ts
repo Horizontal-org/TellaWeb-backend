@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { getConnection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IDeleteByIdReportService } from '../interfaces';
 import { ReportEntity } from '../domain';
@@ -12,6 +12,7 @@ import { FileEntity } from 'modules/file/domain';
 @Injectable()
 export class DeleteByIdReportService implements IDeleteByIdReportService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(ReportEntity)
     private reportRepository: Repository<ReportEntity>,
     @Inject(TYPES_FILE.applications.IDeleteBucketFileApplication)
@@ -19,7 +20,7 @@ export class DeleteByIdReportService implements IDeleteByIdReportService {
   ) {}
 
   async execute(reportId: string): Promise<boolean> {
-    await getConnection()
+    await this.dataSource
       .createQueryBuilder()
       .delete()
       .from(FileEntity)

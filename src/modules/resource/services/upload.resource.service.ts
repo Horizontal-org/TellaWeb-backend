@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Readable } from 'stream';
 import { ReadStream } from 'fs';
 
@@ -56,7 +61,7 @@ export class UploadResourceService implements IUploadResourceService {
 
     const resource = new ResourceEntity();
     resource.fileName = input.fileName;
-    resource.title = input.fileName.split('.pdf')[0];
+    resource.title = input.fileName.replace(/\.pdf$/i, '');
     resource.type = 'pdf';
     const newResource = await this.resourceRepository.save(resource);
 

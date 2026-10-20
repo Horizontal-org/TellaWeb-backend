@@ -15,10 +15,7 @@ export class LogoutAuthController {
   ) {}
 
   @Post('logout')
-  async logout(
-    @LoggedUser() user: ReadUserDto,
-    @Res() response: Response,
-  ) {
+  async logout(@LoggedUser() user: ReadUserDto, @Res() response: Response) {
     await this.refreshTokenService.revokeAllForUser(user.id);
 
     response

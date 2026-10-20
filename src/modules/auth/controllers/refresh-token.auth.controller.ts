@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Post, Res, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Post,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { TYPES } from '../interfaces';
 import { IGenerateTokenAuthService } from '../interfaces/services/generate-token.auth.service.interface';
@@ -21,10 +28,7 @@ export class RefreshTokenAuthController {
   ) {}
 
   @Post('refresh')
-  async refresh(
-    @Body() body: RefreshTokenAuthDto,
-    @Res() response: Response,
-  ) {
+  async refresh(@Body() body: RefreshTokenAuthDto, @Res() response: Response) {
     const result = await this.refreshTokenService.validate(body.refresh_token);
     if (!result) {
       throw new UnauthorizedException();

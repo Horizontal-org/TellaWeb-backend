@@ -1,4 +1,3 @@
 export interface IDeleteBackupService {
-    execute(backupId: string): Promise<void>;
-  }
-  
+  execute(backupId: string): Promise<void>;
+}

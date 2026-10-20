@@ -17,9 +17,7 @@ export class StartBackupController {
   ) {}
 
   @Post('')
-  async handler(
-    @LoggedUser() loggedUser: ReadUserDto
-  ): Promise<void> {
+  async handler(@LoggedUser() loggedUser: ReadUserDto): Promise<void> {
     await this.startBackupApplication.execute(loggedUser);
   }
 }

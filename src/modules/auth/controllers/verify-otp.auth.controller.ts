@@ -8,7 +8,6 @@ import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
 import { TYPES } from '../interfaces';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 
-
 @AuthController('auth', [], JwtTypes.WEB)
 export class VerifyOtpAuthController {
   constructor(
@@ -17,9 +16,12 @@ export class VerifyOtpAuthController {
   ) {}
 
   @Post('/otp/verify')
-  async handler(@Body() body: OtpCodeAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<boolean> {
-    await this.verifyOtpService.execute(body.code, loggedUser.id)
+  async handler(
+    @Body() body: OtpCodeAuthDto,
+    @LoggedUser() loggedUser: ReadUserDto,
+  ): Promise<boolean> {
+    await this.verifyOtpService.execute(body.code, loggedUser.id);
 
-    return true
+    return true;
   }
 }

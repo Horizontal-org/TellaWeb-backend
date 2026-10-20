@@ -17,8 +17,7 @@ import {
 } from '../../user/interfaces';
 
 @Injectable()
-export class CreateRemoteConfigurationApplication
-  implements ICreateRemoteConfigurationApplication {
+export class CreateRemoteConfigurationApplication implements ICreateRemoteConfigurationApplication {
   constructor(
     @Inject(TYPES.services.ICreateRemoteConfigurationService)
     private readonly createRemoteConfigurationService: ICreateRemoteConfigurationService,

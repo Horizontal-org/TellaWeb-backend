@@ -4,7 +4,11 @@ import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
-import { TYPES, ILatestBackupService, IDeleteBackupService } from '../interfaces';
+import {
+  TYPES,
+  ILatestBackupService,
+  IDeleteBackupService,
+} from '../interfaces';
 
 @AuthController('backup', [RolesUser.ADMIN], JwtTypes.WEB)
 export class DeleteBackupController {
@@ -15,7 +19,7 @@ export class DeleteBackupController {
 
   @Delete('delete/:backupId')
   async handler(
-    @Param('backupId', new ParseUUIDPipe()) backupId: string
+    @Param('backupId', new ParseUUIDPipe()) backupId: string,
   ): Promise<void> {
     await this.deleteBackupService.execute(backupId);
   }

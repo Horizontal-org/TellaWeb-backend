@@ -18,7 +18,11 @@ import { LoggedUser } from 'modules/auth/decorators';
 import { IUserHasResourceService } from '../interfaces/services/user-has.resource.service.interface';
 
 // JWT IS ALL BECAUSE THIS IS BEING CONSUMED AS A COOKIE
-@AuthController('resource', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
+@AuthController(
+  'resource',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER],
+  JwtTypes.ALL,
+)
 export class GetAssetMobileResourceController {
   constructor(
     @Inject(TYPES.handlers.IStorageFileHandler)
@@ -35,19 +39,21 @@ export class GetAssetMobileResourceController {
     @Headers() headers,
     @Response() res,
   ) {
-
     if (role !== 'admin') {
-      const hasResource = await this.userHasResourceService.execute(id, fileName)
+      const hasResource = await this.userHasResourceService.execute(
+        id,
+        fileName,
+      );
       if (!hasResource) {
-        throw new UnauthorizedException()  
+        throw new UnauthorizedException();
       }
     }
 
     const stream = await this.storageFileHandler.fetch({
       bucket: 'resources',
-      fileName: fileName
+      fileName: fileName,
     });
 
-    stream.pipe(res)
+    stream.pipe(res);
   }
 }

@@ -7,7 +7,7 @@ import {
   applicationsReportProviders,
   getByIdReportApplicationProvider,
   servicesReportProviders,
-  createReportApplicationProvider
+  createReportApplicationProvider,
 } from './report.providers';
 import { FileModule } from 'modules/file/file.module';
 import { ProjectModule } from 'modules/project/project.module';
@@ -16,9 +16,9 @@ import { ProjectEntity } from 'modules/project/domain';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ReportEntity]), 
-    TypeOrmModule.forFeature([ProjectEntity]),  
-    FileModule, 
+    TypeOrmModule.forFeature([ReportEntity]),
+    TypeOrmModule.forFeature([ProjectEntity]),
+    FileModule,
     forwardRef(() => ProjectModule),
   ],
   controllers: [...reportControllers],

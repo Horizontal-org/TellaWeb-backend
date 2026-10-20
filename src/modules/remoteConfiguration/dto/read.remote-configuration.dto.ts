@@ -19,16 +19,15 @@ export class ReadRemoteConfigurationDto {
   @IsString()
   name: string;
 
-
   @ApiProperty()
   @Expose()
   // @isJSON()
-  camouflage?: {visible: boolean, change_name: boolean, calculator: boolean};
+  camouflage?: { visible: boolean; change_name: boolean; calculator: boolean };
 
   @ApiProperty()
   @Expose()
   // @IsJSON()
-  crashReports?: {visible: boolean, enabled: boolean};
+  crashReports?: { visible: boolean; enabled: boolean };
 
   @ApiProperty()
   @Expose()

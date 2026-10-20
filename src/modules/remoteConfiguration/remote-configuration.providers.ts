@@ -39,8 +39,8 @@ export const getByIdRemoteConfigurationApplicationProvider = {
 
 export const editRemoteConfigurationApplicationProvider = {
   provide: TYPES.applications.IEditRemoteConfigurationApplication,
-  useClass: EditRemoteConfigurationApplication
-}
+  useClass: EditRemoteConfigurationApplication,
+};
 
 export const getByShortCodeRemoteConfigurationServiceProvider = {
   provide: TYPES.services.IGetByShortCodeRemoteConfigurationService,
@@ -69,8 +69,8 @@ export const getByIdRemoteConfigurationServiceProvider = {
 
 export const editRemoteConfigurationServiceProvider = {
   provide: TYPES.services.IEditRemoteConfigurationService,
-  useClass: EditRemoteConfigurationService
-}
+  useClass: EditRemoteConfigurationService,
+};
 
 export const applicationsRemoteConfigurationProviders = [
   getByShortCodeRemoteConfigurationApplicationProvider,
@@ -78,7 +78,7 @@ export const applicationsRemoteConfigurationProviders = [
   deleteByIdRemoteConfigurationApplicationProvider,
   createRemoteConfigurationApplicationProvider,
   getByIdRemoteConfigurationApplicationProvider,
-  editRemoteConfigurationApplicationProvider
+  editRemoteConfigurationApplicationProvider,
 ];
 
 export const servicesRemoteConfigurationProviders = [
@@ -87,5 +87,5 @@ export const servicesRemoteConfigurationProviders = [
   deleteByIdRemoteConfigurationServiceProvider,
   createRemoteConfigurationServiceProvider,
   getByIdRemoteConfigurationServiceProvider,
-  editRemoteConfigurationServiceProvider
+  editRemoteConfigurationServiceProvider,
 ];

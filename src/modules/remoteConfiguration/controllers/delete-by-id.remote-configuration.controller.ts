@@ -5,10 +5,9 @@ import { RolesUser } from 'modules/user/domain';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
-import { boolean } from 'yargs';
 import {
   IDeleteByIdRemoteConfigurationApplication,
-  TYPES
+  TYPES,
 } from '../interfaces';
 
 @AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)
@@ -18,7 +17,7 @@ export class DeleteByIdRemoteConfigurationController {
     private deleteByIdRemoteConfigurationApplication: IDeleteByIdRemoteConfigurationApplication,
   ) {}
 
-  @ApiOkResponse({ type: boolean })
+  @ApiOkResponse({ type: Boolean })
   @Delete(':configurationId')
   async handler(@Param('configurationId') configurationId: string) {
     return this.deleteByIdRemoteConfigurationApplication.execute(

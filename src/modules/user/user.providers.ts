@@ -121,22 +121,22 @@ export const batchDeleteUsersServiceProvider = {
 export const flagUserServiceProvider = {
   provide: TYPES.services.IFlagUserAuthService,
   useClass: FlagUserAuthService,
-}
+};
 
 export const checkSuspiciousApplicationProvider = {
   provide: TYPES.applications.ICheckSuspiciousUserApplication,
-  useClass: CheckSuspiciousUserApplication
-}
+  useClass: CheckSuspiciousUserApplication,
+};
 
 export const unblockUserServiceProvider = {
   provide: TYPES.services.IUnblockUserService,
-  useClass: UnblockUserService
-}
+  useClass: UnblockUserService,
+};
 
 export const handleWhitelistUserServiceProvider = {
   provide: TYPES.services.IHandleWhitelistUserService,
-  useClass: HandleWhitelistUserService
-}
+  useClass: HandleWhitelistUserService,
+};
 
 export const applicationsUserProviders = [
   findByUsernameUserApplicationProvider,
@@ -149,7 +149,7 @@ export const applicationsUserProviders = [
   makePublicUserApplicationProvider,
   deleteByIdUserApplication,
   batchDeleteUsersApplicationProvider,
-  checkSuspiciousApplicationProvider
+  checkSuspiciousApplicationProvider,
 ];
 
 export const servicesUserProviders = [
@@ -163,5 +163,5 @@ export const servicesUserProviders = [
   batchDeleteUsersServiceProvider,
   flagUserServiceProvider,
   unblockUserServiceProvider,
-  handleWhitelistUserServiceProvider
+  handleWhitelistUserServiceProvider,
 ];

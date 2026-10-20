@@ -8,7 +8,6 @@ import { EnableOtpResponseAuthDto } from '../dto/enable-otp-response.auth.dto';
 import { EnableOtpAuthDto } from '../dto/enable-otp.auth.dto';
 import { IEnableOtpAuthService, TYPES } from '../interfaces';
 
-
 @AuthController('auth', [], JwtTypes.WEB)
 export class EnableOtpAuthController {
   constructor(
@@ -17,13 +16,15 @@ export class EnableOtpAuthController {
   ) {}
 
   @Post('/otp/enable')
-  async handler(@Body() body: EnableOtpAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<EnableOtpResponseAuthDto> {
-    
-    const res = await this.enableOtpService.execute({ 
+  async handler(
+    @Body() body: EnableOtpAuthDto,
+    @LoggedUser() loggedUser: ReadUserDto,
+  ): Promise<EnableOtpResponseAuthDto> {
+    const res = await this.enableOtpService.execute({
       username: loggedUser.username,
-      password: body.password
-    })
+      password: body.password,
+    });
 
-    return res;    
+    return res;
   }
 }

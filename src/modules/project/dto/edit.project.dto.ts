@@ -19,15 +19,15 @@ export class EditProjectDto {
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  users: Array<string>
+  users: Array<string>;
 
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  resources: Array<string>
+  resources: Array<string>;
 
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  reports: Array<string>  
+  reports: Array<string>;
 }

@@ -6,7 +6,7 @@ import { CloseResourceService } from './services/close.resource.service';
 import { CheckNameResourceService } from './services/check-name.resource.service';
 import { DeleteResourceService } from './services/delete.resource.service';
 import { DownloadResourceService } from './services/download.resource.service';
-import { GetByProjectsResourceService } from './services/get-by-projects.resource.service'
+import { GetByProjectsResourceService } from './services/get-by-projects.resource.service';
 import { UserHasResourceService } from './services/user-has.resource.service';
 import { PdfAnalyzerService } from './services/pdf-analyzer.service';
 
@@ -17,47 +17,45 @@ export const listResourceServiceProvider = {
 
 export const uploadResourceServiceProvider = {
   provide: TYPES.services.IUploadResourceService,
-  useClass: UploadResourceService
-}
+  useClass: UploadResourceService,
+};
 
 export const closeResourceServiceProvider = {
   provide: TYPES.services.ICloseResourceService,
-  useClass: CloseResourceService
-}
+  useClass: CloseResourceService,
+};
 
 export const checkNameResourceServiceProvider = {
   provide: TYPES.services.ICheckNameResourceService,
-  useClass: CheckNameResourceService
-}
+  useClass: CheckNameResourceService,
+};
 
 export const deleteResourceServiceProvider = {
   provide: TYPES.services.IDeleteResourceService,
-  useClass: DeleteResourceService
-}
+  useClass: DeleteResourceService,
+};
 
 export const downloadResourceServiceProvider = {
   provide: TYPES.services.IDownloadResourceService,
-  useClass: DownloadResourceService
-}
-
+  useClass: DownloadResourceService,
+};
 
 export const getByProjectsResourceServiceProvider = {
   provide: TYPES.services.IGetByProjectsResourceService,
-  useClass: GetByProjectsResourceService
-}
+  useClass: GetByProjectsResourceService,
+};
 
 export const userHasResourceServiceProvider = {
   provide: TYPES.services.IUserHasResourceService,
-  useClass: UserHasResourceService
-}
+  useClass: UserHasResourceService,
+};
 
 export const pdfAnalyzerServiceProvider = {
   provide: TYPES.services.IPdfAnalyzerService,
-  useClass: PdfAnalyzerService
-}
+  useClass: PdfAnalyzerService,
+};
 
-export const applicationsResourceProviders = [
-];
+export const applicationsResourceProviders = [];
 
 export const servicesResourceProviders = [
   listResourceServiceProvider,
@@ -68,7 +66,7 @@ export const servicesResourceProviders = [
   downloadResourceServiceProvider,
   getByProjectsResourceServiceProvider,
   userHasResourceServiceProvider,
-  pdfAnalyzerServiceProvider
+  pdfAnalyzerServiceProvider,
 ];
 
 // export const guardsProjectProviders = [

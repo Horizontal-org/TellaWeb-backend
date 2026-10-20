@@ -10,7 +10,6 @@ import { IActivateOtpAuthService } from '../interfaces/services/activate-otp.aut
 import { ICreateRecoveryKeysService } from '../interfaces/services/create.recovery-keys.service.interface';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 
-
 @AuthController('auth', [], JwtTypes.WEB)
 export class ActivateOtpAuthController {
   constructor(
@@ -23,10 +22,13 @@ export class ActivateOtpAuthController {
   ) {}
 
   @Post('/otp/activate')
-  async handler(@Body() body: OtpCodeAuthDto, @LoggedUser() loggedUser: ReadUserDto): Promise<string[]> {
-    await this.verifyOtpService.execute(body.code, loggedUser.id)
-    await this.activateOtpService.execute(loggedUser.id)
-    const keys = await this.createRecoveryKeysService.execute(loggedUser.id)
-    return keys
+  async handler(
+    @Body() body: OtpCodeAuthDto,
+    @LoggedUser() loggedUser: ReadUserDto,
+  ): Promise<string[]> {
+    await this.verifyOtpService.execute(body.code, loggedUser.id);
+    await this.activateOtpService.execute(loggedUser.id);
+    const keys = await this.createRecoveryKeysService.execute(loggedUser.id);
+    return keys;
   }
 }

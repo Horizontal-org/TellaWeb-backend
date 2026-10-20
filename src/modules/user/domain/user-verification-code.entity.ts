@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from '.';
 
-@Entity("user_verification_codes")
+@Entity('user_verification_codes')
 export class UserVerificationCodeEntity {
   @Expose()
   @PrimaryGeneratedColumn('uuid')
@@ -24,19 +24,18 @@ export class UserVerificationCodeEntity {
   @Expose()
   @Column({ name: 'created_at' })
   createdAt!: Date;
-  
+
   @Expose()
   @Column({ name: 'expires_at' })
   expiresAt!: Date;
-  
+
   @Expose()
-  @ManyToOne(() => UserEntity, user => user.verification_code)
-  @JoinColumn({ name: "user_id" })
+  @ManyToOne(() => UserEntity, (user) => user.verification_code)
+  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
   @BeforeInsert()
   private beforeInsert(): void {
     this.createdAt = new Date();
   }
-
 }

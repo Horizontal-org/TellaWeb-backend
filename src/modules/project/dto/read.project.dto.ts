@@ -27,7 +27,7 @@ export class ReadProjectDto {
   @Expose()
   @IsString()
   url: string;
-  
+
   @ApiProperty()
   @Expose()
   @Type(() => ReadReportDto)

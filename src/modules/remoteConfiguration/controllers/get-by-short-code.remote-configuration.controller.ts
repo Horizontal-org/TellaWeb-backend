@@ -8,7 +8,7 @@ import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { ReadRemoteConfigurationDto } from '../dto/read.remote-configuration.dto';
 import {
   IGetByShortCodeRemoteConfigurationApplication,
-  TYPES
+  TYPES,
 } from '../interfaces';
 
 @AuthController('config', [], JwtTypes.WEB)

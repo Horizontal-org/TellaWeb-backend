@@ -14,10 +14,10 @@ export class CreateProjectDto {
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  users: Array<string>
+  users: Array<string>;
 
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  reports: Array<string>  
+  reports: Array<string>;
 }

@@ -17,7 +17,7 @@ export class ListUserApplication implements IListUserApplication {
     sort: string,
     order: string,
     search: string,
-    exclude: Array<string>
+    exclude: Array<string>,
   ): Promise<PaginatedDto<ReadUserDto>> {
     const { results: users, total } = await this.listUserService.execute(
       take,
@@ -25,7 +25,7 @@ export class ListUserApplication implements IListUserApplication {
       sort,
       order,
       search,
-      exclude
+      exclude,
     );
 
     return {
