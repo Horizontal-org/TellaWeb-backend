@@ -9,5 +9,6 @@ export interface IListReportApplication {
     sort: string,
     order: string,
     search: string,
+    projectId: string,
   ): Promise<PaginatedDto<ReadReportDto>>;
 }

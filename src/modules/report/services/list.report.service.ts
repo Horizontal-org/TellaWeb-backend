@@ -27,6 +27,7 @@ export class ListReportService implements IListReportService {
     sort: string,
     order: string,
     search: string,
+    projectId: string,
   ): Promise<PartialResult<ReportEntity>> {
     const query = this.reportRepository
       .createQueryBuilder('report')
@@ -36,9 +37,14 @@ export class ListReportService implements IListReportService {
       .skip(skip || undefined)
       .take(take || undefined);
 
+    // Optional: only the reports of one project (the project page's list)
+    if (projectId && projectId.length > 0) {
+      query.andWhere('report.project = :projectId', { projectId });
+    }
+
     if (search && search.length > 0) {
-      query.where(
-        'report.title like :search OR report.description like :search',
+      query.andWhere(
+        '(report.title like :search OR report.description like :search)',
         {
           search: `%${search}%`,
         },
