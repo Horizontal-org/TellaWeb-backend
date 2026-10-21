@@ -38,5 +38,6 @@ yarn.lock
 /backups
 tellaDb.sql
 /.env
+.env
 # e2e test working directory (data/, backups/)
 /test/.e2e-workdir
