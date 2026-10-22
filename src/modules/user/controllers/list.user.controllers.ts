@@ -32,6 +32,7 @@ export class ListUserController {
     @Query('order') order = '',
     @Query('search') search = '',
     @Query('exclude', new ParseArrayPipe({ optional: true })) exclude = [],
+    @Query('projectId') projectId = '',
   ): Promise<PaginatedDto<ReadUserDto>> {
     const response = await this.listUserApplication.execute(
       limit,
@@ -40,6 +41,7 @@ export class ListUserController {
       order,
       search,
       exclude,
+      projectId,
     );
 
     return response;

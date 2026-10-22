@@ -31,6 +31,7 @@ export class ListResourceService implements IListResourceService {
     order: string,
     search: string,
     exclude: Array<string>,
+    projectId: string,
   ): Promise<PaginatedDto<ReadResourceDto>> {
     const query = this.resourceRepository
       .createQueryBuilder('resource')
@@ -39,8 +40,17 @@ export class ListResourceService implements IListResourceService {
       .skip(skip || undefined)
       .take(take || undefined);
 
+    // Optional: only the resources of one project (the project page's list). A subquery on the
+    // join table, so the joined `projects` of each resource stay complete
+    if (projectId && projectId.length > 0) {
+      query.andWhere(
+        'resource.id IN (SELECT pr.resource_id FROM projects_resources pr WHERE pr.project_id = :projectId)',
+        { projectId },
+      );
+    }
+
     if (search && search.length > 0) {
-      query.where('resource.title like :search', {
+      query.andWhere('resource.title like :search', {
         search: `%${search}%`,
       });
     }

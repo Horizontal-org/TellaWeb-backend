@@ -12,5 +12,6 @@ export interface IListResourceService {
     order: string,
     search: string,
     exclude: Array<string>,
+    projectId: string,
   ): Promise<PaginatedDto<ReadResourceDto>>;
 }

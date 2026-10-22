@@ -105,6 +105,7 @@ export class UserCommander {
       order,
       search,
       [],
+      '',
     );
     if (users.results.length === 0)
       return console.log('No users found in the application');

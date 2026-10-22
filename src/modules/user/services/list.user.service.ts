@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UserEntity } from '../domain';
+import { RolesUser, UserEntity } from '../domain';
 import { IListUserService } from '../interfaces';
 import { PartialResult } from 'common/dto/partial-result.common.dto';
 import { applySort, SortableColumns } from 'common/utils/sort.utils';
@@ -27,12 +27,22 @@ export class ListUserService implements IListUserService {
     order: string,
     search: string,
     exclude: Array<string>,
+    projectId: string,
   ): Promise<PartialResult<UserEntity>> {
     const query = this.userRepository
       .createQueryBuilder('user')
       // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
       .skip(skip || undefined)
       .take(take || undefined);
+
+    // Optional: only the users of one project (the project page's list). Admins belong to every
+    // project, as in GetByIdProjectService
+    if (projectId && projectId.length > 0) {
+      query.andWhere(
+        '(user.role = :admin OR user.id IN (SELECT pu.user_id FROM projects_users pu WHERE pu.project_id = :projectId))',
+        { admin: RolesUser.ADMIN, projectId },
+      );
+    }
 
     if (search && search.length > 0) {
       query.andWhere('user.username like :search', { search: `%${search}%` });
