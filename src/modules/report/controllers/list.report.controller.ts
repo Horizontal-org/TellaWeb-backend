@@ -31,6 +31,7 @@ export class ListReportController {
     @Query('sort') sort = '',
     @Query('order') order = '',
     @Query('search') search = '',
+    @Query('projectId') projectId = '',
   ): Promise<PaginatedDto<ReadReportDto>> {
     const response = await this.listReportApplication.execute(
       limit,
@@ -38,6 +39,7 @@ export class ListReportController {
       sort,
       order,
       search,
+      projectId,
     );
     return response;
   }

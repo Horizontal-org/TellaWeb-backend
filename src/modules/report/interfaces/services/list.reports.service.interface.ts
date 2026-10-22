@@ -9,5 +9,6 @@ export interface IListReportService {
     sort: string,
     order: string,
     search: string,
+    projectId: string,
   ): Promise<PartialResult<ReportEntity>>;
 }
