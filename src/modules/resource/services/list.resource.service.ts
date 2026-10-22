@@ -31,7 +31,7 @@ export class ListResourceService implements IListResourceService {
     order: string,
     search: string,
     exclude: Array<string>,
-    projectId: string,
+    projectId?: string,
   ): Promise<PaginatedDto<ReadResourceDto>> {
     const query = this.resourceRepository
       .createQueryBuilder('resource')

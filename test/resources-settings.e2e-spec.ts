@@ -205,6 +205,42 @@ describe('resources, remote configurations and global settings', () => {
       });
     });
 
+    it('lists the resources of a project to its members', async () => {
+      const res = await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(viewer))
+        .expect(200);
+      expect(res.body.total).toBe(1);
+      expect(res.body.results[0]).toMatchObject({
+        id: resource.id,
+        fileName: 'guide.pdf',
+      });
+
+      await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(admin))
+        .expect(200);
+    });
+
+    it('only members list the resources of a project', async () => {
+      // The editor is not in the project
+      await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(editor))
+        .expect(403);
+    });
+
+    it('viewers cannot list every resource', async () => {
+      await t
+        .http()
+        .get('/resource?limit=10&offset=0')
+        .set(bearer(viewer))
+        .expect(403);
+    });
+
     it('zips several resources', async () => {
       const res = await t
         .http()

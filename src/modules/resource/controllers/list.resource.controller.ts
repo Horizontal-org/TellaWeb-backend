@@ -34,7 +34,6 @@ export class ListResourceController {
     @Query('order') order = '',
     @Query('search') search = '',
     @Query('exclude', new ParseArrayPipe({ optional: true })) exclude = [],
-    @Query('projectId') projectId = '',
   ): Promise<PaginatedDto<ReadResourceDto>> {
     const response = await this.listResourceService.execute(
       limit,
@@ -43,7 +42,6 @@ export class ListResourceController {
       order,
       search,
       exclude,
-      projectId,
     );
     return response;
   }
