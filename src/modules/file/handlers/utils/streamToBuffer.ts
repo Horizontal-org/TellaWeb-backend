@@ -1,7 +1,6 @@
 import { PayloadTooLargeException } from '@nestjs/common';
 import { ReadStream } from 'fs';
 
-// Without maxBytes the whole stream is buffered, whatever its size
 export const streamToBuffer = (
   stream: ReadStream,
   maxBytes?: number,
@@ -16,8 +15,7 @@ export const streamToBuffer = (
 
       total += chunk.length;
       if (maxBytes !== undefined && total > maxBytes) {
-        // The request isn't destroyed so the 413 can still be sent; the rest
-        // of the body is read and discarded
+        // Not destroyed, or the 413 can't be sent
         settled = true;
         data = [];
         reject(new PayloadTooLargeException('File is too large'));

@@ -43,8 +43,7 @@ export class UploadResourceController {
       throw new BadRequestException('Only PDF files can be uploaded');
     }
 
-    // Same here: the header can be missing or wrong, so the service also
-    // stops reading once the body goes over the limit
+    // Header can be missing or wrong; the service also caps the body
     if (parseInt(contentLength, 10) > MAX_RESOURCE_SIZE) {
       throw new PayloadTooLargeException('File exceeds the 20 MB limit');
     }
