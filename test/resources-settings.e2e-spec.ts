@@ -1,3 +1,5 @@
+import * as http from 'http';
+import { AddressInfo } from 'net';
 import * as JSZip from 'jszip';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -89,6 +91,48 @@ describe('resources, remote configurations and global settings', () => {
         .set('Content-Type', 'application/octet-stream')
         .send(await png(10, 10))
         .expect(400);
+    });
+
+    it('rejects a file over 20 MB from its Content-Length', async () => {
+      await t
+        .http()
+        .put('/resource/upload/big.pdf')
+        .set(bearer(admin))
+        .set('Content-Type', 'application/octet-stream')
+        .send(Buffer.alloc(20 * 1024 * 1024 + 1))
+        .expect(413);
+    });
+
+    it('rejects a file over 20 MB sent without a Content-Length', async () => {
+      // Plain http so the body is sent chunked, with no Content-Length
+      const server = t.app.getHttpServer().listen(0);
+      const { port } = server.address() as AddressInfo;
+
+      try {
+        const status = await new Promise<number>((resolve, reject) => {
+          const req = http.request(
+            {
+              port,
+              method: 'PUT',
+              path: '/resource/upload/big.pdf',
+              headers: {
+                ...bearer(admin),
+                'Content-Type': 'application/octet-stream',
+              },
+            },
+            (res) => {
+              res.resume();
+              resolve(res.statusCode);
+            },
+          );
+          req.on('error', reject);
+          req.end(Buffer.alloc(20 * 1024 * 1024 + 1));
+        });
+
+        expect(status).toBe(413);
+      } finally {
+        server.close();
+      }
     });
 
     it('rejects a PDF with JavaScript', async () => {
