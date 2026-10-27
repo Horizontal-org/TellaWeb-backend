@@ -1,4 +1,11 @@
-import { Get, Inject, Param, ParseUUIDPipe, Res } from '@nestjs/common';
+import {
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
 import { basename, dirname } from 'path';
@@ -6,6 +13,7 @@ import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetZippedBucketFileApplication } from '../interfaces';
+import { ReportAccessGuard } from 'modules/report/guard/access.report.guard';
 
 @AuthController(
   'file',
@@ -18,6 +26,7 @@ export class DownloadBucketFileController {
     private readonly getZippedBucketFileApplication: IGetZippedBucketFileApplication,
   ) {}
 
+  @UseGuards(ReportAccessGuard)
   @Get('report/:reportId')
   async handler(
     @Param('reportId', ParseUUIDPipe)
@@ -35,9 +44,10 @@ export class DownloadBucketFileController {
     zipStream.pipe(res);
   }
 
-  @Get('/download/:bucketId/:fileId')
+  @UseGuards(ReportAccessGuard)
+  @Get('/download/:reportId/:fileId')
   async downloadFile(
-    @Param('bucketId', ParseUUIDPipe)
+    @Param('reportId', ParseUUIDPipe)
     bucketId: string,
     @Param('fileId')
     fileId: string,

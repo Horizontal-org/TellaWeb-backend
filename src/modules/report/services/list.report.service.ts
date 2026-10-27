@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
 import { applySort, SortableColumns } from 'common/utils/sort.utils';
+import { RolesUser } from 'modules/user/domain';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReportEntity } from '../domain';
 import { IListReportService } from '../interfaces';
@@ -28,6 +30,7 @@ export class ListReportService implements IListReportService {
     order: string,
     search: string,
     projectId: string,
+    user: ReadUserDto,
   ): Promise<PartialResult<ReportEntity>> {
     const query = this.reportRepository
       .createQueryBuilder('report')
@@ -36,6 +39,15 @@ export class ListReportService implements IListReportService {
       // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
       .skip(skip || undefined)
       .take(take || undefined);
+
+    // Non-admins only see reports of projects they're a member of
+    if (user.role !== RolesUser.ADMIN) {
+      query
+        .innerJoin('report.project', 'memberProject')
+        .innerJoin('memberProject.users', 'member', 'member.id = :userId', {
+          userId: user.id,
+        });
+    }
 
     // Optional: only the reports of one project (the project page's list)
     if (projectId && projectId.length > 0) {

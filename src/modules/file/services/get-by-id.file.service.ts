@@ -15,6 +15,7 @@ export class GetByIdFileService implements IGetByIdFileService {
 
   async execute(id: string): Promise<FileDto> {
     const file = await this.fileRepository.findOne({ where: { id } });
+    if (!file) return null;
     return {
       id,
       bucket: file.bucket,

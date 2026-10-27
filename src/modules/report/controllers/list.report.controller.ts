@@ -4,9 +4,11 @@ import { ApiExtraModels } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { LoggedUser } from 'modules/auth/decorators';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { RolesUser } from 'modules/user/domain';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReadReportDto } from '../dto';
 import { IListReportApplication, TYPES } from '../interfaces';
@@ -26,6 +28,7 @@ export class ListReportController {
   @ApiPaginatedResponse(ReadReportDto)
   @Get('')
   async handler(
+    @LoggedUser() user: ReadUserDto,
     @Query('limit', new ParseIntPipe()) limit = 0,
     @Query('offset', new ParseIntPipe()) offset = 0,
     @Query('sort') sort = '',
@@ -40,6 +43,7 @@ export class ListReportController {
       order,
       search,
       projectId,
+      user,
     );
     return response;
   }

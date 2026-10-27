@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReadReportDto } from '../dto';
 import {
@@ -24,6 +25,7 @@ export class ListReportApplication implements IListReportApplication {
     order: string,
     search: string,
     projectId: string,
+    user: ReadUserDto,
   ): Promise<PaginatedDto<ReadReportDto>> {
     const { results: reports, total } = await this.listReportService.execute(
       take,
@@ -32,6 +34,7 @@ export class ListReportApplication implements IListReportApplication {
       order,
       search,
       projectId,
+      user,
     );
 
     return {

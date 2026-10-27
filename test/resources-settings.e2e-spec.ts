@@ -300,6 +300,19 @@ describe('resources, remote configurations and global settings', () => {
       expect(Buffer.compare(content, document)).toBe(0);
     });
 
+    it("only zips resources of the user's projects", async () => {
+      await t
+        .http()
+        .get('/resource/download?fileNames=guide.pdf')
+        .set(bearer(editor))
+        .expect(401);
+      await t
+        .http()
+        .get('/resource/download?fileNames=guide.pdf')
+        .set(bearer(admin))
+        .expect(200);
+    });
+
     it('admins delete a resource', async () => {
       const res = await t
         .http()

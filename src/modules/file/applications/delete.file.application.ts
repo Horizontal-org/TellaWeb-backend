@@ -22,8 +22,11 @@ export class DeleteFileApplication implements IDeleteFileApplication {
     private readonly deleteThumbnailFileService: IDeleteThumbnailFileService,
   ) {}
 
-  async execute(fileId: string): Promise<boolean> {
-    const readFileDto = await this.getByIdFileApplication.execute(fileId);
+  async execute(fileId: string, reportId: string): Promise<boolean> {
+    const readFileDto = await this.getByIdFileApplication.execute(
+      fileId,
+      reportId,
+    );
 
     await this.deleteFileService.execute(fileId);
     await this.deleteFullFileService.execute(readFileDto);

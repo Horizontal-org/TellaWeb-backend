@@ -230,6 +230,16 @@ describe('projects and reports', () => {
   describe('reports', () => {
     let report: any;
 
+    // editors can only manage reports in their own projects (ReportAccessGuard)
+    beforeAll(async () => {
+      await t
+        .http()
+        .put(`/project/${project.id}`)
+        .set(bearer(admin))
+        .send({ users: [t.users.editor.id] })
+        .expect(200);
+    });
+
     it('a reporter creates a report in their project from the mobile app', async () => {
       const res = await t
         .http()
@@ -380,8 +390,85 @@ describe('projects and reports', () => {
         .expect(201);
 
       for (const id of ids) {
-        await t.http().get(`/report/${id}`).set(bearer(editor)).expect(404);
+        await t.http().get(`/report/${id}`).set(bearer(admin)).expect(404);
       }
+    });
+
+    describe("outside the user's projects", () => {
+      let outside: any;
+
+      beforeAll(async () => {
+        outside = (
+          await t
+            .http()
+            .post(`/project/${otherProject.id}`)
+            .set(bearer(admin))
+            .send({ title: 'Outside report' })
+            .expect(201)
+        ).body;
+      });
+
+      it('viewers cannot get it', async () => {
+        await t
+          .http()
+          .get(`/report/${outside.id}`)
+          .set(bearer(viewer))
+          .expect(403);
+      });
+
+      it('editors cannot edit or delete it', async () => {
+        await t
+          .http()
+          .post(`/report/${outside.id}`)
+          .set(bearer(editor))
+          .send({ title: 'nope' })
+          .expect(403);
+        await t
+          .http()
+          .delete(`/report/${outside.id}`)
+          .set(bearer(editor))
+          .expect(403);
+      });
+
+      it('batch delete with one report outside deletes nothing', async () => {
+        const own = (
+          await t
+            .http()
+            .post(`/project/${project.id}`)
+            .set(bearer(reporterMobile))
+            .send({ title: 'E2E batch own' })
+            .expect(201)
+        ).body;
+
+        await t
+          .http()
+          .post('/report/batch-delete')
+          .set(bearer(editor))
+          .send({ toDelete: [own.id, outside.id] })
+          .expect(403);
+
+        await t.http().get(`/report/${own.id}`).set(bearer(editor)).expect(200);
+        await t
+          .http()
+          .get(`/report/${outside.id}`)
+          .set(bearer(admin))
+          .expect(200);
+      });
+
+      it("the list only has reports of the user's projects", async () => {
+        const list = async (session: Session) =>
+          (
+            await t
+              .http()
+              .get('/report?limit=0&offset=0')
+              .set(bearer(session))
+              .expect(200)
+          ).body.results.map((r) => r.id);
+
+        expect(await list(viewer)).not.toContain(outside.id);
+        expect(await list(viewer)).toContain(report.id);
+        expect(await list(admin)).toContain(outside.id);
+      });
     });
 
     it('deleting a project keeps its reports', async () => {
