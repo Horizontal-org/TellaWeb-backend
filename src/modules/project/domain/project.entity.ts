@@ -58,6 +58,9 @@ export class ProjectEntity {
   })
   resources: ResourceEntity[];
 
+  // not a column: filled by the list query
+  reportCount?: number;
+
   @Column({ nullable: true })
   url: string;
 

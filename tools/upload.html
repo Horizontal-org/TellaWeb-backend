@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Report upload</title>
+    <style>
+      body { font-family: sans-serif; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
+      label { display: block; margin-top: 0.75rem; }
+      input { width: 100%; box-sizing: border-box; }
+      button { margin-top: 1rem; }
+      pre { background: #f4f4f4; padding: 0.5rem; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Report upload</h1>
+    <form id="form">
+      <label>Username <input name="username" autocomplete="username" required /></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required /></label>
+      <label>Project ID <input name="projectId" required /></label>
+      <label>Report title <input name="title" required /></label>
+      <label>Files <input name="files" type="file" multiple required /></label>
+      <button>Upload</button>
+    </form>
+    <pre id="log" aria-live="polite"></pre>
+
+    <script>
+      const form = document.getElementById('form');
+      const logEl = document.getElementById('log');
+      const log = (msg) => (logEl.textContent += msg + '\n');
+
+      async function request(url, options) {
+        const res = await fetch(url, options);
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(`${res.status} ${body.message || res.statusText}`);
+        return body;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = form.querySelector('button');
+        button.disabled = true;
+        logEl.textContent = '';
+        const f = form.elements;
+        const api = location.origin;
+        const json = { 'Content-Type': 'application/json' };
+
+        try {
+          const { access_token } = await request(`${api}/login`, {
+            method: 'POST',
+            headers: json,
+            body: JSON.stringify({ username: f.username.value, password: f.password.value }),
+          });
+          const auth = { Authorization: `Bearer ${access_token}` };
+          log('Logged in');
+
+          const report = await request(`${api}/project/${encodeURIComponent(f.projectId.value)}`, {
+            method: 'POST',
+            headers: { ...json, ...auth },
+            body: JSON.stringify({ title: f.title.value }),
+          });
+          log(`Created report ${report.id}`);
+
+          for (const file of f.files.files) {
+            if (!file.size) {
+              log(`Skipped ${file.name}: empty file`);
+              continue;
+            }
+            try {
+              // shortcut: single-chunk upload, no resume; switch to a file.slice loop if large files fail
+              const result = await request(`${api}/file/v2/${report.id}/${encodeURIComponent(file.name)}`, {
+                method: 'PUT',
+                headers: { ...auth, 'Content-Range': `bytes 0-${file.size - 1}/${file.size}` },
+                body: file,
+              });
+              if (result.success === false) throw new Error(result.error);
+              log(`Uploaded ${file.name}`);
+            } catch (err) {
+              log(`Failed ${file.name}: ${err.message}`);
+            }
+          }
+          log('Done');
+        } catch (err) {
+          log(`Error: ${err.message}`);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
