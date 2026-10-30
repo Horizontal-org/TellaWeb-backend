@@ -32,6 +32,7 @@ export class ListResourceService implements IListResourceService {
     search: string,
     exclude: Array<string>,
     projectId?: string,
+    excludeProjectId?: string,
   ): Promise<PaginatedDto<ReadResourceDto>> {
     const query = this.resourceRepository
       .createQueryBuilder('resource')
@@ -46,6 +47,15 @@ export class ListResourceService implements IListResourceService {
       query.andWhere(
         'resource.id IN (SELECT pr.resource_id FROM projects_resources pr WHERE pr.project_id = :projectId)',
         { projectId },
+      );
+    }
+
+    // the add-to-project search: leave out what the project already has, without
+    // sending every id in the URL
+    if (excludeProjectId) {
+      query.andWhere(
+        'resource.id NOT IN (SELECT pr.resource_id FROM projects_resources pr WHERE pr.project_id = :excludeProjectId)',
+        { excludeProjectId },
       );
     }
 

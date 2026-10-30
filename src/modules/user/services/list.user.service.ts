@@ -28,6 +28,7 @@ export class ListUserService implements IListUserService {
     search: string,
     exclude: Array<string>,
     projectId: string,
+    excludeProjectId?: string,
   ): Promise<PartialResult<UserEntity>> {
     const query = this.userRepository
       .createQueryBuilder('user')
@@ -41,6 +42,15 @@ export class ListUserService implements IListUserService {
       query.andWhere(
         '(user.role = :admin OR user.id IN (SELECT pu.user_id FROM projects_users pu WHERE pu.project_id = :projectId))',
         { admin: RolesUser.ADMIN, projectId },
+      );
+    }
+
+    // the add-to-project search: leave out the project's users (admins are in every project)
+    // without sending every id in the URL
+    if (excludeProjectId) {
+      query.andWhere(
+        'user.role != :admin AND user.id NOT IN (SELECT pu.user_id FROM projects_users pu WHERE pu.project_id = :excludeProjectId)',
+        { admin: RolesUser.ADMIN, excludeProjectId },
       );
     }
 

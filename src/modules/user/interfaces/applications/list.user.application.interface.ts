@@ -10,5 +10,6 @@ export interface IListUserApplication {
     search: string,
     exclude: Array<string>,
     projectId: string,
+    excludeProjectId?: string,
   ): Promise<PaginatedDto<ReadUserDto>>;
 }

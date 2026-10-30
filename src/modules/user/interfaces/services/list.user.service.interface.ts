@@ -10,5 +10,6 @@ export interface IListUserService {
     search: string,
     exclude: Array<string>,
     projectId: string,
+    excludeProjectId?: string,
   ): Promise<PartialResult<UserEntity>>;
 }

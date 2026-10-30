@@ -191,6 +191,57 @@ describe('projects and reports', () => {
       await t.http().get('/project').set(bearer(admin)).expect(400);
     });
 
+    it('list rejects a negative limit or offset', async () => {
+      await t
+        .http()
+        .get('/project?limit=-1&offset=0')
+        .set(bearer(admin))
+        .expect(400);
+      await t
+        .http()
+        .get('/project?limit=10&offset=-1')
+        .set(bearer(admin))
+        .expect(400);
+    });
+
+    it('the user search leaves out the project members and admins', async () => {
+      const res = await t
+        .http()
+        .get(`/user/list?limit=0&offset=0&excludeProject=${project.id}`)
+        .set(bearer(admin))
+        .expect(200);
+      const ids = res.body.results.map((u) => u.id);
+      expect(ids).toContain(t.users.editor.id);
+      expect(ids).not.toContain(t.users.viewer.id);
+      expect(ids).not.toContain(t.users.reporter.id);
+      expect(ids).not.toContain(t.users.admin.id);
+    });
+
+    it('names longer than the column are a 400, not a 500', async () => {
+      const long = 'a'.repeat(151);
+      await t
+        .http()
+        .post('/project')
+        .set(bearer(admin))
+        .send({ name: long })
+        .expect(400);
+      await t
+        .http()
+        .put(`/project/${project.id}`)
+        .set(bearer(admin))
+        .send({ name: long })
+        .expect(400);
+    });
+
+    it('edit rejects ids that are not UUIDs', async () => {
+      await t
+        .http()
+        .put(`/project/${project.id}`)
+        .set(bearer(admin))
+        .send({ resources: ['nope'] })
+        .expect(400);
+    });
+
     it('edit toggles the users it receives and renames the slug', async () => {
       const res = await t
         .http()
@@ -303,13 +354,15 @@ describe('projects and reports', () => {
       expect(res.body.author.password).toBeUndefined();
     });
 
-    it('the project includes its reports', async () => {
+    it('the project list counts its reports without sending them', async () => {
       const res = await t
         .http()
         .get('/project?limit=25&offset=0&search=E2E Project One')
         .set(bearer(admin))
         .expect(200);
-      expect(res.body.results[0].reports.map((r) => r.id)).toContain(report.id);
+      expect(res.body.results[0].reportCount).toBe(1);
+      expect(res.body.results[0].reports).toBeUndefined();
+      expect(res.body.results[0].users).toBeUndefined();
     });
 
     it('lists, searches and paginates reports', async () => {

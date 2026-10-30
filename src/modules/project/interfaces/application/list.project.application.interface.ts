@@ -1,7 +1,7 @@
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
 import { ReadUserDto } from 'modules/user/dto';
 
-import { ReadProjectDto } from '../../dto';
+import { ListProjectDto } from '../../dto';
 
 export interface IListProjectApplication {
   execute(
@@ -11,5 +11,5 @@ export interface IListProjectApplication {
     sort: string,
     order: string,
     search: string,
-  ): Promise<PaginatedDto<ReadProjectDto>>;
+  ): Promise<PaginatedDto<ListProjectDto>>;
 }

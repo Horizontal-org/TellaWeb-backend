@@ -268,6 +268,28 @@ describe('resources, remote configurations and global settings', () => {
         .expect(200);
     });
 
+    it('excludeProject leaves out the resources a project already has', async () => {
+      const all = await t
+        .http()
+        .get('/resource?limit=0&offset=0')
+        .set(bearer(admin))
+        .expect(200);
+      expect(all.body.results.map((r) => r.id)).toContain(resource.id);
+
+      const rest = await t
+        .http()
+        .get(`/resource?limit=0&offset=0&excludeProject=${project.id}`)
+        .set(bearer(admin))
+        .expect(200);
+      expect(rest.body.results.map((r) => r.id)).not.toContain(resource.id);
+
+      await t
+        .http()
+        .get('/resource?limit=0&offset=0&excludeProject=nope')
+        .set(bearer(admin))
+        .expect(400);
+    });
+
     it('only members list the resources of a project', async () => {
       // The editor is not in the project
       await t
