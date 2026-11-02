@@ -11,6 +11,7 @@ exports[`http Swagger has the same routes as before 1`] = `
   "DELETE /user/{userId}",
   "GET /backup/download/{backupId}",
   "GET /backup/latest",
+  "GET /backup/space",
   "GET /config",
   "GET /config/shortcode/{shortcode}",
   "GET /config/{configurationId}",
