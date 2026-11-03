@@ -1,6 +1,7 @@
 export const TYPES = {
   services: {
     ICheckInProgressBackupService: 'ICheckInProgressBackupService',
+    ICheckSpaceBackupService: 'ICheckSpaceBackupService',
     IStartBackupService: 'IStartBackupService',
     ILatestBackupService: 'ILatestBackupService',
     IDeleteBackupService: 'IDeleteBackupService',

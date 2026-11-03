@@ -1,10 +1,11 @@
-import { Get, Header, Inject, Param, Res } from '@nestjs/common';
+import { Get, Header, Inject, Param, Res, UseGuards } from '@nestjs/common';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { Response } from 'express';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import { RolesUser } from 'modules/user/domain';
 
 import { TYPES, IGetThumbnailByIdFileApplication } from '../interfaces';
+import { ReportAccessGuard } from 'modules/report/guard/access.report.guard';
 
 @AuthController(
   'file',
@@ -17,11 +18,13 @@ export class GetThumbnailByIdFileController {
     private readonly getThumbnailByIdFileApplication: IGetThumbnailByIdFileApplication,
   ) {}
 
+  @UseGuards(ReportAccessGuard)
   @Get('asset/:reportId/:fileId/:size')
   @Header('Content-Type', 'image/png')
   async handler(
     @Param('fileId')
     fileId: string,
+    @Param('reportId') reportId: string,
     @Param('size') size: string,
     @Res() res: Response,
   ) {
@@ -29,7 +32,7 @@ export class GetThumbnailByIdFileController {
       `[GET THUMBNAIL] GetThumbnailByIdFileController.handler() called for fileId=${fileId}, size=${size}`,
     );
     const thumbnailReadable =
-      await this.getThumbnailByIdFileApplication.execute(fileId, {
+      await this.getThumbnailByIdFileApplication.execute(fileId, reportId, {
         // the route param is a string; 0 or anything that isn't a number
         // gives the default width (this was `size | 200`, a bitwise OR)
         width: Number(size) || 200,

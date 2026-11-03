@@ -463,12 +463,12 @@ describe('files', () => {
       await t
         .http()
         .get('/file/report/00000000-0000-4000-8000-000000000000')
-        .set(bearer(editor))
+        .set(bearer(admin))
         .expect(404);
     });
 
     it('a report id that is not a UUID is a 400', async () => {
-      await t.http().get('/file/report/..').set(bearer(editor)).expect(400);
+      await t.http().get('/file/report/..').set(bearer(admin)).expect(400);
     });
 
     // the web app hands this URL to the browser, which saves it as a file
@@ -535,6 +535,79 @@ describe('files', () => {
     });
   });
 
+  describe('access across projects', () => {
+    let otherReportId: string;
+    let otherFile: any;
+
+    // a report with a file in a project the editor is not a member of
+    beforeAll(async () => {
+      const other = (
+        await t
+          .http()
+          .post('/project')
+          .set(bearer(admin))
+          .send({ name: 'E2E files other project' })
+          .expect(201)
+      ).body;
+      otherReportId = (
+        await t
+          .http()
+          .post(`/project/${other.id}`)
+          .set(bearer(admin))
+          .send({ title: 'E2E files other report' })
+          .expect(201)
+      ).body.id;
+      otherFile = (
+        await t
+          .http()
+          .put(`/file/v2/${otherReportId}/other.png`)
+          .set(bearer(admin))
+          .set('Content-Type', 'application/octet-stream')
+          .set('Content-Range', `bytes 0-${image.length - 1}/${image.length}`)
+          .send(image)
+          .expect(200)
+      ).body;
+    });
+
+    it('editors cannot read or delete files of a report outside their projects', async () => {
+      const routes = [
+        () => t.http().get(`/report/${otherReportId}`),
+        () => t.http().get(`/file/report/${otherReportId}`),
+        () => t.http().get(`/file/download/${otherReportId}/other.png`),
+        () => t.http().get(`/file/asset/${otherReportId}/${otherFile.id}`),
+        () => t.http().get(`/file/asset/${otherReportId}/${otherFile.id}/100`),
+        () => t.http().delete(`/file/${otherReportId}/${otherFile.id}`),
+      ];
+      for (const req of routes) {
+        await req().set(bearer(editor)).expect(403);
+      }
+    });
+
+    it('admins still can', async () => {
+      await t
+        .http()
+        .get(`/file/asset/${otherReportId}/${otherFile.id}`)
+        .set(bearer(admin))
+        .expect(206);
+      await t
+        .http()
+        .get(`/file/report/${otherReportId}`)
+        .set(bearer(admin))
+        .expect(200);
+    });
+
+    it('a file of another report is a 404 through a report the user can access', async () => {
+      const routes = [
+        () => t.http().get(`/file/asset/${reportId}/${otherFile.id}`),
+        () => t.http().get(`/file/asset/${reportId}/${otherFile.id}/100`),
+        () => t.http().delete(`/file/${reportId}/${otherFile.id}`),
+      ];
+      for (const req of routes) {
+        await req().set(bearer(editor)).expect(404);
+      }
+    });
+  });
+
   describe('delete', () => {
     it('editors delete a file', async () => {
       const res = await t
@@ -585,7 +658,7 @@ describe('files', () => {
       const id = await reportWithFile('E2E report with a file');
 
       await t.http().delete(`/report/${id}`).set(bearer(editor)).expect(200);
-      await t.http().get(`/report/${id}`).set(bearer(editor)).expect(404);
+      await t.http().get(`/report/${id}`).set(bearer(admin)).expect(404);
       expect(await filesOf(id)).toBe(0);
     });
 

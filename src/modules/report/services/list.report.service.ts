@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 
 import { PartialResult } from 'common/dto/partial-result.common.dto';
 import { applySort, SortableColumns } from 'common/utils/sort.utils';
+import { RolesUser } from 'modules/user/domain';
+import { ReadUserDto } from 'modules/user/dto';
 
 import { ReportEntity } from '../domain';
 import { IListReportService } from '../interfaces';
@@ -27,6 +29,8 @@ export class ListReportService implements IListReportService {
     sort: string,
     order: string,
     search: string,
+    projectId: string,
+    user: ReadUserDto,
   ): Promise<PartialResult<ReportEntity>> {
     const query = this.reportRepository
       .createQueryBuilder('report')
@@ -36,9 +40,23 @@ export class ListReportService implements IListReportService {
       .skip(skip || undefined)
       .take(take || undefined);
 
+    // Non-admins only see reports of projects they're a member of
+    if (user.role !== RolesUser.ADMIN) {
+      query
+        .innerJoin('report.project', 'memberProject')
+        .innerJoin('memberProject.users', 'member', 'member.id = :userId', {
+          userId: user.id,
+        });
+    }
+
+    // Optional: only the reports of one project (the project page's list)
+    if (projectId && projectId.length > 0) {
+      query.andWhere('report.project = :projectId', { projectId });
+    }
+
     if (search && search.length > 0) {
-      query.where(
-        'report.title like :search OR report.description like :search',
+      query.andWhere(
+        '(report.title like :search OR report.description like :search)',
         {
           search: `%${search}%`,
         },

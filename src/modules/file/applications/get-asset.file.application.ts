@@ -16,8 +16,12 @@ export class GetAssetFileApplication implements IGetAssetFileApplication {
     private readonly streamFileService: IStreamFileService,
   ) {}
 
-  async execute(fileId: string, range?: string): Promise<StreamFileDto> {
-    const file = await this.getByIdFileApplication.execute(fileId);
+  async execute(
+    fileId: string,
+    reportId: string,
+    range?: string,
+  ): Promise<StreamFileDto> {
+    const file = await this.getByIdFileApplication.execute(fileId, reportId);
     const streamResponse = await this.streamFileService.execute(file, range);
 
     return streamResponse;

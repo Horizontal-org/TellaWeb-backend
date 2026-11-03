@@ -1,3 +1,5 @@
+import * as http from 'http';
+import { AddressInfo } from 'net';
 import * as JSZip from 'jszip';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -89,6 +91,48 @@ describe('resources, remote configurations and global settings', () => {
         .set('Content-Type', 'application/octet-stream')
         .send(await png(10, 10))
         .expect(400);
+    });
+
+    it('rejects a file over 20 MB from its Content-Length', async () => {
+      await t
+        .http()
+        .put('/resource/upload/big.pdf')
+        .set(bearer(admin))
+        .set('Content-Type', 'application/octet-stream')
+        .send(Buffer.alloc(20 * 1024 * 1024 + 1))
+        .expect(413);
+    });
+
+    it('rejects a file over 20 MB sent without a Content-Length', async () => {
+      // Plain http so the body is sent chunked, with no Content-Length
+      const server = t.app.getHttpServer().listen(0);
+      const { port } = server.address() as AddressInfo;
+
+      try {
+        const status = await new Promise<number>((resolve, reject) => {
+          const req = http.request(
+            {
+              port,
+              method: 'PUT',
+              path: '/resource/upload/big.pdf',
+              headers: {
+                ...bearer(admin),
+                'Content-Type': 'application/octet-stream',
+              },
+            },
+            (res) => {
+              res.resume();
+              resolve(res.statusCode);
+            },
+          );
+          req.on('error', reject);
+          req.end(Buffer.alloc(20 * 1024 * 1024 + 1));
+        });
+
+        expect(status).toBe(413);
+      } finally {
+        server.close();
+      }
     });
 
     it('rejects a PDF with JavaScript', async () => {
@@ -205,6 +249,64 @@ describe('resources, remote configurations and global settings', () => {
       });
     });
 
+    it('lists the resources of a project to its members', async () => {
+      const res = await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(viewer))
+        .expect(200);
+      expect(res.body.total).toBe(1);
+      expect(res.body.results[0]).toMatchObject({
+        id: resource.id,
+        fileName: 'guide.pdf',
+      });
+
+      await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(admin))
+        .expect(200);
+    });
+
+    it('excludeProject leaves out the resources a project already has', async () => {
+      const all = await t
+        .http()
+        .get('/resource?limit=0&offset=0')
+        .set(bearer(admin))
+        .expect(200);
+      expect(all.body.results.map((r) => r.id)).toContain(resource.id);
+
+      const rest = await t
+        .http()
+        .get(`/resource?limit=0&offset=0&excludeProject=${project.id}`)
+        .set(bearer(admin))
+        .expect(200);
+      expect(rest.body.results.map((r) => r.id)).not.toContain(resource.id);
+
+      await t
+        .http()
+        .get('/resource?limit=0&offset=0&excludeProject=nope')
+        .set(bearer(admin))
+        .expect(400);
+    });
+
+    it('only members list the resources of a project', async () => {
+      // The editor is not in the project
+      await t
+        .http()
+        .get(`/resource/project/${project.id}?limit=10&offset=0`)
+        .set(bearer(editor))
+        .expect(403);
+    });
+
+    it('viewers cannot list every resource', async () => {
+      await t
+        .http()
+        .get('/resource?limit=10&offset=0')
+        .set(bearer(viewer))
+        .expect(403);
+    });
+
     it('zips several resources', async () => {
       const res = await t
         .http()
@@ -218,6 +320,19 @@ describe('resources, remote configurations and global settings', () => {
       const zip = await JSZip.loadAsync(res.body);
       const content = await zip.file('guide.pdf').async('nodebuffer');
       expect(Buffer.compare(content, document)).toBe(0);
+    });
+
+    it("only zips resources of the user's projects", async () => {
+      await t
+        .http()
+        .get('/resource/download?fileNames=guide.pdf')
+        .set(bearer(editor))
+        .expect(401);
+      await t
+        .http()
+        .get('/resource/download?fileNames=guide.pdf')
+        .set(bearer(admin))
+        .expect(200);
     });
 
     it('admins delete a resource', async () => {

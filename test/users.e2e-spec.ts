@@ -71,6 +71,25 @@ describe('users', () => {
       .expect(400);
   });
 
+  it('validates the body: short password, unknown role', async () => {
+    await t
+      .http()
+      .post('/user')
+      .set(bearer(admin))
+      .send({ username: 'shortpw@e2e.test', password: '12345', role: 'viewer' })
+      .expect(400);
+    await t
+      .http()
+      .post('/user')
+      .set(bearer(admin))
+      .send({
+        username: 'badrole@e2e.test',
+        password: PASSWORD,
+        role: 'superuser',
+      })
+      .expect(400);
+  });
+
   it('strips unknown fields from the body', async () => {
     const user = (
       await t
@@ -189,6 +208,41 @@ describe('users', () => {
       .post('/login/web')
       .send({ username: 'edited@e2e.test', password: PASSWORD })
       .expect(401);
+  });
+
+  it('admin edit validates the body like create', async () => {
+    const user = await createUser('validated@e2e.test');
+    const edit = (body: object) =>
+      t.http().post(`/user/${user.id}`).set(bearer(admin)).send(body);
+
+    await edit({ username: 'abcde' }).expect(400);
+    await edit({ username: 'a'.repeat(61) }).expect(400);
+    await edit({ note: 'n'.repeat(256) }).expect(400);
+    await edit({ role: 'superuser' }).expect(400);
+    await edit({ password: '12345' }).expect(400);
+
+    // the web app sends null for the fields it doesn't change
+    const res = await edit({
+      username: null,
+      password: null,
+      note: 'only the note',
+      role: 'viewer',
+    }).expect(201);
+    expect(res.body).toMatchObject({
+      username: 'validated@e2e.test',
+      note: 'only the note',
+    });
+  });
+
+  it('change-password rejects a short new password', async () => {
+    await createUser('shortnew@e2e.test');
+    const session = await loginWeb(t, 'shortnew@e2e.test');
+    await t
+      .http()
+      .post('/user/change-password')
+      .set(bearer(session))
+      .send({ current: PASSWORD, new: '12345' })
+      .expect(400);
   });
 
   it('editing an unknown user is a 404', async () => {

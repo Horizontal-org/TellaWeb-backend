@@ -6,5 +6,8 @@ export interface IListRemoteConfigurationService {
   execute(
     take: number,
     limit: number,
+    sort: string,
+    order: string,
+    search: string,
   ): Promise<PartialResult<RemoteConfigurationEntity>>;
 }

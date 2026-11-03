@@ -16,7 +16,7 @@ import {
   TYPES,
 } from '../interfaces';
 import { Repository } from 'typeorm';
-import { ResourceEntity } from '../domain';
+import { MAX_RESOURCE_SIZE, ResourceEntity } from '../domain';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -34,7 +34,10 @@ export class UploadResourceService implements IUploadResourceService {
   ) {}
 
   async execute(input: WriteStreamResourceDto): Promise<ReadResourceDto> {
-    const buffer = await streamToBuffer(input.stream as ReadStream);
+    const buffer = await streamToBuffer(
+      input.stream as ReadStream,
+      MAX_RESOURCE_SIZE,
+    );
 
     const analysis = await this.pdfAnalyzerService.analyze(buffer);
     if (!analysis.isValid) {

@@ -1,6 +1,7 @@
 import { TYPES } from './interfaces';
 
 import { CheckInProgressBackupService } from './services/check-in-progress.backup.service';
+import { CheckSpaceBackupService } from './services/check-space.backup.service';
 import { StartBackupService } from './services/start.backup.service';
 import { LatestBackupService } from './services/latest.backup.service';
 
@@ -12,6 +13,11 @@ import { DownloadBackupService } from './services/download.backup.service';
 export const checkInProgressServiceProvider = {
   provide: TYPES.services.ICheckInProgressBackupService,
   useClass: CheckInProgressBackupService,
+};
+
+export const checkSpaceServiceProvider = {
+  provide: TYPES.services.ICheckSpaceBackupService,
+  useClass: CheckSpaceBackupService,
 };
 
 export const startBackupServiceProvider = {
@@ -49,6 +55,7 @@ export const applicationsBackupProviders = [startBackupApplicationProvider];
 export const servicesBackupProviders = [
   startBackupServiceProvider,
   checkInProgressServiceProvider,
+  checkSpaceServiceProvider,
   latestBackupServiceProvider,
   deleteBackupServiceProvider,
   downloadBackupServiceProvider,

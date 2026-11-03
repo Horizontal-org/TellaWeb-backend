@@ -122,8 +122,8 @@ describe('backups', () => {
       .expect(200);
 
     expect(res.headers['content-type']).toBe('application/zip');
-    expect(res.headers['content-disposition']).toBe(
-      'attachment; filename="TELLAWEB_BACKUP.zip"',
+    expect(res.headers['content-disposition']).toMatch(
+      /^attachment; filename="tellaweb-backup-\d{1,2}[a-z]+\d{4}-\d{2}h\d{2}utc\.zip"$/,
     );
     expect(res.headers['accept-ranges']).toBe('bytes');
     expect(Number(res.headers['content-length'])).toBe(res.body.length);

@@ -4,7 +4,7 @@ import { plainToClass } from 'class-transformer';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
 import { ReadUserDto } from 'modules/user/dto';
 
-import { ReadProjectDto } from '../dto';
+import { ListProjectDto } from '../dto';
 import {
   TYPES,
   IListProjectApplication,
@@ -25,7 +25,7 @@ export class ListProjectApplication implements IListProjectApplication {
     sort: string,
     order: string,
     search: string,
-  ): Promise<PaginatedDto<ReadProjectDto>> {
+  ): Promise<PaginatedDto<ListProjectDto>> {
     const { results: projects, total } = await this.listProjectService.execute(
       user,
       take,
@@ -39,7 +39,7 @@ export class ListProjectApplication implements IListProjectApplication {
       limit: take,
       offset: skip,
       total: total,
-      results: projects.map((project) => plainToClass(ReadProjectDto, project)),
+      results: projects.map((project) => plainToClass(ListProjectDto, project)),
     };
   }
 }

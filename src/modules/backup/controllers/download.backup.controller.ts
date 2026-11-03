@@ -29,7 +29,7 @@ export class DownloadBackupController {
     // a dot directory anywhere in it (dotfiles: 'ignore'), but checks only the
     // part below `root`.
     const options = { root: dirname(zipPath) };
-    res.download(basename(zipPath), 'TELLAWEB_BACKUP.zip', options, (err) => {
+    res.download(basename(zipPath), basename(zipPath), options, (err) => {
       if (!err) return;
       console.log('error downloading backup => ', err);
       if (!res.headersSent) {

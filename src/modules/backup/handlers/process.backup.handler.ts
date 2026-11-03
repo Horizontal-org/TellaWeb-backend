@@ -19,6 +19,27 @@ import { Queue } from 'bull';
 import { ProcessBackupDto } from '../dto/process.backup.dto';
 import { dumpDatabase } from './database-dump';
 
+const MONTHS = [
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sept',
+  'oct',
+  'nov',
+  'dec',
+];
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// e.g. tellaweb-backup-13sept2024-16h45utc
+export const backupName = (d: Date) =>
+  `tellaweb-backup-${d.getUTCDate()}${MONTHS[d.getUTCMonth()]}${d.getUTCFullYear()}` +
+  `-${pad(d.getUTCHours())}h${pad(d.getUTCMinutes())}utc`;
+
 @Injectable()
 export class ProcessBackupHandler implements IProcessBackupHandler {
   constructor(
@@ -35,11 +56,7 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
 
   async process(processData: ProcessBackupDto): Promise<void> {
     try {
-      const datetime = new Date();
-      this.backupDir = path.join(
-        this.basePath,
-        `${datetime.toISOString().slice(0, 19)}-backup`,
-      );
+      this.backupDir = path.join(this.basePath, backupName(new Date()));
       await this.createBackupFolder();
 
       // csvs
@@ -198,8 +215,8 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
       {
         host: process.env.MYSQL_HOST,
         port: +process.env.MYSQL_PORT || 3306,
-        user: 'root',
-        password: process.env.MYSQL_ROOT_PASSWORD,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
       },
       this.backupDir + '/database_dump.sql',

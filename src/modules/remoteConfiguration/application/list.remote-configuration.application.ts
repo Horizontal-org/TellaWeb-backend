@@ -20,9 +20,18 @@ export class ListRemoteConfigurationApplication implements IListRemoteConfigurat
   async execute(
     take: number,
     skip: number,
+    sort: string,
+    order: string,
+    search: string,
   ): Promise<PaginatedDto<ReadRemoteConfigurationDto>> {
     const { results, total } =
-      await this.listRemoteConfigurationService.execute(take, skip);
+      await this.listRemoteConfigurationService.execute(
+        take,
+        skip,
+        sort,
+        order,
+        search,
+      );
 
     return {
       limit: take,

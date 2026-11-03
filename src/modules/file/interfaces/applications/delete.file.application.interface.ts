@@ -1,3 +1,3 @@
 export interface IDeleteFileApplication {
-  execute(fileId: string): Promise<boolean>;
+  execute(fileId: string, reportId: string): Promise<boolean>;
 }

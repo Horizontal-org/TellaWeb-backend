@@ -4,6 +4,7 @@ import { Readable } from 'stream';
 export interface IGetThumbnailByIdFileApplication {
   execute(
     fileId: string,
+    reportId: string,
     thumbnailOptions?: ThumbnailOptions,
   ): Promise<Readable>;
 }
