@@ -5,6 +5,7 @@ import { EditProjectController } from './edit.project.controller';
 import { DeleteByIdProjectController } from './delete-by-id.project.controller';
 import { AddReportProjectController } from './add-report.controller';
 import { GetBySlugProjectController } from './get-by-slug.controller';
+import { CheckNameProjectController } from './check-name.project.controller';
 
 export const projectControllers = [
   CreateProjectController,
@@ -14,4 +15,5 @@ export const projectControllers = [
   DeleteByIdProjectController,
   AddReportProjectController,
   GetBySlugProjectController,
+  CheckNameProjectController,
 ];

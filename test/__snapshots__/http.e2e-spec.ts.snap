@@ -23,6 +23,7 @@ exports[`http Swagger has the same routes as before 1`] = `
   "GET /global-setting/{name}",
   "GET /p/{projectSlug}",
   "GET /project",
+  "GET /project/check/{name}",
   "GET /project/{projectId}",
   "GET /report",
   "GET /report/{reportId}",

@@ -5,8 +5,10 @@ import { In, Repository } from 'typeorm';
 import { ICreateProjectService } from '../interfaces';
 import { ProjectEntity } from '../domain';
 import { CreateProjectDto } from '../dto';
+import { AlreadyExistProjectException } from '../exceptions';
 import { UserEntity } from 'modules/user/domain';
 import { ReportEntity } from 'modules/report/domain';
+import { slugify } from 'common/utils/slug.utils';
 
 @Injectable()
 export class CreateProjectService implements ICreateProjectService {
@@ -37,15 +39,13 @@ export class CreateProjectService implements ICreateProjectService {
 
     const project = new ProjectEntity();
 
-    const slug = createProjectDto.name
-      .toString()
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\u0100-\uFFFF\w\-]/g, '-')
-      .replace(/\-\-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '');
+    const slug = slugify(createProjectDto.name);
+
+    const exist = await this.projectRepository.findOne({
+      where: [{ name: createProjectDto.name }, { slug }],
+    });
+    if (exist) throw new AlreadyExistProjectException(createProjectDto.name);
+
     project.name = createProjectDto.name;
     project.slug = slug;
     project.reports = reports;

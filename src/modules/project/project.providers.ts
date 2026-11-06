@@ -17,6 +17,7 @@ import { EditProjectService } from './services/edit.project.service';
 
 import { DeleteByIdProjectApplication } from './applications/delete-by-id.project.application';
 import { DeleteByIdProjectService } from './services/delete-by-id.project.service';
+import { CheckNameProjectService } from './services/check-name.project.service';
 import { ProjectAccessGuard } from './guard/access.project.guard';
 
 export const projectAccessGuardProvider = {
@@ -84,6 +85,11 @@ export const deleteByIdProjectServiceProvider = {
   useClass: DeleteByIdProjectService,
 };
 
+export const checkNameProjectServiceProvider = {
+  provide: TYPES.services.ICheckNameProjectService,
+  useClass: CheckNameProjectService,
+};
+
 export const applicationsProjectProviders = [
   createProjectApplicationProvider,
   listProjectApplicationProvider,
@@ -100,6 +106,7 @@ export const servicesProjectProviders = [
   editProjectServiceProvider,
   deleteByIdProjectServiceProvider,
   getBySlugServiceProvider,
+  checkNameProjectServiceProvider,
 ];
 
 export const guardsProjectProviders = [projectAccessGuardProvider];
