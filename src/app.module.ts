@@ -18,10 +18,16 @@ import { GlobalJwtModule } from 'modules/jwt/jwt.module';
 import { ResourceModule } from 'modules/resource/resource.module';
 import { GlobalSettingModule } from 'modules/globalSettings/global-settings.module';
 import { BackupModule } from 'modules/backup/backup.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    // only used by the login guards; e2e logs in hundreds of times from one IP
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: 10 }],
+      skipIf: () => process.env.THROTTLE_DISABLED === 'true',
+    }),
     TypeOrmModule.forRoot({
       ...OrmConfig,
       autoLoadEntities: true,

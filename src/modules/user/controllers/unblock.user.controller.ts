@@ -8,7 +8,6 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import * as requestIp from 'request-ip';
 
 import { TYPES, IUnblockUserService } from '../interfaces';
 
@@ -22,8 +21,7 @@ export class UnblockUserController {
   @ApiResponse({ type: Boolean })
   @Get('unblock')
   async handler(@Query('code') code = '', @Req() req): Promise<boolean> {
-    const ip = requestIp.getClientIp(req);
-    await this.unblockUser.execute(code, ip);
+    await this.unblockUser.execute(code, req.ip);
 
     return true;
   }

@@ -6,3 +6,4 @@ export { DisableOtpAuthService } from './disable-otp.auth.service';
 export { ActivateOtpAuthService } from './activate-otp.auth.service';
 export { CreateRecoveryKeysService } from './create.recovery-keys.service';
 export { RefreshTokenAuthService } from './refresh-token.auth.service';
+export { VerifyMfaTokenAuthService } from './verify-mfa-token.auth.service';

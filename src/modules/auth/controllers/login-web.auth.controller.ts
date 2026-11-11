@@ -6,10 +6,11 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { LoginAuthDto } from '../domain/';
-import * as requestIp from 'request-ip';
 import {
   TYPES,
   IValidateAuthService,
@@ -25,8 +26,10 @@ import { GlobalSettingEntity } from 'modules/globalSettings/domain';
 import { Repository } from 'typeorm';
 import { RolesUser } from 'modules/user/domain';
 import { InvalidCredentailsUserException } from 'modules/user/exceptions';
+import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 @Controller('login')
+@UseGuards(ThrottlerGuard)
 export class LoginWebAuthController {
   constructor(
     @Inject(USER_TYPES.applications.ICheckSuspiciousUserApplication)
@@ -60,7 +63,8 @@ export class LoginWebAuthController {
     });
 
     if (gSetting && gSetting.enabled) {
-      const ip = requestIp.getClientIp(req);
+      // req.ip honours trust proxy; client-sent forwarding headers can't spoof it
+      const ip = req.ip;
       const flagged = await this.checkSuspiciousApplication.execute(
         ip,
         user.id,
@@ -75,11 +79,16 @@ export class LoginWebAuthController {
     }
 
     if (user.otp_active) {
+      // minted only after the reporter and suspicious-login checks above
+      const { access_token: mfa_token } =
+        await this.generateTokenAuthService.execute({
+          user,
+          type: JwtTypes.MFA,
+          expiresIn: '5m',
+        });
       response.send({
-        user: {
-          id: user.id,
-          otp_active: user.otp_active,
-        },
+        user: { otp_active: user.otp_active },
+        mfa_token,
       });
     } else {
       const authToken = await this.generateTokenAuthService.execute({

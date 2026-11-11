@@ -23,4 +23,5 @@ export const e2eEnv = {
   WEB_ORIGIN: 'https://web.e2e.test',
   APP_ORIGIN: 'https://app.e2e.test',
   BCRYPT_SALT: '4',
+  THROTTLE_DISABLED: 'true',
 };
