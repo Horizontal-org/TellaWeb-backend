@@ -8,6 +8,7 @@ import {
   createTestApp,
   loginMobile,
   loginWeb,
+  mfaToken,
   PASSWORD,
   TestApp,
   USERS,
@@ -278,22 +279,57 @@ describe('auth', () => {
       recoveryKeys.forEach((key) => expect(key).toMatch(/^\d{8}$/));
     });
 
-    it('web login then only returns the user id and otp flag', async () => {
+    it('web login then only returns the otp flag and a short-lived mfa token', async () => {
       const res = await t
         .http()
         .post('/login/web')
         .send({ username, password: PASSWORD })
         .expect(201);
 
-      expect(res.body).toEqual({ user: { id: userId, otp_active: true } });
+      expect(res.body).toEqual({
+        user: { otp_active: true },
+        mfa_token: expect.any(String),
+      });
       expect(res.headers['set-cookie']).toBeUndefined();
     });
 
-    it('otp login with a valid code returns tokens', async () => {
-      const res = await t
+    it('the mfa token is not a session', async () => {
+      const mfa = await mfaToken(t, username);
+      await t
+        .http()
+        .get('/user')
+        .set('Authorization', `Bearer ${mfa}`)
+        .expect(401);
+    });
+
+    it('otp login needs the mfa token, a user id is not enough', async () => {
+      await t
         .http()
         .post('/auth/otp/login')
         .send({ userId, code: totp(secret) })
+        .expect(400);
+      await t
+        .http()
+        .post('/auth/otp/recovery-key')
+        .send({ userId, code: recoveryKeys[3], password: PASSWORD })
+        .expect(400);
+    });
+
+    it('otp login rejects a web access token as the mfa token', async () => {
+      const admin = await loginWeb(t, USERS.admin);
+      await t
+        .http()
+        .post('/auth/otp/login')
+        .send({ mfa_token: admin.access_token, code: totp(secret) })
+        .expect(401);
+    });
+
+    it('otp login with a valid code returns tokens', async () => {
+      const mfa_token = await mfaToken(t, username);
+      const res = await t
+        .http()
+        .post('/auth/otp/login')
+        .send({ mfa_token, code: totp(secret) })
         .expect(201);
 
       expect(res.body.access_token).toEqual(expect.any(String));
@@ -302,46 +338,58 @@ describe('auth', () => {
     });
 
     it('otp login with a wrong code is rejected', async () => {
+      const mfa_token = await mfaToken(t, username);
       await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: '000000' })
+        .send({ mfa_token, code: '000000' })
         .expect(401);
     });
 
-    it('validates a recovery key', async () => {
+    it('validating a recovery key is admin only', async () => {
       await t
         .http()
         .post('/auth/otp/validate/recovery-key')
+        .send({ userId, code: recoveryKeys[0] })
+        .expect(401);
+
+      const admin = await loginWeb(t, USERS.admin);
+      await t
+        .http()
+        .post('/auth/otp/validate/recovery-key')
+        .set(bearer(admin))
         .send({ userId, code: recoveryKeys[0] })
         .expect(201);
       await t
         .http()
         .post('/auth/otp/validate/recovery-key')
+        .set(bearer(admin))
         .send({ userId, code: '12345678' })
         .expect(401);
     });
 
-    it('logs in with a recovery key and the password', async () => {
+    it('logs in with a recovery key and the mfa token', async () => {
+      const mfa_token = await mfaToken(t, username);
       const res = await t
         .http()
         .post('/auth/otp/recovery-key')
-        .send({ userId, code: recoveryKeys[1], password: PASSWORD })
+        .send({ mfa_token, code: recoveryKeys[1] })
         .expect(201);
       expect(res.body.access_token).toEqual(expect.any(String));
 
       await t
         .http()
         .post('/auth/otp/recovery-key')
-        .send({ userId, code: recoveryKeys[1], password: 'wrong' })
+        .send({ mfa_token: 'nope', code: recoveryKeys[1] })
         .expect(401);
     });
 
     it('lists the recovery keys', async () => {
+      const mfa_token = await mfaToken(t, username);
       const otp = await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: totp(secret) })
+        .send({ mfa_token, code: totp(secret) })
         .expect(201);
       const res = await t
         .http()
@@ -353,10 +401,11 @@ describe('auth', () => {
     });
 
     it('disable with a recovery key turns 2FA off', async () => {
+      const mfa_token = await mfaToken(t, username);
       const otp = await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId, code: totp(secret) })
+        .send({ mfa_token, code: totp(secret) })
         .expect(201);
 
       await t
@@ -424,10 +473,14 @@ describe('auth', () => {
         expect(await keysOf(second.id)).toBe(15);
 
         // activating again regenerates: still 15, all new
+        const mfa_token = await mfaToken(t, 'keys-one@e2e.test');
         const otp = await t
           .http()
           .post('/auth/otp/login')
-          .send({ userId: first.id, code: totp(first.secret) })
+          .send({
+            mfa_token,
+            code: totp(first.secret),
+          })
           .expect(201);
         const again = await t
           .http()
@@ -483,21 +536,26 @@ describe('auth', () => {
       });
 
       it('logs in with the code from their authenticator app', async () => {
+        const mfa_token = await mfaToken(t, 'otp-legacy@e2e.test');
         const res = await t
           .http()
           .post('/auth/otp/login')
-          .send({ userId: legacyId, code: totp(storedSecret) })
+          .send({
+            mfa_token,
+            code: totp(storedSecret),
+          })
           .expect(201);
         expect(res.body.access_token).toEqual(expect.any(String));
       });
 
       it('codes from earlier 30-second steps are rejected', async () => {
         for (const secondsAgo of [30, 60, 90]) {
+          const mfa_token = await mfaToken(t, 'otp-legacy@e2e.test');
           await t
             .http()
             .post('/auth/otp/login')
             .send({
-              userId: legacyId,
+              mfa_token,
               code: totp(storedSecret, Date.now() - secondsAgo * 1000),
             })
             .expect(401);

@@ -1,7 +1,7 @@
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { LoginAuthDto } from '../domain/';
-// import * as requestIp from 'request-ip';
 
 import { version } from '../../../../package.json';
 
@@ -16,6 +16,7 @@ import {
 } from '../../user/interfaces';
 
 @Controller('login')
+@UseGuards(ThrottlerGuard)
 export class LoginAuthController {
   constructor(
     @Inject(USER_TYPES.applications.ICheckSuspiciousUserApplication)

@@ -16,4 +16,6 @@ export { IEditProjectService } from './service/edit.project.service.interface';
 export { IDeleteByIdProjectApplication } from './application/delete-by-id.project.application.interface';
 export { IDeleteByIdProjectService } from './service/delete-by-id.project.service.interface';
 
+export { ICheckNameProjectService } from './service/check-name.project.service.interface';
+
 export { TYPES } from './types';

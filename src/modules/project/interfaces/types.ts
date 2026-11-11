@@ -14,6 +14,7 @@ export const TYPES = {
     IEditProjectService: 'IEditProjectService',
     IDeleteByIdProjectService: 'IDeleteByIdProjectService',
     IGetBySlugProjectService: 'IGetBySlugProjectService',
+    ICheckNameProjectService: 'ICheckNameProjectService',
   },
   guards: {
     IProjectAccessGuard: 'IProjectAccess',

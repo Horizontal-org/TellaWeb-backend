@@ -13,7 +13,7 @@ import { ReadUserDto } from 'modules/user/dto';
 import { UserEntity } from 'modules/user/domain';
 import { JwtTypes } from '../domain/jwt-types.auth.enum';
 import { Request } from 'express';
-import { InvalidSessionException } from 'common/exceptions/invalid-session.exception'
+import { InvalidSessionException } from 'common/exceptions/invalid-session.exception';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -34,9 +34,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JWTPayload): Promise<ReadUserDto> {
+    // same secret signs MFA tokens, which must never authenticate a request
+    if (payload.type !== JwtTypes.WEB && payload.type !== JwtTypes.MOBILE) {
+      throw new InvalidSessionException();
+    }
     const user = await this.getByIdUserApplication.execute(payload.userId);
     if (!user) {
-      throw new InvalidSessionException()
+      throw new InvalidSessionException();
     }
     // web sessions of a blocked user stop working (mobile ones don't); the
     // web app then tries a refresh, which is refused with a 403
@@ -44,7 +48,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const blocked = await this.userRepository.count({
         where: { id: user.id, blocked: true },
       });
-      if (blocked) throw new InvalidSessionException()
+      if (blocked) throw new InvalidSessionException();
     }
     return user;
   }

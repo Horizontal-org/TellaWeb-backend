@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { EditProjectDto } from '../dto';
 import { ProjectEntity } from '../domain';
 import { UserEntity } from 'modules/user/domain';
 import { ReportEntity } from 'modules/report/domain';
+import { slugify } from 'common/utils/slug.utils';
 import { IEditProjectService } from '../interfaces';
+import {
+  AlreadyExistProjectException,
+  AlreadyExistSlugProjectException,
+} from '../exceptions';
 import { ResourceEntity } from 'modules/resource/domain';
 
 @Injectable()
@@ -52,16 +57,20 @@ export class EditProjectService implements IEditProjectService {
       resources = await this.resourceRepository.findBy({ id: In(newIds) });
     }
 
-    const slug = (editProjectDto.slug || project.slug)
-      .toString()
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\u0100-\uFFFF\w\-]/g, '-')
-      .replace(/\-\-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '');
-    project.name = editProjectDto.name || project.name;
+    const slug = slugify(editProjectDto.slug || project.slug);
+    const name = editProjectDto.name || project.name;
+
+    const exist = await this.projectRepository.findOne({
+      where: [
+        { name, id: Not(project.id) },
+        { slug, id: Not(project.id) },
+      ],
+    });
+    // edit never regenerates the slug from the name, so a slug clash means the URL was edited
+    if (exist?.slug === slug) throw new AlreadyExistSlugProjectException(slug);
+    if (exist) throw new AlreadyExistProjectException(name);
+
+    project.name = name;
     project.slug = slug;
     project.reports = reports || project.reports;
     project.users = users || project.users;

@@ -113,6 +113,7 @@ describe('projects and reports', () => {
         .set(bearer(reporterMobile))
         .expect(200);
       expect(res.body).toMatchObject({ id: project.id, slug: project.slug });
+      expect(res.body.users).toBeUndefined();
 
       await t
         .http()
@@ -122,11 +123,12 @@ describe('projects and reports', () => {
     });
 
     it('admins can open any project by slug; an unknown slug is 404', async () => {
-      await t
+      const res = await t
         .http()
         .get(`/p/${otherProject.slug}`)
         .set(bearer(admin))
         .expect(200);
+      expect(res.body.users).toEqual(expect.any(Array));
       await t.http().get('/p/does-not-exist').set(bearer(admin)).expect(404);
     });
 

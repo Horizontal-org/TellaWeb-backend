@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 export class LoginOtpAuthDto {
   @ApiProperty()
   @IsString()
-  userId: string;
+  mfa_token: string;
 
   @ApiProperty()
   @IsString()

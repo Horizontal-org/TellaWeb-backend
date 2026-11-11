@@ -12,6 +12,7 @@ export const TYPES = {
     IGetRecoveryKeysService: 'IGetRecoveryKeysService',
     IFlagUserAuthService: 'IFlagUserAuthService',
     IRefreshTokenAuthService: 'IRefreshTokenAuthService',
+    IVerifyMfaTokenAuthService: 'IVerifyMfaTokenAuthService',
   },
   handlers: {
     IOtpAuthHandler: 'IOtpAuthHandler',

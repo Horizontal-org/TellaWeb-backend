@@ -5,6 +5,8 @@ import { RolesUser } from 'modules/user/domain';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { LoggedUser } from 'modules/auth/decorators';
+import { ReadUserDto } from 'modules/user/dto';
 import { ReadProjectDto } from '../dto';
 import { IGetBySlugProjectApplication, TYPES } from '../interfaces';
 
@@ -22,7 +24,13 @@ export class GetBySlugProjectController {
 
   @ApiOkResponse({ type: ReadProjectDto })
   @Get(':projectSlug')
-  async handler(@Param('projectSlug') projectSlug: string) {
-    return this.getBySlugProjectApplication.execute(projectSlug);
+  async handler(
+    @Param('projectSlug') projectSlug: string,
+    @LoggedUser() user: ReadUserDto,
+  ) {
+    const project = await this.getBySlugProjectApplication.execute(projectSlug);
+    // reporters (mobile) don't need the member list, and it exposes user ids
+    if (user.role === RolesUser.REPORTER) delete project.users;
+    return project;
   }
 }

@@ -156,6 +156,11 @@ export async function loginMobile(
   return readSession(res);
 }
 
+// the short-lived token /login/web returns to users with 2FA on
+export async function mfaToken(t: TestApp, username: string): Promise<string> {
+  return (await loginWeb(t, username)).body.mfa_token;
+}
+
 export const bearer = (session: Session) => ({
   Authorization: `Bearer ${session.access_token}`,
 });

@@ -7,6 +7,7 @@ import {
   createTestApp,
   loginMobile,
   loginWeb,
+  mfaToken,
   PASSWORD,
   Session,
   TestApp,
@@ -73,6 +74,19 @@ describe('suspicious login detection', () => {
     const res = await login();
     expect(res.body.access_token).toEqual(expect.any(String));
     expect(mockLookups.length).toBeGreaterThan(0);
+  });
+
+  it('looks up the IP the proxy saw, not one the client claims', async () => {
+    mockLookups.length = 0;
+    await t
+      .http()
+      .post('/login/web')
+      .set('X-Client-IP', '6.6.6.6')
+      // nginx appends the real client after whatever the client sent
+      .set('X-Forwarded-For', '6.6.6.6, 203.0.113.7')
+      .send({ username: USERS.viewer, password: PASSWORD })
+      .expect(201);
+    expect(mockLookups).toEqual(['203.0.113.7']);
   });
 
   it('later logins from that country go through', async () => {
@@ -163,17 +177,18 @@ describe('suspicious login detection', () => {
           .expect(201)
       ).body;
 
+      const mfa_token = await mfaToken(t, 'blocked-2fa@e2e.test');
       await users.update(created.body.id, { blocked: true });
 
       await t
         .http()
         .post('/auth/otp/login')
-        .send({ userId: created.body.id, code: totp(secret) })
+        .send({ mfa_token, code: totp(secret) })
         .expect(403);
       await t
         .http()
         .post('/auth/otp/recovery-key')
-        .send({ userId: created.body.id, code: keys[0], password: PASSWORD })
+        .send({ mfa_token, code: keys[0] })
         .expect(403);
     });
   });

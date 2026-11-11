@@ -1,14 +1,15 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
-import * as requestIp from 'request-ip';
 import { TransformInterceptor } from 'common/interceptors/transform.interceptor';
 import { AbilityExceptionFilter } from 'casl/casl-ability.filter';
 
 // Global middleware, pipes, filters and interceptors. Shared by main.ts and
 // the e2e tests, so the tests run the same request pipeline as the server.
 export function configureApp(app: INestApplication): INestApplication {
-  app.use(requestIp.mw());
+  // behind one reverse-proxy hop (nginx): req.ip is the client's IP, used by the
+  // login throttling and the suspicious-login check
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.enableCors({
     origin: [process.env.WEB_ORIGIN, process.env.APP_ORIGIN],
     credentials: true,

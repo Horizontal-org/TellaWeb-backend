@@ -3,6 +3,7 @@ export { IValidateAuthService } from './services/validate.auth.service.interface
 export { IEnableOtpAuthService } from './services/enable-otp.auth.service.interface';
 
 export { IRefreshTokenAuthService } from './services/refresh-token.auth.service.interface';
+export { IVerifyMfaTokenAuthService } from './services/verify-mfa-token.auth.service.interface';
 export { IOtpAuthHandler } from './handlers/otp.auth.handler';
 
 export { TYPES } from './types';
