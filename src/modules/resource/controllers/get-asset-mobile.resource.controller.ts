@@ -54,6 +54,8 @@ export class GetAssetMobileResourceController {
       fileName: fileName,
     });
 
+    // unhandled, a read error would crash the process
+    stream.on('error', (err) => res.destroy(err));
     stream.pipe(res);
   }
 }

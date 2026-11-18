@@ -35,6 +35,13 @@ const MONTHS = [
 ];
 const pad = (n: number) => String(n).padStart(2, '0');
 
+// project names and report titles are user input; keep each one a single
+// folder inside the backup
+export const folderName = (name: string) => {
+  const safe = `${name}`.replace(/[/\\\0]/g, '_');
+  return safe === '' || safe === '.' || safe === '..' ? '_' : safe;
+};
+
 // e.g. tellaweb-backup-13sept2024-16h45utc
 export const backupName = (d: Date) =>
   `tellaweb-backup-${d.getUTCDate()}${MONTHS[d.getUTCMonth()]}${d.getUTCFullYear()}` +
@@ -183,8 +190,8 @@ export class ProcessBackupHandler implements IProcessBackupHandler {
     for (const r of reports) {
       const reportDir = path.join(
         this.backupDir,
-        `${r.project_name}`,
-        `${r.report_title}`,
+        folderName(r.project_name),
+        folderName(r.report_title),
       );
       await fsp.mkdir(reportDir, { mode: 0o755, recursive: true });
 

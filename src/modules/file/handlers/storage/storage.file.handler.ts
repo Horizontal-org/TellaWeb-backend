@@ -54,7 +54,11 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async getBucket(bucketId: string): Promise<ReadStream[]> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullPath = path.join(
+      this.basePath,
+      this.segment(bucketId),
+      this.fullFolder,
+    );
     const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
     return bucketFullFiles
@@ -86,7 +90,11 @@ export class StorageFileHandler implements IStorageFileHandler {
     bucketId: string,
     fileName: string,
   ): Promise<string> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    const bucketFullPath = path.join(
+      this.basePath,
+      this.segment(bucketId),
+      this.fullFolder,
+    );
     const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
     // only names listed in the bucket, so fileName can't point outside it
@@ -111,7 +119,7 @@ export class StorageFileHandler implements IStorageFileHandler {
 
   async deleteBucket(bucketId: string): Promise<boolean> {
     // an empty id would resolve to the data folder itself
-    if (!bucketId) return false;
+    if (!this.isSafeSegment(bucketId)) return false;
     const bucketPath = path.join(this.basePath, bucketId);
     try {
       rmSync(bucketPath, { recursive: true, force: true });
@@ -164,8 +172,8 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {
-    if (!this.fileExist(input, false))
-      throw new NotFoundFileException(input.fileName);
+    const filePath = this.getPath(input, false);
+    if (!existsSync(filePath)) throw new NotFoundFileException(input.fileName);
 
     const ext = input.fileName.toLowerCase().split('.').pop();
     const isHeic =
@@ -189,7 +197,7 @@ export class StorageFileHandler implements IStorageFileHandler {
       return createReadStream(previewPath);
     }
 
-    return createReadStream(this.getPath(input, false));
+    return createReadStream(filePath);
   }
 
   public async get(
@@ -352,10 +360,29 @@ export class StorageFileHandler implements IStorageFileHandler {
   private getPath(input: ReadFileDto, isPartial: boolean) {
     return path.join(
       this.basePath,
-      input.bucket,
+      this.segment(input.bucket),
       isPartial ? this.partialFolder : this.fullFolder,
-      input.fileName,
+      this.segment(input.fileName),
     );
+  }
+
+  // Names come from the URL, where Express decodes %2F into '/', so a name
+  // with a separator or a dot segment could point outside its bucket.
+  private isSafeSegment(name: string): boolean {
+    return (
+      typeof name === 'string' &&
+      name !== '' &&
+      name !== '.' &&
+      name !== '..' &&
+      !/[/\\\0]/.test(name)
+    );
+  }
+
+  private segment(name: string): string {
+    if (!this.isSafeSegment(name)) {
+      throw new BadRequestException('Invalid file or bucket name');
+    }
+    return name;
   }
 
   private async createBucket(bucket: string) {
@@ -380,8 +407,8 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   private async streamToFile(input: WriteStreamFileDto) {
-    this.createBucket(input.bucket);
     const filePath = this.getPath(input, true);
+    this.createBucket(input.bucket);
     return await createWritePromise(filePath, input.stream, input.rangeStart);
   }
 }
