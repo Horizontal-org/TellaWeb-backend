@@ -20,6 +20,8 @@ export class BatchDeleteReportService implements IBatchDeleteReportService {
   ) {}
 
   async execute(toDelete: Array<string>): Promise<boolean> {
+    if (toDelete.length === 0) return true;
+
     await this.dataSource
       .createQueryBuilder()
       .delete()
@@ -34,9 +36,9 @@ export class BatchDeleteReportService implements IBatchDeleteReportService {
       .where('id IN (:...toDelete)', { toDelete: toDelete })
       .execute();
 
-    await toDelete.forEach(async (id) => {
-      await this.deleteBucketFileApplication.execute(id);
-    });
+    await Promise.all(
+      toDelete.map((id) => this.deleteBucketFileApplication.execute(id)),
+    );
     return true;
   }
 }

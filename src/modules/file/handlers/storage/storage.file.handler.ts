@@ -110,9 +110,11 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async deleteBucket(bucketId: string): Promise<boolean> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    // an empty id would resolve to the data folder itself
+    if (!bucketId) return false;
+    const bucketPath = path.join(this.basePath, bucketId);
     try {
-      rmSync(bucketFullPath, { recursive: true, force: true });
+      rmSync(bucketPath, { recursive: true, force: true });
       return true;
     } catch (_) {
       return false;

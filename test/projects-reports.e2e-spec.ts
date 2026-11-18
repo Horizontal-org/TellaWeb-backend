@@ -526,7 +526,7 @@ describe('projects and reports', () => {
       });
     });
 
-    it('deleting a project keeps its reports', async () => {
+    it('deleting a project deletes its reports', async () => {
       const temp = (
         await t
           .http()
@@ -551,18 +551,11 @@ describe('projects and reports', () => {
         .expect(200);
       await t.http().get(`/p/${temp.slug}`).set(bearer(admin)).expect(404);
 
-      const res = await t
+      await t
         .http()
         .get(`/report/${tempReport.id}`)
         .set(bearer(admin))
-        .expect(200);
-      expect(res.body.title).toBe('E2E orphan report');
-
-      await t
-        .http()
-        .delete(`/report/${tempReport.id}`)
-        .set(bearer(admin))
-        .expect(200);
+        .expect(404);
     });
   });
 });
