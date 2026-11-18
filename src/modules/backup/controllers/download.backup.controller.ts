@@ -7,7 +7,7 @@ import { RolesUser } from 'modules/user/domain';
 
 import { IDownloadBackupService, TYPES } from '../interfaces';
 
-@AuthController('backup', [RolesUser.ADMIN], JwtTypes.ALL)
+@AuthController('backup', [RolesUser.ADMIN], JwtTypes.WEB)
 export class DownloadBackupController {
   constructor(
     @Inject(TYPES.services.IDownloadBackupService)

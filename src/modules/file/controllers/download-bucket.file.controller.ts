@@ -18,7 +18,7 @@ import { ReportAccessGuard } from 'modules/report/guard/access.report.guard';
 @AuthController(
   'file',
   [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
-  JwtTypes.ALL,
+  JwtTypes.WEB,
 )
 export class DownloadBucketFileController {
   constructor(
