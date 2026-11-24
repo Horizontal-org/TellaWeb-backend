@@ -35,7 +35,8 @@ export class ListReportService implements IListReportService {
     const query = this.reportRepository
       .createQueryBuilder('report')
       .leftJoinAndSelect('report.files', 'files')
-      .innerJoinAndSelect('report.author', 'author')
+      // left join: authorId is SET NULL when the author is deleted
+      .leftJoinAndSelect('report.author', 'author')
       // 0 = no limit / no offset, as in TypeORM 0.2 (0.3 sends LIMIT 0 / OFFSET 0)
       .skip(skip || undefined)
       .take(take || undefined);
