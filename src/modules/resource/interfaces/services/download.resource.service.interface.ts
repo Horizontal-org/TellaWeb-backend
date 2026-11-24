@@ -1,5 +1,5 @@
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 export interface IDownloadResourceService {
-  execute(fileNames: string[]): Promise<ReadStream>;  
+  execute(fileNames: string[]): Promise<Readable>;
 }

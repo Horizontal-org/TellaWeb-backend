@@ -16,11 +16,11 @@ export class EditRemoteConfigurationDto {
 
   @ApiProperty()
   @IsJSON()
-  camouflage: {visible: boolean, change_name: boolean, calculator: boolean};
+  camouflage: { visible: boolean; change_name: boolean; calculator: boolean };
 
   @ApiProperty()
   @IsJSON()
-  crashReports?: {visible: boolean, enabled: boolean};
+  crashReports?: { visible: boolean; enabled: boolean };
 
   @ApiProperty()
   @IsBoolean()

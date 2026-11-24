@@ -1,7 +1,7 @@
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { LoginAuthDto } from '../domain/';
-// import * as requestIp from 'request-ip';
 
 import { version } from '../../../../package.json';
 
@@ -10,9 +10,13 @@ import {
   IValidateAuthService,
   IGenerateTokenAuthService,
 } from '../interfaces';
-import { ICheckSuspiciousUserApplication, TYPES as USER_TYPES } from '../../user/interfaces'
+import {
+  ICheckSuspiciousUserApplication,
+  TYPES as USER_TYPES,
+} from '../../user/interfaces';
 
 @Controller('login')
+@UseGuards(ThrottlerGuard)
 export class LoginAuthController {
   constructor(
     @Inject(USER_TYPES.applications.ICheckSuspiciousUserApplication)
@@ -21,21 +25,16 @@ export class LoginAuthController {
     private generateTokenAuthService: IGenerateTokenAuthService,
     @Inject(TYPES.services.IValidateAuthService)
     private validateAuthService: IValidateAuthService,
-    
   ) {}
 
   @Post()
-  async login(
-    @Body() loginAuthDto: LoginAuthDto, 
-    @Res() response: Response,
-  ) {
-
+  async login(@Body() loginAuthDto: LoginAuthDto, @Res() response: Response) {
     const { username, password } = loginAuthDto;
     const user = await this.validateAuthService.execute({ username, password });
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'mobile',
-      expiresIn: '1y'
+      expiresIn: '1y',
     });
 
     response
@@ -48,6 +47,6 @@ export class LoginAuthController {
         ...authToken,
         user,
         version,
-      });    
+      });
   }
 }

@@ -33,7 +33,6 @@ export class ReadReportDto {
   @IsJSON()
   deviceInfo: unknown;
 
-
   @ApiProperty({ type: [FileDto] })
   @Expose()
   @Type(() => FileDto)

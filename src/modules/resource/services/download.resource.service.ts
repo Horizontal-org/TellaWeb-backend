@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReadStream } from 'node:fs';
+import { Readable } from 'stream';
 
+import { TYPES } from '../interfaces';
 import {
-  TYPES,
-  
-} from '../interfaces';
-import { ICompressionFileHandler, IStorageFileHandler } from 'modules/file/interfaces';
+  ICompressionFileHandler,
+  IStorageFileHandler,
+} from 'modules/file/interfaces';
 import { IDownloadResourceService } from '../interfaces/services/download.resource.service.interface';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class DownloadResourceService implements IDownloadResourceService {
     @Inject(TYPES.handlers.ICompressionFileHandler)
     private compressionFileHandler: ICompressionFileHandler,
   ) {}
-  async execute(fileNames: string[]): Promise<ReadStream> {
+  async execute(fileNames: string[]): Promise<Readable> {
     const filesStream = await this.storageFileHandler.getResources(fileNames);
     return await this.compressionFileHandler.execute(filesStream);
-  }  
+  }
 }

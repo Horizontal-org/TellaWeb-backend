@@ -31,14 +31,20 @@ import {
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER], JwtTypes.ALL)
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER, RolesUser.REPORTER],
+  JwtTypes.ALL,
+)
 export class UploadFileReportController {
   constructor(
     @Inject(TYPES.applications.ICreateFileApplication)
     private createFileApplication: ICreateFileApplication,
     @Inject(TYPES.applications.ICloseFileApplication)
     private readonly closeFileApplication: ICloseFileApplication,
-    @Inject(GLOBAL_SETTINGS_TYPES.services.IRecordAnalyticsEventGlobalSettingService)
+    @Inject(
+      GLOBAL_SETTINGS_TYPES.services.IRecordAnalyticsEventGlobalSettingService,
+    )
     private readonly recordAnalyticsService: IRecordAnalyticsEventGlobalSettingService,
   ) {}
 
@@ -50,7 +56,8 @@ export class UploadFileReportController {
   })
   @ApiHeader({
     name: 'Content-Range',
-    description: 'Byte range of the chunk being uploaded, e.g. "bytes 0-499/1000"',
+    description:
+      'Byte range of the chunk being uploaded, e.g. "bytes 0-499/1000"',
     required: false,
   })
   @UseGuards(OnlyAuthor)
@@ -63,27 +70,42 @@ export class UploadFileReportController {
     @Headers('x-file-info') fileInfoHeader?: string,
     @Headers('content-length') contentLengthHeader?: string,
     @Headers('content-range') contentRangeHeader?: string,
-  ): Promise<FileDto | { success: boolean; error?: string; complete: boolean; }> {
-    
+  ): Promise<
+    FileDto | { success: boolean; error?: string; complete: boolean }
+  > {
     const startTime = Date.now();
 
-    console.log(`[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`);
- 
-    if (!contentLengthHeader || contentLengthHeader.trim() === '' || isNaN(parseInt(contentLengthHeader))) {
-      throw new HttpException('Content-Length header is required', HttpStatus.LENGTH_REQUIRED);
+    console.log(
+      `[UPLOAD] === Starting upload for ${fileName} to report ${reportId} ===`,
+    );
+
+    if (
+      !contentLengthHeader ||
+      contentLengthHeader.trim() === '' ||
+      isNaN(parseInt(contentLengthHeader))
+    ) {
+      throw new HttpException(
+        'Content-Length header is required',
+        HttpStatus.LENGTH_REQUIRED,
+      );
     }
-    
+
     if (!contentRangeHeader || contentRangeHeader.trim() === '') {
-      throw new HttpException('Content-Range header is required', HttpStatus.LENGTH_REQUIRED);
+      throw new HttpException(
+        'Content-Range header is required',
+        HttpStatus.LENGTH_REQUIRED,
+      );
     }
-    
+
     const contentLength = parseInt(contentLengthHeader, 10);
-    
+
     const parsed = this.parseContentRange(contentRangeHeader);
     if (!parsed) {
-      throw new BadRequestException('Invalid Content-Range header format. Expected: bytes <start>-<end>/<total>');
+      throw new BadRequestException(
+        'Invalid Content-Range header format. Expected: bytes <start>-<end>/<total>',
+      );
     }
-    
+
     const rangeStart = parsed.start;
     const rangeEnd = parsed.end;
     const totalSize = parsed.total;
@@ -93,7 +115,7 @@ export class UploadFileReportController {
       throw new BadRequestException(
         `Content-Length (${contentLength}) does not match Content-Range chunk size (${expectedChunkSize})`,
       );
-    }    
+    }
 
     const file = await this.createFileApplication.execute({
       bucket: reportId,
@@ -106,7 +128,10 @@ export class UploadFileReportController {
     });
 
     const uploadDuration = Date.now() - startTime;
-    console.log(`[UPLOAD] Stream completed in ${uploadDuration}ms, file created:`, file);
+    console.log(
+      `[UPLOAD] Stream completed in ${uploadDuration}ms, file created:`,
+      file,
+    );
 
     if (file.bytesWritten !== contentLength) {
       return {
@@ -120,9 +145,11 @@ export class UploadFileReportController {
     const fileTotalSize = totalSize ?? contentLength;
 
     if (accumulatedBytes < fileTotalSize) {
-      console.log(`[UPLOAD] Chunk received (${accumulatedBytes}/${fileTotalSize}), resumable incomplete`);
+      console.log(
+        `[UPLOAD] Chunk received (${accumulatedBytes}/${fileTotalSize}), resumable incomplete`,
+      );
       res.setHeader('Range', `bytes=0-${accumulatedBytes - 1}`);
-      res.status(HttpStatus.PARTIAL_CONTENT)
+      res.status(HttpStatus.PARTIAL_CONTENT);
       return {
         success: true,
         error: null,
@@ -159,7 +186,9 @@ export class UploadFileReportController {
     return file;
   }
 
-  private parseContentRange(header: string): { start: number; end: number; total: number } | null {
+  private parseContentRange(
+    header: string,
+  ): { start: number; end: number; total: number } | null {
     const match = header.match(/^bytes\s+(\d+)-(\d+)\/(\d+)$/);
     if (!match) return null;
 
@@ -172,8 +201,6 @@ export class UploadFileReportController {
     return { start, end, total };
   }
 
-
-
   @ApiCreatedResponse({ type: FileDto })
   @UseGuards(OnlyAuthor)
   @Header('Deprecation', 'true')
@@ -183,7 +210,9 @@ export class UploadFileReportController {
     @Param('reportId') reportId: string,
     @Param('fileName') fileName: string,
   ): Promise<FileDto> {
-    console.log('V1 upload endpoint is deprecated, please use /v2/:reportId/:fileName instead');
+    console.log(
+      'V1 upload endpoint is deprecated, please use /v2/:reportId/:fileName instead',
+    );
     const file = await this.createFileApplication.execute({
       bucket: reportId,
       fileName,

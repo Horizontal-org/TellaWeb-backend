@@ -12,6 +12,6 @@ export class GetByIdRemoteConfigService implements IGetByIdRemoteConfigurationSe
   ) {}
 
   async execute(reportId: string): Promise<RemoteConfigurationEntity> {
-    return this.configRepository.findOne(reportId);
+    return this.configRepository.findOne({ where: { id: reportId } });
   }
 }

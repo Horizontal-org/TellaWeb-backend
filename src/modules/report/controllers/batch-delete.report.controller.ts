@@ -4,8 +4,9 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { RolesUser } from 'modules/user/domain';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
+import { LoggedUser } from 'modules/auth/decorators';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
-import { boolean } from 'yargs';
+import { ReadUserDto } from 'modules/user/dto';
 import { BatchDeleteReportDto } from '../dto/batch-delete.report.dto';
 import { IBatchDeleteReportApplication, TYPES } from '../interfaces';
 
@@ -16,9 +17,12 @@ export class BatchDeleteReportController {
     private batchDeleteReportApplication: IBatchDeleteReportApplication,
   ) {}
 
-  @ApiOkResponse({ type: boolean })
+  @ApiOkResponse({ type: Boolean })
   @Post('batch-delete')
-  async handler(@Body() deleteDto: BatchDeleteReportDto) {
-    return this.batchDeleteReportApplication.execute(deleteDto.toDelete);
+  async handler(
+    @Body() deleteDto: BatchDeleteReportDto,
+    @LoggedUser() user: ReadUserDto,
+  ) {
+    return this.batchDeleteReportApplication.execute(deleteDto.toDelete, user);
   }
 }

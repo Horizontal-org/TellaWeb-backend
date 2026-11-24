@@ -14,7 +14,11 @@ import {
   IEditUserApplication,
 } from '../interfaces';
 
-@AuthController('user', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController(
+  'user',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 export class ChangePasswordUserController {
   constructor(
     @Inject(TYPES.applications.ICheckPasswordUserApplication)

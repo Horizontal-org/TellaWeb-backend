@@ -1,28 +1,26 @@
-import { ForbiddenError } from '@casl/ability';
-import { Body, Controller, Get, Inject, Post, Res, UnauthorizedException } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { MfaThrottlerGuard } from '../guard/mfa-throttler.guard';
 import { Response } from 'express';
 
-import { AuthController } from 'common/decorators/auth-controller.decorator';
-import { LoggedUser } from 'modules/auth/decorators';
-import { AbilityFactory, Actions } from 'casl/casl-ability.factory';
-import { ReadUserDto } from 'modules/user/dto';
-import { IEnableOtpAuthService, IGenerateTokenAuthService, IOtpAuthHandler, TYPES } from '../interfaces';
-import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
-
-import { OtpCodeAuthDto } from '../dto/otp-code.auth.dto';
-import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 import {
-  ICheckPasswordUserApplication,
+  IGenerateTokenAuthService,
+  IVerifyMfaTokenAuthService,
+  TYPES,
+} from '../interfaces';
+import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
+import {
   IGetByIdUserApplication,
   TYPES as TYPES_USER,
 } from 'modules/user/interfaces';
-import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
+import { RolesUser } from 'modules/user/domain';
+import { InvalidCredentailsUserException } from 'modules/user/exceptions';
 import { LoginRecoveryKeysAuthDto } from '../dto/login-recovery-keys.auth.dto';
 import { IValidateRecoveryKeysService } from '../interfaces/services/validate.recovery-keys.service.interface';
 
-
 @Controller('auth')
+@UseGuards(MfaThrottlerGuard)
+@Throttle({ default: { limit: 5, ttl: 60_000 } })
 export class LoginRecoveryKeysAuthController {
   constructor(
     @Inject(TYPES_USER.applications.IGetUserByIdApplication)
@@ -31,35 +29,32 @@ export class LoginRecoveryKeysAuthController {
     private generateTokenAuthService: IGenerateTokenAuthService,
     @Inject(TYPES.services.IValidateRecoveryKeysService)
     private validateRecoveryKeysService: IValidateRecoveryKeysService,
-    @Inject(TYPES_USER.applications.ICheckPasswordUserApplication)
-    private checkPasswordApplication: ICheckPasswordUserApplication,
     @Inject(TYPES.services.IRefreshTokenAuthService)
     private refreshTokenService: IRefreshTokenAuthService,
+    @Inject(TYPES.services.IVerifyMfaTokenAuthService)
+    private verifyMfaTokenService: IVerifyMfaTokenAuthService,
   ) {}
 
   @Post('/otp/recovery-key')
-  async handler(@Body() body: LoginRecoveryKeysAuthDto, @Res() response: Response): Promise<boolean> {
-    const user = await this.getByIdUserApplication.execute(body.userId)
-    
-    // extra layer of security
-    try {
-      await this.checkPasswordApplication.execute({
-        username: user.username,
-        password: body.password
-      })
-    } catch (_) {
-      throw new UnauthorizedException();
+  async handler(
+    @Body() body: LoginRecoveryKeysAuthDto,
+    @Res() response: Response,
+  ): Promise<boolean> {
+    // the mfa token proves the password step, so no password re-check here
+    const userId = await this.verifyMfaTokenService.execute(body.mfa_token);
+    await this.validateRecoveryKeysService.execute(userId, body.code);
+    const user = await this.getByIdUserApplication.execute(userId);
+    if (user.role === RolesUser.REPORTER) {
+      throw new InvalidCredentailsUserException();
     }
-
-    await this.validateRecoveryKeysService.execute(body.userId, body.code)
 
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '15m'
+      expiresIn: '15m',
     });
     const refresh_token = await this.refreshTokenService.generate(user.id);
-    
+
     response
       .cookie('access_token', authToken.access_token, {
         httpOnly: true,
@@ -71,7 +66,7 @@ export class LoginRecoveryKeysAuthController {
         refresh_token,
         user,
       });
-        
-    return true
+
+    return true;
   }
 }

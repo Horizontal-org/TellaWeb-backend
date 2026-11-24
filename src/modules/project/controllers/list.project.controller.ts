@@ -1,19 +1,24 @@
-import { Get, Inject, ParseIntPipe, Query } from '@nestjs/common';
+import { Get, Inject, Query } from '@nestjs/common';
 import { ApiExtraModels } from '@nestjs/swagger';
 
 import { ApiPaginatedResponse } from 'common/decorators/api-paginated.common.decorator';
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { PaginatedDto } from 'common/dto/paginated.common.dto';
+import { NonNegativeIntPipe } from 'common/pipes/non-negative-int.pipe';
 import { LoggedUser } from 'modules/auth/decorators';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 import { RolesUser } from 'modules/user/domain';
 import { ReadUserDto } from 'modules/user/dto';
 
-import { ReadProjectDto } from '../dto';
+import { ListProjectDto } from '../dto';
 import { IListProjectApplication, TYPES } from '../interfaces';
 
-@AuthController('project', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.WEB)
+@AuthController(
+  'project',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 @ApiExtraModels(PaginatedDto)
 export class ListProjectController {
   constructor(
@@ -21,16 +26,16 @@ export class ListProjectController {
     private listProjectApplication: IListProjectApplication,
   ) {}
 
-  @ApiPaginatedResponse(ReadProjectDto)
+  @ApiPaginatedResponse(ListProjectDto)
   @Get('')
   async handler(
     @LoggedUser() user: ReadUserDto,
-    @Query('limit', new ParseIntPipe()) limit = 0,
-    @Query('offset', new ParseIntPipe()) offset = 0,
+    @Query('limit', new NonNegativeIntPipe()) limit = 0,
+    @Query('offset', new NonNegativeIntPipe()) offset = 0,
     @Query('sort') sort = '',
     @Query('order') order = '',
     @Query('search') search = '',
-  ): Promise<PaginatedDto<ReadProjectDto>> {
+  ): Promise<PaginatedDto<ListProjectDto>> {
     const response = await this.listProjectApplication.execute(
       user,
       limit,

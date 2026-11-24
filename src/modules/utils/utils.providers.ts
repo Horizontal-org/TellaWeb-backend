@@ -6,6 +6,4 @@ export const mailUtilServiceProvider = {
   useClass: MailUtilService,
 };
 
-export const servicesUtilsProviders = [
-  mailUtilServiceProvider,  
-];
+export const servicesUtilsProviders = [mailUtilServiceProvider];

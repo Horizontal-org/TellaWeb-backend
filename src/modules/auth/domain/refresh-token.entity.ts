@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, JoinColumn, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+} from 'typeorm';
 import { UserEntity } from 'modules/user/domain/user.entity';
 
 @Entity({ name: 'refresh_tokens' })

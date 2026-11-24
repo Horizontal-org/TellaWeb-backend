@@ -23,9 +23,11 @@ export class EnableOtpAuthService implements IEnableOtpAuthService {
     private readonly otpHandler: IOtpAuthHandler,
   ) {}
 
-  async execute({ username, password }: LoginAuthDto): Promise<EnableOtpResponseAuthDto> {
-    
-    let userDto = null 
+  async execute({
+    username,
+    password,
+  }: LoginAuthDto): Promise<EnableOtpResponseAuthDto> {
+    let userDto = null;
     try {
       userDto = await this.checkPasswordUserApplication.execute({
         username,
@@ -35,16 +37,22 @@ export class EnableOtpAuthService implements IEnableOtpAuthService {
       throw new UnauthorizedException();
     }
 
-    const secret = authenticator.generateSecret()
-    const userEntity = await this.userRepository.findOne(userDto.id)
+    const secret = authenticator.generateSecret();
+    const userEntity = await this.userRepository.findOne({
+      where: { id: userDto.id },
+    });
 
     userEntity.refreshOtpSecret(secret);
     await this.userRepository.save(userEntity);
 
-    const qr = await this.otpHandler.createQR(userEntity.username, 'Tellaweb', secret)
+    const qr = await this.otpHandler.createQR(
+      userEntity.username,
+      'Tellaweb',
+      secret,
+    );
     return {
       otp_url: qr,
-      otp_code: secret
-    }
+      otp_code: secret,
+    };
   }
 }

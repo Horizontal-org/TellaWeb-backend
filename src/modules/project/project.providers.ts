@@ -17,8 +17,8 @@ import { EditProjectService } from './services/edit.project.service';
 
 import { DeleteByIdProjectApplication } from './applications/delete-by-id.project.application';
 import { DeleteByIdProjectService } from './services/delete-by-id.project.service';
+import { CheckNameProjectService } from './services/check-name.project.service';
 import { ProjectAccessGuard } from './guard/access.project.guard';
-
 
 export const projectAccessGuardProvider = {
   provide: TYPES.guards.IProjectAccessGuard,
@@ -28,12 +28,12 @@ export const projectAccessGuardProvider = {
 export const getBySlugApplicationProvider = {
   provide: TYPES.applications.IGetBySlugProjectApplication,
   useClass: GetBySlugProjectApplication,
-}
+};
 
 export const getBySlugServiceProvider = {
   provide: TYPES.services.IGetBySlugProjectService,
   useClass: GetBySlugProjectService,
-}
+};
 
 export const createProjectApplicationProvider = {
   provide: TYPES.applications.ICreateProjectApplication,
@@ -65,7 +65,7 @@ export const getByIdProjectServiceProvider = {
   useClass: GetByIdProjectService,
 };
 
-export const editProjectApplicationProvider = { 
+export const editProjectApplicationProvider = {
   provide: TYPES.applications.IEditProjectApplication,
   useClass: EditProjectApplication,
 };
@@ -77,12 +77,17 @@ export const editProjectServiceProvider = {
 
 export const deleteByIdProjectApplicationProvider = {
   provide: TYPES.applications.IDeleteByIdProjectApplication,
-  useClass: DeleteByIdProjectApplication
+  useClass: DeleteByIdProjectApplication,
 };
 
 export const deleteByIdProjectServiceProvider = {
   provide: TYPES.services.IDeleteByIdProjectService,
   useClass: DeleteByIdProjectService,
+};
+
+export const checkNameProjectServiceProvider = {
+  provide: TYPES.services.ICheckNameProjectService,
+  useClass: CheckNameProjectService,
 };
 
 export const applicationsProjectProviders = [
@@ -91,7 +96,7 @@ export const applicationsProjectProviders = [
   getByIdProjectApplicationProvider,
   editProjectApplicationProvider,
   deleteByIdProjectApplicationProvider,
-  getBySlugApplicationProvider
+  getBySlugApplicationProvider,
 ];
 
 export const servicesProjectProviders = [
@@ -100,9 +105,8 @@ export const servicesProjectProviders = [
   getByIdProjectServiceProvider,
   editProjectServiceProvider,
   deleteByIdProjectServiceProvider,
-  getBySlugServiceProvider
+  getBySlugServiceProvider,
+  checkNameProjectServiceProvider,
 ];
 
-export const guardsProjectProviders = [
-  projectAccessGuardProvider
-]
+export const guardsProjectProviders = [projectAccessGuardProvider];

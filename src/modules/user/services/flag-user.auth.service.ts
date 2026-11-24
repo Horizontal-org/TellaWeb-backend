@@ -12,24 +12,23 @@ export class FlagUserAuthService implements IFlagUserAuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(UserVerificationCodeEntity)
-    private readonly userVerificationRepo: Repository<UserVerificationCodeEntity>,    
+    private readonly userVerificationRepo: Repository<UserVerificationCodeEntity>,
   ) {}
 
   async execute(user): Promise<string> {
-    user.blocked = true
-    await this.userRepository.save(user)
+    user.blocked = true;
+    await this.userRepository.save(user);
 
-    const verificationCode = randomBytes(20).toString('hex')
+    const verificationCode = randomBytes(20).toString('hex');
     const userVerification = new UserVerificationCodeEntity();
-    userVerification.code = verificationCode
-    userVerification.user = user
+    userVerification.code = verificationCode;
+    userVerification.user = user;
 
-    const auxDate = new Date()
-    userVerification.expiresAt = new Date(auxDate.getTime() + 10*60000)
-    
-    await this.userVerificationRepo.save(userVerification)
+    const auxDate = new Date();
+    userVerification.expiresAt = new Date(auxDate.getTime() + 10 * 60000);
 
-      
-    return verificationCode
+    await this.userVerificationRepo.save(userVerification);
+
+    return verificationCode;
   }
 }

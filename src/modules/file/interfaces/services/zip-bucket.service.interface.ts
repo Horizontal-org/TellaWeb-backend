@@ -1,9 +1,6 @@
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 export interface IZipBucketFileService {
-  execute(bucketId: string): Promise<ReadStream>;
-  downloadFileFromBucket(
-    bucketId: string,
-    fileName: string,
-  ): Promise<ReadStream>;
+  execute(bucketId: string): Promise<Readable>;
+  getFilePathFromBucket(bucketId: string, fileName: string): Promise<string>;
 }

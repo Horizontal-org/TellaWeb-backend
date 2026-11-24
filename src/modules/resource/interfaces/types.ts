@@ -12,6 +12,6 @@ export const TYPES = {
   },
   handlers: {
     IStorageFileHandler: 'IStorageFileHandler',
-    ICompressionFileHandler: 'ICompressionFileHandler'
-  }
+    ICompressionFileHandler: 'ICompressionFileHandler',
+  },
 };

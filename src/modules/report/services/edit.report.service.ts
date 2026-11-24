@@ -13,7 +13,9 @@ export class EditReportService implements IEditReportService {
   ) {}
 
   async execute(editReportDto: EditReportDto): Promise<ReportEntity> {
-    const report = await this.reportRepository.findOne(editReportDto.id);
+    const report = await this.reportRepository.findOne({
+      where: { id: editReportDto.id },
+    });
 
     report.update(editReportDto);
     const updatedReport = await this.reportRepository.save(report);

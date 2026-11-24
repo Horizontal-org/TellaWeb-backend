@@ -17,8 +17,10 @@ export class CloseFileService implements ICloseFileService {
   ) {}
 
   async execute(closeFileDto: CloseFileDto, reportId: string): Promise<void> {
-    console.log(`[CLOSE] CloseFileService.execute() called for ${closeFileDto.fileName}`);
-    
+    console.log(
+      `[CLOSE] CloseFileService.execute() called for ${closeFileDto.fileName}`,
+    );
+
     const file = await this.fileRepository.findOne({
       where: {
         bucket: closeFileDto.bucket,
@@ -33,27 +35,31 @@ export class CloseFileService implements ICloseFileService {
     await this.fileHandler.close(closeFileDto);
     console.log(`[CLOSE] File moved successfully`);
 
-
     console.log(`[CLOSE] Detecting file type...`);
     file.type = await this.fileHandler.getType(closeFileDto);
     console.log(`[CLOSE] File type detected: ${file.type}`);
-    
+
     file.attachToReport(reportId);
     file.fileInfo = closeFileDto.fileInfo;
-    console.log(`[CLOSE] Attached to report: ${reportId}, fileInfo: ${JSON.stringify(closeFileDto.fileInfo)}`);
-    
+    console.log(
+      `[CLOSE] Attached to report: ${reportId}, fileInfo: ${JSON.stringify(closeFileDto.fileInfo)}`,
+    );
 
     await this.fileRepository.save(file);
     //UNTIL HERE, FILE IS CLOSED AND SAVED IN FULL FOLDER
-    
-    console.log(`[CLOSE] File entity saved successfully: id=${file.id}, type=${file.type}`);
+
+    console.log(
+      `[CLOSE] File entity saved successfully: id=${file.id}, type=${file.type}`,
+    );
 
     if (file.type === FileType.IMAGE) {
-      console.log(`[CLOSE] Generating preview for image: ${closeFileDto.fileName}`);
+      console.log(
+        `[CLOSE] Generating preview for image: ${closeFileDto.fileName}`,
+      );
       await this.fileHandler.generatePreview(closeFileDto);
       console.log(`[CLOSE] Preview generated successfully`);
     }
-    
+
     return;
   }
 }

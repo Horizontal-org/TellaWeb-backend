@@ -9,7 +9,7 @@ import { ICreateRemoteConfigurationApplication, TYPES } from '../interfaces';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 import {
   CreateRemoteConfigurationDto,
-  ReadRemoteConfigurationDto
+  ReadRemoteConfigurationDto,
 } from '../dto';
 
 @AuthController('config', [RolesUser.ADMIN], JwtTypes.WEB)

@@ -22,11 +22,13 @@ export class EditUserController {
   @ApiResponse({ type: ReadUserDto })
   @Post(':userId')
   async handler(
-    @Body() editUserDto: Partial<EditUserDto>,
+    @Body() editUserDto: EditUserDto,
     @Param('userId', new ParseUUIDPipe()) userId: string,
   ): Promise<ReadUserDto> {
     editUserDto.id = userId;
-    editUserDto.password = editUserDto.password ? await hashPassword(editUserDto.password) : null
+    editUserDto.password = editUserDto.password
+      ? await hashPassword(editUserDto.password)
+      : null;
     const user = await this.editUserApplication.execute(editUserDto);
 
     return user;

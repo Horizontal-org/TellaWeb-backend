@@ -12,16 +12,16 @@ export class UpdateGlobalSettingService implements IUpdateGlobalSettingService {
   constructor(
     @InjectRepository(GlobalSettingEntity)
     private readonly globalSettingRepository: Repository<GlobalSettingEntity>,
-
   ) {}
 
   async execute(id: string, enabled: boolean): Promise<void> {
-    const globalSetting = await this.globalSettingRepository.findOne(id);
-    
+    const globalSetting = await this.globalSettingRepository.findOne({
+      where: { id },
+    });
+
     if (!globalSetting) throw new NotFoundUserException();
 
-
-    globalSetting.enabled = enabled
+    globalSetting.enabled = enabled;
     await this.globalSettingRepository.save(globalSetting);
 
     return;

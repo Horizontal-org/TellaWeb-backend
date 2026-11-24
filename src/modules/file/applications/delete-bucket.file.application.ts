@@ -7,8 +7,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class DeleteBucketFileApplication
-  implements IDeleteBucketFileApplication {
+export class DeleteBucketFileApplication implements IDeleteBucketFileApplication {
   constructor(
     @Inject(TYPES.services.IDeleteBucketFileService)
     private readonly deleteBucket: IDeleteBucketFileService,

@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 
 import { CloseResourceDto } from '../dto';
 import { ResourceEntity } from '../domain';
-import { ICheckNameResourceService, ICloseResourceService, TYPES } from '../interfaces';
+import {
+  ICheckNameResourceService,
+  ICloseResourceService,
+  TYPES,
+} from '../interfaces';
 import { IStorageFileHandler } from 'modules/file/interfaces';
 import { NotFoundFileException } from 'modules/file/exceptions';
 
@@ -24,6 +28,6 @@ export class CheckNameResourceService implements ICheckNameResourceService {
       },
     });
 
-    return !!(file)
+    return !!file;
   }
 }

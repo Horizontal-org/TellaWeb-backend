@@ -15,10 +15,9 @@ export class LatestBackupController {
   ) {}
 
   @Get('latest')
-  async handler(
-  ): Promise<LatestBackupDto> {
+  async handler(): Promise<LatestBackupDto> {
     const latest = await this.latestBackupService.execute();
-    
-    return latest
+
+    return latest;
   }
 }

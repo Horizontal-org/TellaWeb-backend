@@ -11,8 +11,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class GetThumbnailByIdFileApplication
-  implements IGetThumbnailByIdFileApplication {
+export class GetThumbnailByIdFileApplication implements IGetThumbnailByIdFileApplication {
   constructor(
     @Inject(TYPES.applications.IGetByIdFileApplication)
     private readonly getByIdFileApplication: IGetByIdFileApplication,
@@ -24,9 +23,10 @@ export class GetThumbnailByIdFileApplication
 
   async execute(
     fileId: string,
+    reportId: string,
     { width }: ThumbnailOptions = {},
   ): Promise<Readable> {
-    const file = await this.getByIdFileApplication.execute(fileId);
+    const file = await this.getByIdFileApplication.execute(fileId, reportId);
     const fileStream = await this.fetchFileService.execute(file);
     const thumbnailStream = await this.createThumbnailFileService.execute(
       file.type,

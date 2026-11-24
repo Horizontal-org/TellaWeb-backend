@@ -10,7 +10,6 @@ import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
 
 @AuthController('resource', [RolesUser.ADMIN], JwtTypes.WEB)
-
 export class CloseResourceController {
   constructor(
     @Inject(TYPES.services.ICloseResourceService)
@@ -20,23 +19,20 @@ export class CloseResourceController {
   @Post('upload/:fileName')
   async handler(
     @Param('fileName') fileName: string,
-    @Body() closeResourceDto: CloseResourceDto
+    @Body() closeResourceDto: CloseResourceDto,
   ) {
-
-    closeResourceDto.fileName = fileName
+    closeResourceDto.fileName = fileName;
 
     try {
-      await this.closeResourceService.execute(
-        closeResourceDto,
-      )
-    } catch (err) {       
+      await this.closeResourceService.execute(closeResourceDto);
+    } catch (err) {
       return {
-        success: false
-      }
+        success: false,
+      };
     }
 
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 }

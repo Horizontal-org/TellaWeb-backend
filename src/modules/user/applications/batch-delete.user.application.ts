@@ -2,12 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   TYPES,
   IBatchDeleteUsersApplication,
-  IBatchDeleteUsersService
- } from '../interfaces';
+  IBatchDeleteUsersService,
+} from '../interfaces';
 
 @Injectable()
-export class BatchDeleteUsersApplication
-  implements IBatchDeleteUsersApplication {
+export class BatchDeleteUsersApplication implements IBatchDeleteUsersApplication {
   constructor(
     @Inject(TYPES.services.IBatchDeleteUsersService)
     private batchDeleteUsersService: IBatchDeleteUsersService,

@@ -7,10 +7,7 @@ export interface IStorageFileHandler {
   get(input: ReadFileDto): Promise<InfoFileDto>;
   getBucket(bucketId: string): Promise<ReadStream[]>;
   getResources(fileNames: string[]): Promise<ReadStream[]>;
-  downloadFileFromBucket(
-    bucketId: string,
-    fileName: string,
-  ): Promise<ReadStream>;
+  getFilePathFromBucket(bucketId: string, fileName: string): Promise<string>;
   deleteBucket(bucketId: string): Promise<boolean>;
   append(input: WriteStreamFileDto): Promise<number>;
   delete(input: ReadFileDto): Promise<boolean>;

@@ -5,8 +5,7 @@ import { IDeleteByIdRemoteConfigurationService } from '../interfaces';
 import { RemoteConfigurationEntity } from '../domain';
 
 @Injectable()
-export class DeleteByIdRemoteConfigurationService
-  implements IDeleteByIdRemoteConfigurationService {
+export class DeleteByIdRemoteConfigurationService implements IDeleteByIdRemoteConfigurationService {
   constructor(
     @InjectRepository(RemoteConfigurationEntity)
     private remoteConfigurationRepository: Repository<RemoteConfigurationEntity>,

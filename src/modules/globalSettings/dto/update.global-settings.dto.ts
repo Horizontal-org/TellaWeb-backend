@@ -3,7 +3,7 @@ import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
-export class UpdateGlobalSettingDto {  
+export class UpdateGlobalSettingDto {
   @ApiProperty()
   @Expose()
   @IsUUID()

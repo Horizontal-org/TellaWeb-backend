@@ -1,9 +1,6 @@
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 export interface IGetZippedBucketFileApplication {
-  execute(bocketId: string): Promise<ReadStream>;
-  downloadFileFromBucket(
-    bucketId: string,
-    fileName: string,
-  ): Promise<ReadStream>;
+  execute(bocketId: string): Promise<Readable>;
+  getFilePathFromBucket(bucketId: string, fileName: string): Promise<string>;
 }

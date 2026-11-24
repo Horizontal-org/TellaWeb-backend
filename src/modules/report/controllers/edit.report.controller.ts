@@ -1,4 +1,11 @@
-import { Body, Inject, Post, ParseUUIDPipe, Param } from '@nestjs/common';
+import {
+  Body,
+  Inject,
+  Post,
+  ParseUUIDPipe,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
@@ -7,6 +14,7 @@ import { RolesUser } from 'modules/user/domain';
 
 import { EditReportDto, ReadReportDto } from '../dto';
 import { TYPES, IEditReportApplication } from '../interfaces';
+import { ReportAccessGuard } from '../guard/access.report.guard';
 
 @AuthController('report', [RolesUser.ADMIN, RolesUser.EDITOR], JwtTypes.WEB)
 export class EditReportController {
@@ -16,6 +24,7 @@ export class EditReportController {
   ) {}
 
   @ApiResponse({ type: ReadReportDto })
+  @UseGuards(ReportAccessGuard)
   @Post(':reportId')
   async handler(
     @Body() editReportDto: Partial<EditReportDto>,

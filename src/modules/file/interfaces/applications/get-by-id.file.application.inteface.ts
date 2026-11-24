@@ -1,5 +1,5 @@
 import { FileDto } from '../../dto';
 
 export interface IGetByIdFileApplication {
-  execute(id: string): Promise<FileDto>;
+  execute(id: string, bucket: string): Promise<FileDto>;
 }

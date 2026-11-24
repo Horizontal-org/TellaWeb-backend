@@ -17,7 +17,7 @@ import { EditUserDto } from '../dto/edit.user.dto';
 import { ProjectEntity } from 'modules/project/domain/project.entity';
 import { UserEntity } from '.';
 
-@Entity("recovery_keys")
+@Entity('recovery_keys')
 export class RecoveryKeyEntity {
   @Expose()
   @PrimaryGeneratedColumn('uuid')
@@ -29,14 +29,13 @@ export class RecoveryKeyEntity {
   @Expose()
   @Column({ name: 'created_at' })
   createdAt!: Date;
-  
-  @ManyToOne(() => UserEntity, user => user.recovery_keys)
-  @JoinColumn({ name: "user_id" })
+
+  @ManyToOne(() => UserEntity, (user) => user.recovery_keys)
+  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
   @BeforeInsert()
   private beforeInsert(): void {
     this.createdAt = new Date();
   }
-
 }

@@ -36,7 +36,7 @@ describe('CreateReportApplication', () => {
       } as ReadReportDto;
 
       const author = {
-        toEntity: () => ({ id: 'AAA111' } as UserEntity),
+        toEntity: () => ({ id: 'AAA111' }) as UserEntity,
       } as ReadUserDto;
 
       expect(await application.execute(report, author)).toEqual(report);

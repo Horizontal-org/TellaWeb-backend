@@ -1,16 +1,25 @@
-import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { MfaThrottlerGuard } from '../guard/mfa-throttler.guard';
 import { Response } from 'express';
-import { IGenerateTokenAuthService, TYPES } from '../interfaces';
+import {
+  IGenerateTokenAuthService,
+  IVerifyMfaTokenAuthService,
+  TYPES,
+} from '../interfaces';
 import { IRefreshTokenAuthService } from '../interfaces/services/refresh-token.auth.service.interface';
 import { IVerifyOtpAuthService } from '../interfaces/services/verify-otp.auth.service.interface';
 import {
   IGetByIdUserApplication,
   TYPES as TYPES_USER,
 } from 'modules/user/interfaces';
+import { RolesUser } from 'modules/user/domain';
+import { InvalidCredentailsUserException } from 'modules/user/exceptions';
 import { LoginOtpAuthDto } from '../dto/login-otp.auth.dto';
 
-
 @Controller('auth')
+@UseGuards(MfaThrottlerGuard)
+@Throttle({ default: { limit: 5, ttl: 60_000 } })
 export class LoginOtpAuthController {
   constructor(
     @Inject(TYPES_USER.applications.IGetUserByIdApplication)
@@ -21,18 +30,28 @@ export class LoginOtpAuthController {
     private verifyOtpService: IVerifyOtpAuthService,
     @Inject(TYPES.services.IRefreshTokenAuthService)
     private refreshTokenService: IRefreshTokenAuthService,
+    @Inject(TYPES.services.IVerifyMfaTokenAuthService)
+    private verifyMfaTokenService: IVerifyMfaTokenAuthService,
   ) {}
 
   @Post('/otp/login')
-  async handler(@Body() body: LoginOtpAuthDto, @Res() response: Response): Promise<boolean> {
-    await this.verifyOtpService.execute(body.code, body.userId)
-    const user = await this.getByIdUserApplication.execute(body.userId)
+  async handler(
+    @Body() body: LoginOtpAuthDto,
+    @Res() response: Response,
+  ): Promise<boolean> {
+    const userId = await this.verifyMfaTokenService.execute(body.mfa_token);
+    await this.verifyOtpService.execute(body.code, userId);
+    const user = await this.getByIdUserApplication.execute(userId);
+    if (user.role === RolesUser.REPORTER) {
+      throw new InvalidCredentailsUserException();
+    }
+
     const authToken = await this.generateTokenAuthService.execute({
       user: user,
       type: 'web',
-      expiresIn: '15m'
+      expiresIn: '15m',
     });
-    
+
     const refresh_token = await this.refreshTokenService.generate(user.id);
 
     response
@@ -46,7 +65,7 @@ export class LoginOtpAuthController {
         refresh_token,
         user,
       });
-        
-    return true
+
+    return true;
   }
 }

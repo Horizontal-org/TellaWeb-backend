@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Readable } from 'stream';
 import { ReadStream } from 'fs';
 
@@ -11,7 +16,7 @@ import {
   TYPES,
 } from '../interfaces';
 import { Repository } from 'typeorm';
-import { ResourceEntity } from '../domain';
+import { MAX_RESOURCE_SIZE, ResourceEntity } from '../domain';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -29,7 +34,10 @@ export class UploadResourceService implements IUploadResourceService {
   ) {}
 
   async execute(input: WriteStreamResourceDto): Promise<ReadResourceDto> {
-    const buffer = await streamToBuffer(input.stream as ReadStream);
+    const buffer = await streamToBuffer(
+      input.stream as ReadStream,
+      MAX_RESOURCE_SIZE,
+    );
 
     const analysis = await this.pdfAnalyzerService.analyze(buffer);
     if (!analysis.isValid) {
@@ -56,7 +64,7 @@ export class UploadResourceService implements IUploadResourceService {
 
     const resource = new ResourceEntity();
     resource.fileName = input.fileName;
-    resource.title = input.fileName.split('.pdf')[0];
+    resource.title = input.fileName.replace(/\.pdf$/i, '');
     resource.type = 'pdf';
     const newResource = await this.resourceRepository.save(resource);
 

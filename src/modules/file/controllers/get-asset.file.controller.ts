@@ -5,20 +5,27 @@ import {
   Inject,
   Param,
   Response,
+  UseGuards,
 } from '@nestjs/common';
 
 import { AuthController } from 'common/decorators/auth-controller.decorator';
 import { TYPES, IGetAssetFileApplication } from '../interfaces';
 import { RolesUser } from 'modules/user/domain';
 import { JwtTypes } from 'modules/jwt/domain/jwt-types.auth.enum';
+import { ReportAccessGuard } from 'modules/report/guard/access.report.guard';
 
-@AuthController('file', [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER], JwtTypes.ALL)
+@AuthController(
+  'file',
+  [RolesUser.ADMIN, RolesUser.EDITOR, RolesUser.VIEWER],
+  JwtTypes.WEB,
+)
 export class GetAssetFileController {
   constructor(
     @Inject(TYPES.applications.IGetAssetFileApplication)
     private readonly getAssetFileApplication: IGetAssetFileApplication,
   ) {}
 
+  @UseGuards(ReportAccessGuard)
   @Get('asset/:reportId/:fileId')
   @HttpCode(206)
   async handler(
@@ -29,6 +36,7 @@ export class GetAssetFileController {
   ) {
     const applicationResponse = await this.getAssetFileApplication.execute(
       fileId,
+      reportId,
       headers.range,
     );
 

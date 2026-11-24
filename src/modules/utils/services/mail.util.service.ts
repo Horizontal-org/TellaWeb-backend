@@ -23,7 +23,6 @@ export class MailUtilService {
   }
 
   public async send(params) {
-    console.log("🚀 ~ MailUtilService ~ send ~ params:", params)
     try {
       await this.transporter.sendMail({
         to: params.to,
@@ -37,6 +36,8 @@ export class MailUtilService {
         '🚀 ~ file: mail.util.service.ts:29 ~ MailUtilService ~ example ~ e:',
         e,
       );
+      // rethrow so the bull job fails and gets retried
+      throw e;
     }
   }
 

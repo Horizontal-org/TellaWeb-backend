@@ -26,11 +26,10 @@ export class CloseResourceService implements ICloseResourceService {
     if (!file) throw new NotFoundFileException(closeResourceDto.fileName);
     await this.fileHandler.close({
       bucket: 'resources',
-      ...closeResourceDto
+      ...closeResourceDto,
     });
 
-    
-    file.size = closeResourceDto.size
+    file.size = closeResourceDto.size;
     await this.resourceRepository.save(file);
 
     return;

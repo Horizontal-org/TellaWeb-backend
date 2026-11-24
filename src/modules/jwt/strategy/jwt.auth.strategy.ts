@@ -1,5 +1,7 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import {
@@ -8,13 +10,18 @@ import {
 } from 'modules/user/interfaces';
 import { JWTPayload } from '../domain/jwt-payload.auth.ov';
 import { ReadUserDto } from 'modules/user/dto';
+import { UserEntity } from 'modules/user/domain';
+import { JwtTypes } from '../domain/jwt-types.auth.enum';
 import { Request } from 'express';
+import { InvalidSessionException } from 'common/exceptions/invalid-session.exception';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @Inject(TYPES_USER.applications.IGetUserByIdApplication)
     private readonly getByIdUserApplication: IGetByIdUserApplication,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {
     super({
       jwtFromRequest: (req: Request) => {
@@ -27,9 +34,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JWTPayload): Promise<ReadUserDto> {
+    // same secret signs MFA tokens, which must never authenticate a request
+    if (payload.type !== JwtTypes.WEB && payload.type !== JwtTypes.MOBILE) {
+      throw new InvalidSessionException();
+    }
     const user = await this.getByIdUserApplication.execute(payload.userId);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new InvalidSessionException();
+    }
+    // web sessions of a blocked user stop working (mobile ones don't); the
+    // web app then tries a refresh, which is refused with a 403
+    if (payload.type === JwtTypes.WEB) {
+      const blocked = await this.userRepository.count({
+        where: { id: user.id, blocked: true },
+      });
+      if (blocked) throw new InvalidSessionException();
     }
     return user;
   }

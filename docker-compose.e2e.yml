@@ -1,0 +1,14 @@
+# Throwaway MySQL for the e2e tests (npm run test:e2e), next to the dev database.
+# docker-compose -f docker-compose.e2e.yml up -d
+services:
+  db-e2e:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: e2e
+      MYSQL_DATABASE: tellaweb_e2e
+      MYSQL_USER: tellaweb_e2e
+      MYSQL_PASSWORD: e2e
+    ports:
+      - '3307:3306'
+    tmpfs:
+      - /var/lib/mysql

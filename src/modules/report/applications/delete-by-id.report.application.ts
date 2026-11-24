@@ -8,8 +8,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class DeleteByIdReportApplication
-  implements IDeleteByIdReportApplication {
+export class DeleteByIdReportApplication implements IDeleteByIdReportApplication {
   constructor(
     @Inject(TYPES.services.IDeleteByIdReportService)
     private deleteByIdReportService: IDeleteByIdReportService,

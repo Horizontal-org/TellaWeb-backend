@@ -20,10 +20,8 @@ export class GetByIdController {
 
   @ApiResponse({ type: ReadUserDto })
   @Get(':id')
-  async handler(
-    @Param('id') id: string,
-  ): Promise<ReadUserDto> {
+  async handler(@Param('id') id: string): Promise<ReadUserDto> {
     const user = await this.findByIdApplication.execute(id);
-    return user
+    return user;
   }
 }

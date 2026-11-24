@@ -11,8 +11,7 @@ import {
 } from '../interfaces';
 
 @Injectable()
-export class ListRemoteConfigurationApplication
-  implements IListRemoteConfigurationApplication {
+export class ListRemoteConfigurationApplication implements IListRemoteConfigurationApplication {
   constructor(
     @Inject(TYPES.services.IListRemoteConfigurationService)
     private readonly listRemoteConfigurationService: IListRemoteConfigurationService,
@@ -21,18 +20,25 @@ export class ListRemoteConfigurationApplication
   async execute(
     take: number,
     skip: number,
+    sort: string,
+    order: string,
+    search: string,
   ): Promise<PaginatedDto<ReadRemoteConfigurationDto>> {
-    const {
-      results,
-      total,
-    } = await this.listRemoteConfigurationService.execute(take, skip);
+    const { results, total } =
+      await this.listRemoteConfigurationService.execute(
+        take,
+        skip,
+        sort,
+        order,
+        search,
+      );
 
     return {
       limit: take,
       offset: skip,
       total: total,
       results: results.map((configuration) => {
-        return plainToClass(ReadRemoteConfigurationDto, configuration)
+        return plainToClass(ReadRemoteConfigurationDto, configuration);
       }),
     };
   }

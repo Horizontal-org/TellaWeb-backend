@@ -14,7 +14,7 @@ import {
 } from 'fs';
 import * as path from 'path';
 import * as GetFileType from 'file-type';
-import * as sharp from 'sharp';
+import { sharp } from 'common/utils/sharp.utils';
 
 import { BadRequestException } from '@nestjs/common';
 import {
@@ -30,7 +30,6 @@ import {
   CloseFileDto,
 } from '../../dto';
 import convert = require('heic-convert');
-
 
 import { createWritePromise } from '../utils/writeAsPromise.utils';
 import { FileType } from '../../domain';
@@ -55,10 +54,12 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async getBucket(bucketId: string): Promise<ReadStream[]> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
-    const bucketFullFiles = readdirSync(bucketFullPath, {
-      withFileTypes: true,
-    });
+    const bucketFullPath = path.join(
+      this.basePath,
+      this.segment(bucketId),
+      this.fullFolder,
+    );
+    const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
     return bucketFullFiles
       .filter((different) => different.isFile())
@@ -68,7 +69,11 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async getResources(fileNames: string[]): Promise<ReadStream[]> {
-    const bucketFullPath = path.join(this.basePath, 'resources', this.fullFolder);
+    const bucketFullPath = path.join(
+      this.basePath,
+      'resources',
+      this.fullFolder,
+    );
     const bucketFullFiles = readdirSync(bucketFullPath, {
       withFileTypes: true,
     });
@@ -81,30 +86,43 @@ export class StorageFileHandler implements IStorageFileHandler {
       );
   }
 
-  async downloadFileFromBucket(
+  async getFilePathFromBucket(
     bucketId: string,
     fileName: string,
-  ): Promise<ReadStream | null> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
-    const bucketFullFiles = readdirSync(bucketFullPath, {
-      withFileTypes: true,
-    });
+  ): Promise<string> {
+    const bucketFullPath = path.join(
+      this.basePath,
+      this.segment(bucketId),
+      this.fullFolder,
+    );
+    const bucketFullFiles = this.readBucket(bucketId, bucketFullPath);
 
+    // only names listed in the bucket, so fileName can't point outside it
     const file = bucketFullFiles.find(
       (file) => file.isFile() && file.name === fileName,
     );
     if (!file) {
-      return null; // File not found in the bucket
+      throw new NotFoundFileException(fileName);
     }
 
-    const filePath = path.join(bucketFullPath, file.name);
-    return createReadStream(filePath);
+    return path.join(bucketFullPath, file.name);
+  }
+
+  private readBucket(bucketId: string, bucketFullPath: string) {
+    try {
+      return readdirSync(bucketFullPath, { withFileTypes: true });
+    } catch (err) {
+      if (err.code === 'ENOENT') throw new NotFoundFileException(bucketId);
+      throw err;
+    }
   }
 
   async deleteBucket(bucketId: string): Promise<boolean> {
-    const bucketFullPath = path.join(this.basePath, bucketId, this.fullFolder);
+    // an empty id would resolve to the data folder itself
+    if (!this.isSafeSegment(bucketId)) return false;
+    const bucketPath = path.join(this.basePath, bucketId);
     try {
-      rmSync(bucketFullPath, { recursive: true, force: true });
+      rmSync(bucketPath, { recursive: true, force: true });
       return true;
     } catch (_) {
       return false;
@@ -154,33 +172,39 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   async fetch(input: ReadFileDto): Promise<ReadStream> {
-    if (!this.fileExist(input, false))
-      throw new NotFoundFileException(input.fileName);
+    const filePath = this.getPath(input, false);
+    if (!existsSync(filePath)) throw new NotFoundFileException(input.fileName);
 
     const ext = input.fileName.toLowerCase().split('.').pop();
-    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const isHeic =
+      ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
     const previewFileName = isHeic
       ? input.fileName
-        .replace(/\.heic$/i, '.jpg')
-        .replace(/\.heif$/i, '.jpg')
-        .replace(/\.HEIC$/i, '.jpg')
-        .replace(/\.HEIF$/i, '.jpg')
+          .replace(/\.heic$/i, '.jpg')
+          .replace(/\.heif$/i, '.jpg')
+          .replace(/\.HEIC$/i, '.jpg')
+          .replace(/\.HEIF$/i, '.jpg')
       : input.fileName;
-      
-    const previewPath = path.join(this.basePath, input.bucket, this.previewFolder, previewFileName);
+
+    const previewPath = path.join(
+      this.basePath,
+      input.bucket,
+      this.previewFolder,
+      previewFileName,
+    );
 
     if (existsSync(previewPath)) {
       return createReadStream(previewPath);
     }
 
-    return createReadStream(this.getPath(input, false));
+    return createReadStream(filePath);
   }
 
   public async get(
     input: ReadFileDto,
     isPartial = false,
   ): Promise<InfoFileDto> {
-    const fileExist = await this.fileExist(input, isPartial);    
+    const fileExist = await this.fileExist(input, isPartial);
     if (fileExist) {
       const size = await this.fileSize(input, isPartial);
       return {
@@ -201,17 +225,20 @@ export class StorageFileHandler implements IStorageFileHandler {
     return this.get(input, true);
   }
 
-  public async append(
-    fileInputStreamDto: WriteStreamFileDto,
-  ): Promise<number> {
-    
+  public async append(fileInputStreamDto: WriteStreamFileDto): Promise<number> {
     const file = await this.get(fileInputStreamDto);
-    
+
     if (file.closed)
       throw new AlreadyClosedFileException(fileInputStreamDto.fileName);
 
-    if (file.exist && !!(fileInputStreamDto.totalSize) && file.size >= fileInputStreamDto.totalSize) {
-      console.log(`[HANDLER] Partial file already has ${file.size} bytes meeting or exceeding totalSize ${fileInputStreamDto.totalSize}, skipping stream`);
+    if (
+      file.exist &&
+      !!fileInputStreamDto.totalSize &&
+      file.size >= fileInputStreamDto.totalSize
+    ) {
+      console.log(
+        `[HANDLER] Partial file already has ${file.size} bytes meeting or exceeding totalSize ${fileInputStreamDto.totalSize}, skipping stream`,
+      );
       return file.size;
     }
 
@@ -225,8 +252,13 @@ export class StorageFileHandler implements IStorageFileHandler {
 
     const bytesWritten = await this.streamToFile(fileInputStreamDto);
 
-    if (fileInputStreamDto.contentLength !== undefined && bytesWritten !== fileInputStreamDto.contentLength) {
-      console.warn(`[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`);
+    if (
+      fileInputStreamDto.contentLength !== undefined &&
+      bytesWritten !== fileInputStreamDto.contentLength
+    ) {
+      console.warn(
+        `[UPLOAD] Content-Length mismatch: expected ${fileInputStreamDto.contentLength}, received ${bytesWritten}`,
+      );
     }
 
     return bytesWritten;
@@ -286,16 +318,21 @@ export class StorageFileHandler implements IStorageFileHandler {
   public async generatePreview(input: ReadFileDto): Promise<void> {
     const fullPath = this.getPath(input, false);
     const ext = input.fileName.toLowerCase().split('.').pop();
-    const isHeic = ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
+    const isHeic =
+      ext === 'heic' || ext === 'heif' || ext === 'HEIC' || ext === 'HEIF';
     const previewFileName = isHeic
       ? input.fileName
-        .replace(/\.heic$/i, '.jpg')
-        .replace(/\.heif$/i, '.jpg')
-        .replace(/\.HEIC$/i, '.jpg')
-        .replace(/\.HEIF$/i, '.jpg')
+          .replace(/\.heic$/i, '.jpg')
+          .replace(/\.heif$/i, '.jpg')
+          .replace(/\.HEIC$/i, '.jpg')
+          .replace(/\.HEIF$/i, '.jpg')
       : input.fileName;
 
-    const previewDir = path.join(this.basePath, input.bucket, this.previewFolder);
+    const previewDir = path.join(
+      this.basePath,
+      input.bucket,
+      this.previewFolder,
+    );
     if (!existsSync(previewDir)) {
       mkdirSync(previewDir, { mode: 0o755, recursive: true });
     }
@@ -305,7 +342,9 @@ export class StorageFileHandler implements IStorageFileHandler {
     let inputBuffer: Buffer;
     if (isHeic) {
       const heicBuffer = readFileSync(fullPath);
-      inputBuffer = Buffer.from(await convert({ buffer: heicBuffer, format: 'JPEG', quality: 0.92 }));
+      inputBuffer = Buffer.from(
+        await convert({ buffer: heicBuffer, format: 'JPEG', quality: 0.92 }),
+      );
     } else {
       inputBuffer = readFileSync(fullPath);
     }
@@ -321,10 +360,29 @@ export class StorageFileHandler implements IStorageFileHandler {
   private getPath(input: ReadFileDto, isPartial: boolean) {
     return path.join(
       this.basePath,
-      input.bucket,
+      this.segment(input.bucket),
       isPartial ? this.partialFolder : this.fullFolder,
-      input.fileName,
+      this.segment(input.fileName),
     );
+  }
+
+  // Names come from the URL, where Express decodes %2F into '/', so a name
+  // with a separator or a dot segment could point outside its bucket.
+  private isSafeSegment(name: string): boolean {
+    return (
+      typeof name === 'string' &&
+      name !== '' &&
+      name !== '.' &&
+      name !== '..' &&
+      !/[/\\\0]/.test(name)
+    );
+  }
+
+  private segment(name: string): string {
+    if (!this.isSafeSegment(name)) {
+      throw new BadRequestException('Invalid file or bucket name');
+    }
+    return name;
   }
 
   private async createBucket(bucket: string) {
@@ -349,8 +407,8 @@ export class StorageFileHandler implements IStorageFileHandler {
   }
 
   private async streamToFile(input: WriteStreamFileDto) {
-    this.createBucket(input.bucket);
     const filePath = this.getPath(input, true);
+    this.createBucket(input.bucket);
     return await createWritePromise(filePath, input.stream, input.rangeStart);
   }
 }

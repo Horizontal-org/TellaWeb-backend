@@ -8,8 +8,7 @@ import {
   IFindByUsernameUserService,
 } from '../interfaces';
 
-export class FindByUsernameUserApplication
-  implements IFindByUsernameUserApplication {
+export class FindByUsernameUserApplication implements IFindByUsernameUserApplication {
   constructor(
     @Inject(TYPES.services.IFindByUsernameUserService)
     private readonly findByUsernameUserService: IFindByUsernameUserService,
