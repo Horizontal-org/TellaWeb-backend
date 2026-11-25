@@ -20,6 +20,7 @@ export class GetByIdProjectService implements IGetByIdProjectService {
       where: { id: projectId },
       relations: { users: true, resources: { projects: true } },
     });
+    if (!project) return null;
 
     const adminUsers = await this.userRepository.find({
       where: { role: RolesUser.ADMIN },

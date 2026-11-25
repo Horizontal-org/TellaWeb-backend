@@ -132,6 +132,14 @@ describe('projects and reports', () => {
       await t.http().get('/p/does-not-exist').set(bearer(admin)).expect(404);
     });
 
+    it('an unknown project id is 404 for admins', async () => {
+      await t
+        .http()
+        .get('/project/00000000-0000-4000-8000-000000000000')
+        .set(bearer(admin))
+        .expect(404);
+    });
+
     it('lists every project for admins', async () => {
       const res = await t
         .http()
@@ -300,7 +308,7 @@ describe('projects and reports', () => {
         .set(bearer(reporterMobile))
         .send({
           title: 'E2E report',
-          description: 'from e2e',
+          description: 'from e2e 🧬 ñ',
           deviceInfo: '{"os":"android"}',
         })
         .expect(201);
@@ -309,7 +317,7 @@ describe('projects and reports', () => {
       expect(report).toMatchObject({
         id: expect.any(String),
         title: 'E2E report',
-        description: 'from e2e',
+        description: 'from e2e 🧬 ñ',
       });
     });
 
@@ -350,6 +358,8 @@ describe('projects and reports', () => {
       expect(res.body).toMatchObject({
         id: report.id,
         title: 'E2E report',
+        // 4-byte characters survive the round trip through MySQL (utf8mb4)
+        description: 'from e2e 🧬 ñ',
         author: { id: t.users.reporter.id, username: USERS.reporter },
         files: [],
       });

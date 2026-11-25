@@ -26,7 +26,6 @@ export class ProjectEntity {
 
   @OneToMany(() => ReportEntity, (report: ReportEntity) => report.project, {
     cascade: true,
-    eager: true,
   })
   reports: ReportEntity[];
 

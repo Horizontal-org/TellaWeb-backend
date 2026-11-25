@@ -518,6 +518,24 @@ describe('files', () => {
         .expect(200);
     });
 
+    it('refuses mobile tokens', async () => {
+      await t
+        .http()
+        .get(`/file/download/${reportId}/image.png`)
+        .set(bearer(adminMobile))
+        .expect(403);
+      await t
+        .http()
+        .get(`/file/asset/${reportId}/${audioFile.id}`)
+        .set(bearer(adminMobile))
+        .expect(403);
+      await t
+        .http()
+        .get(`/file/report/${reportId}`)
+        .set(bearer(adminMobile))
+        .expect(403);
+    });
+
     it('an unknown file name is a 404', async () => {
       await t
         .http()

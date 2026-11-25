@@ -40,7 +40,9 @@ export const TokenAccessGuard = (accessType) => {
       }
     }
 
+    // same order as JwtStrategy: browser downloads only send the cookie
     public extractTokenFromHeader(request: Request): string | undefined {
+      if (request.cookies?.['access_token']) return request.cookies['access_token'];
       const [type, token] = request.headers.authorization?.split(' ') ?? [];
       return type === 'Bearer' ? token : undefined;
     }

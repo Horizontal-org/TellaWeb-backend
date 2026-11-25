@@ -31,6 +31,8 @@ export class GetBySlugProjectController {
     const project = await this.getBySlugProjectApplication.execute(projectSlug);
     // reporters (mobile) don't need the member list, and it exposes user ids
     if (user.role === RolesUser.REPORTER) delete project.users;
+    // reports aren't loaded any more; keep the field for mobile clients that may expect it
+    project.reports = [];
     return project;
   }
 }

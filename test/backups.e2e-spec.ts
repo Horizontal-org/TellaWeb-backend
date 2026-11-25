@@ -234,13 +234,13 @@ describe('backups', () => {
     expect(Buffer.compare(res.body, full.body.subarray(10, 20))).toBe(0);
   });
 
-  it('accepts a mobile token too', async () => {
+  it('refuses a mobile token', async () => {
     const mobile = await loginMobile(t, USERS.admin);
     await t
       .http()
       .get(`/backup/download/${backup.id}`)
       .set(bearer(mobile))
-      .expect(200);
+      .expect(403);
   });
 
   it('an unknown backup is a 404', async () => {
